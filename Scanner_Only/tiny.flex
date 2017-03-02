@@ -43,9 +43,9 @@ identifier = {letter}+
 "else"             { return new Token(Token.ELSE, yytext(), yyline, yycolumn); }
 "if"               { return new Token(Token.IF, yytext(), yyline, yycolumn); }
 "int"              { return new Token(Token.INT, yytext(), yyline, yycolumn); }
-"return"           { return new Token(Token.REPEAT, yytext(), yyline, yycolumn); }
-"void"             { return new Token(Token.UNTIL, yytext(), yyline, yycolumn); }
-"while"            { return new Token(Token.READ, yytext(), yyline, yycolumn); }
+"return"           { return new Token(Token.RETURN, yytext(), yyline, yycolumn); }
+"void"             { return new Token(Token.VOID, yytext(), yyline, yycolumn); }
+"while"            { return new Token(Token.WHILE, yytext(), yyline, yycolumn); }
 
 "+"                { return new Token(Token.PLUS, yytext(), yyline, yycolumn); }
 "-"                { return new Token(Token.MINUS, yytext(), yyline, yycolumn); }

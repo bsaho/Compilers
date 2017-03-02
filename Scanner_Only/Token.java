@@ -114,7 +114,7 @@ class Token {
         return "NUM(" + m_value + ")";
 
       case ERROR:
-        return "ERROR"
+        return "ERROR";
 
       default:
         return "UNKNOWN(" + m_value + ")";
