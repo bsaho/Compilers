@@ -79,6 +79,6 @@ identifier = {letter}+
 
 
 {WhiteSpace}*      { /* skip whitespace */ }   
-"{"[^\}]*"}"       { /* skip comments */ }
+"/*"[^\}]*"*/"       { /* skip comments */ }
 
 .                  { return new Token(Token.ERROR, yytext(), yyline, yycolumn); }
