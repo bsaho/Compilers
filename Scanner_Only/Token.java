@@ -22,6 +22,12 @@ class Token {
   public final static int SEMI = 19;
   public final static int ID = 20;
   public final static int NUM = 21;
+  public final static int COMMA = 22;
+  public final static int RCURL = 23;
+  public final static int LCURL = 24;
+  public final static int RSQUARE = 25;
+  public final static int LSQUARE = 26;
+
 
   public int m_type;
   public String m_value;
@@ -79,6 +85,14 @@ class Token {
         return "ID(" + m_value + ")";
       case NUM:
         return "NUM(" + m_value + ")";
+      case LSQUARE:
+        return "LSQUARE";
+      case RSQUARE:
+          return "RSQUARE";
+      case RCURL:
+          return "RCURL";
+      case LCURL:
+          return "LCURL";
       case ERROR:
         return "ERROR(" + m_value + ")";
       default:
