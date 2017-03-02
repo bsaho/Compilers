@@ -1,32 +1,41 @@
 class Token {
 
-  public final static int ERROR = 0;
-  public final static int IF = 1;
-  public final static int THEN = 2;
-  public final static int ELSE = 3;
-  public final static int END = 4;
-  public final static int REPEAT = 5;
-  public final static int UNTIL = 6;
-  public final static int READ = 7;
-  public final static int WRITE = 8;
-  public final static int ASSIGN = 9;
-  public final static int EQ = 10;
-  public final static int LT = 11;
-  public final static int GT = 12;
-  public final static int PLUS = 13;
-  public final static int MINUS = 14;
-  public final static int TIMES = 15;
-  public final static int OVER = 16;
-  public final static int LPAREN = 17;
-  public final static int RPAREN = 18;
-  public final static int SEMI = 19;
-  public final static int ID = 20;
-  public final static int NUM = 21;
-  public final static int COMMA = 22;
-  public final static int RCURL = 23;
-  public final static int LCURL = 24;
-  public final static int RSQUARE = 25;
-  public final static int LSQUARE = 26;
+    public final static int ELSE = 1;
+    public final static int IF = 2;
+    public final static int INT = 3;
+    public final static int RETURN = 4;
+    public final static int VOID = 5;
+    public final static int WHILE = 6;
+
+    public final static int PLUS = 7;
+    public final static int MINUS = 8;
+    public final static int TIMES = 9;
+    public final static int OVER = 10;
+
+    public final static int LT = 11;
+    public final static int LTEQ = 12;
+    public final static int GT = 13;
+    public final static int GTEQ = 14;
+    public final static int EQ = 15;
+    public final static int NOTEQ = 16;
+
+    public final static int ASSIGN = 17;
+    public final static int SEMI = 18;
+    public final static int COMMA = 19;
+    public final static int LPAREN = 20;
+    public final static int RPAREN = 21;
+
+    public final static int LSQUARE = 22;
+    public final static int RSQUARE = 23;
+
+    public final static int LCURL = 24;
+    public final static int RCURL = 25;
+
+    public final static int ID = 26;
+    public final static int NUM = 27;
+
+    public final static int ERROR = 28;
+
 
 
   public int m_type;
@@ -43,30 +52,19 @@ class Token {
 
   public String toString() {
     switch (m_type) {
-      case IF:
-        return "IF";
-      case THEN:
-        return "THEN";
       case ELSE:
         return "ELSE";
-      case END:
-        return "END";
-      case REPEAT:
-        return "REPEAT";
-      case UNTIL:
-        return "UNTIL";
-      case READ:
-        return "READ";
-      case WRITE:
-        return "WRITE";
-      case ASSIGN:
-        return "ASSIGN";
-      case EQ:
-        return "EQ";
-      case LT:
-        return "LT";
-      case GT:
-        return "GT";
+      case IF:
+        return "IF";
+      case INT:
+        return "INT";
+      case RETURN:
+        return "RETURN";
+      case VOID:
+        return "VOID";
+      case WHILE:
+        return "WHILE";
+      
       case PLUS:
         return "PLUS";
       case MINUS:
@@ -75,26 +73,49 @@ class Token {
         return "TIMES";
       case OVER:
         return "OVER";
+     
+      case LTEQ:
+        return "LTEQ";
+      case LT:
+        return "LT";
+      case GT:
+        return "GT";
+      case GTEQ:
+        return "GTEQ";
+      case EQ:
+        return "EQ";
+      case NOTEQ:
+        return "NOTEQ";
+
+      case ASSIGN:
+        return "ASSIGN";
+      case SEMI:
+        return "SEMI";
+      case COMMA:
+        return "COMMA";
       case LPAREN:
         return "LPAREN";
       case RPAREN:
         return "RPAREN";
-      case SEMI:
-        return "SEMI";
-      case ID:
-        return "ID(" + m_value + ")";
-      case NUM:
-        return "NUM(" + m_value + ")";
+
       case LSQUARE:
         return "LSQUARE";
       case RSQUARE:
           return "RSQUARE";
-      case RCURL:
-          return "RCURL";
+
       case LCURL:
           return "LCURL";
+      case RCURL:
+          return "RCURL";
+
+      case ID:
+        return "ID(" + m_value + ")";
+      case NUM:
+        return "NUM(" + m_value + ")";
+
       case ERROR:
-        return "ERROR(" + m_value + ")";
+        return "ERROR"
+
       default:
         return "UNKNOWN(" + m_value + ")";
     }
