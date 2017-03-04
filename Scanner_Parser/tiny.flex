@@ -91,7 +91,53 @@ identifier = {letter}+
    This section contains regular expressions and actions, i.e. Java
    code, that will be executed when the scanner matches the associated
    regular expression. */
-   
+
+
+"else"             {  return symbol(sym.ELSE); }
+"if"               {  return symbol(sym.IF); }
+"int"              {  return symbol(sym.INT); }
+"return"           {  return symbol(sym.RETURN); }
+"void"             {  return symbol(sym.VOID); }
+"while"            {  return symbol(sym.WHILE); }
+
+"+"                {  return symbol(sym.PLUS); }
+"-"                {  return symbol(sym.MINUS); }
+"*"                {  return symbol(sym.TIMES); }
+"/"                {  return symbol(sym.OVER); }
+
+"<"                { return symbol(sym.LT); }
+"<="               { return symbol(sym.LTEQ); }
+">"                { return symbol(sym.GT); }
+">="               { return symbol(sym.GTEQ); }
+"=="               { return symbol(sym.EQ); }
+"!="               { return symbol(sym.NOTEQ); }
+
+"="                { return symbol(sym.ASSIGN); }
+";"                { return symbol(sym.SEMI); }
+","                { return symbol(sym.COMMA); }
+
+
+"("                { return symbol(sym.LPAREN); }
+")"                { return symbol(sym.RPAREN); }
+
+"["                { return symbol(sym.LSQUARE); }
+"]"                { return symbol(sym.RSQUARE); }
+
+
+"{"                { return symbol(sym.LCURL); }
+"}"                { return symbol(sym.RCURL); }
+
+{identifier}       { return symbol(sym.ID, yytext()); }
+{number}           { return symbol(sym.NUM, yytext()); }
+
+
+{WhiteSpace}*      { /* skip whitespace */ }   
+"/*"[^\}]*"*/"     { /* skip comments */ }
+
+.                  { return symbol(sym.ERROR); }
+
+/************************Old Definitions***********************************/
+ 
 "if"               { return symbol(sym.IF); }
 "then"             { return symbol(sym.THEN); }
 "else"             { return symbol(sym.ELSE); }
