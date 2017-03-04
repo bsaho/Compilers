@@ -108,6 +108,7 @@ var_dec         ::= type_spec:t1  ID:id1 SEMI
 
 type_spec      ::= INT:i
 
+
                | VOID:i
 
                ;
