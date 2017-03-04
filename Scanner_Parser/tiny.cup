@@ -92,17 +92,17 @@ program	     ::= dec_list:s
                ;
 
 dec_list     ::= dec_list:s1 dec:s2 
-                 {: ExpList t = s1;
+                 {: DecList t = s1;
                     while( t.tail != null )
                       t = t.tail;
-                    t.tail = new ExpList(s2, null);
+                    t.tail = new DecList(s2, null);
                     RESULT = s1;
                  :}
                | dec:s
-                 {: RESULT = new ExpList(s, null); :}
-               | error SEMI stmt:s
+                 {: RESULT = new DecList(s, null); :}
+               | error SEMI dec_list:s
                  {: parser.report_error("invalid", null); 
-                    RESULT = new ExpList(s, null); 
+                    RESULT = new DecList(s, null); 
                  :}
                ;
 
@@ -113,9 +113,9 @@ dec         ::= var_dec:v
                ;
 
 type_spec      ::= INT
-                 {: RESULT = new IfExp(ileft, e, s, null); :}
+                 {: RESULT = new NameTy(ileft, NameTy.INT); :}
                | VOID
-                 {: RESULT = new IfExp(ileft, e, s1, s2); :}
+                 {: RESULT = new NameTy(ileft, NameTy.VOID); :}
                ;
 
 params         ::= param_list:l
