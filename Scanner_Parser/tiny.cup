@@ -121,13 +121,13 @@ type_spec      ::= INT
 params         ::= param_list:l
                  {: RESULT = l; :}
                |  VOID
-                 {: RESULT = f; :}
+                 {: RESULT = new NameTy(ileft, NameTy.VOID); :}
                 ;
 
-param         ::= type_spec:l ID 
-                 {: RESULT = l; :}
-               |  type_spec:l ID LSQUARE RSQUARE
-                 {: RESULT = f; :}
+param         ::= type_spec:s ID:id 
+                 {: RESULT = new SimpleDec(ileft, s, id); :}
+               |  type_spec:s ID:id LSQUARE RSQUARE
+                 {: RESULT = new ArrayDec(ileft, s, id ); :}
                  ;
 
 local_dec        ::= local_dec:l var_dec 
