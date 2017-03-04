@@ -2,12 +2,10 @@ package absyn;
 
 public class WhileExp extends Exp {
   public Exp test;
-  public ExpList thenpart;
-  public ExpList elsepart;
-  public IfExp( int pos, Exp test, ExpList thenpart, ExpList elsepart ) {
+  public Exp body;
+  public WhileExp( int pos, Exp test, Exp body ) {
     this.pos = pos;
     this.test = test;
-    this.thenpart = thenpart;
-    this.elsepart = elsepart;
+    this.body = body;
   }
 }
