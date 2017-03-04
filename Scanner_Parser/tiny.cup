@@ -8,7 +8,7 @@
 /* ----------------------Preliminary Declarations Section--------------------*/
    
 /* Import the class java_cup.runtime.*  */
-//import java_cup.runtime.*;
+import java_cup.runtime.*;
 import absyn.*;
    
 /* Parser code to change the way the parser reports errors (include
@@ -122,16 +122,19 @@ params         ::= param_list:l
                  {: RESULT = l; :}
                |  VOID
                  {: RESULT = f; :}
+                ;
 
 param         ::= type_spec:l ID 
                  {: RESULT = l; :}
                |  type_spec:l ID LSQUARE RSQUARE
                  {: RESULT = f; :}
+                 ;
 
 local_dec        ::= local_dec:l var_dec 
                  {: RESULT = l; :}
                |  
                  {: RESULT = f; :}
+                 ;
 
 stmt        ::= exp_stmt:l 
                  {: RESULT = l; :}
@@ -143,22 +146,26 @@ stmt        ::= exp_stmt:l
                  {: RESULT = f; :}
                 |  return_stmt
                  {: RESULT = f; :}
+                 ;
 
 
 selct_stmt    ::= IF LPAREN exp RPAREN stmt
                  {: RESULT = l; :}
                 |  IF LPAREN exp RPAREN stmt ELSE stmt
                  {: RESULT = f; :}
+                 ;
 
 return_stmt    ::= RETURN SEMI
                  {: RESULT = l; :}
                 | RETURN exp
                  {: RESULT = f; :}
+                 ;
 
 var            ::= ID
                  {: RESULT = l; :}
                 |  ID LSQUARE exp RSQUARE 
-                 {: RESULT = f; :}                
+                 {: RESULT = f; :}
+                 ;            
 
 relop            ::= LTEQ
                  {: RESULT = l; :}
@@ -172,22 +179,27 @@ relop            ::= LTEQ
                  {: RESULT = f; :}
                 |  NOTEQ
                  {: RESULT = f; :}
+                 ;
 
 add_op           ::= PLUS
                  {: RESULT = l; :}
                 |  MINUS 
                  {: RESULT = f; :}  
+                 ;
 
 mul_op            ::= TIMES
                  {: RESULT = l; :}
                 |  OVER 
                  {: RESULT = f; :}  
+                 ;
 
 call           ::= ID LPAREN args RPAREN
                  {: RESULT = l; :}
+                 ;
 
 
-arg_list          ::= arg_list COMMA exp
+arg_list        ::= arg_list COMMA exp
                  {: RESULT = l; :}
                 |  exp
-                 {: RESULT = f; :}  
+                 {: RESULT = f; :} 
+                 ; 
