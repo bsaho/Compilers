@@ -138,10 +138,7 @@ comp_stmt      ::= LCURL local_dec stmt_list RCURL
 
 local_dec        ::= local_dec:l var_dec:v
 
-                | var_dec:v
-
-                | /*empty*/
-
+                | 
                 ;
 
 
