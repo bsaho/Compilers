@@ -203,17 +203,16 @@ arg_list        ::= arg_list COMMA exp
                 |  exp
                  {: RESULT = f; :} 
                  ; 
-
 /*********************Saho, to be fixed*/
-var_dec         :: type_spec ID SEMI
-                  {: RESULT=l; :} 
-                  | type_spec LSQUARE NUM RSQUARE SEMI
-                  {: RESULT=f; :}
+var_dec         ::=type_spec:t1  ID:id1 SEMI
+                  {: RESULT= new SimpleDec (t1,id1) ; :} 
+                  | type_spec:t1 ID:id1 LSQUARE NUM:n1 RSQUARE SEMI
+                  {: RESULT= new ArrayDec (t1,id1,n1) ; :};
 
 
 
-func_dec       ::= type_spec ID LPAREN params RPAREN comp_stmt
-                {: RESULT=l; :}
+func_dec       ::= type_spec:t ID:id1 LPAREN params:p RPAREN comp_stmt:c1
+                {: RESULT= new FuncDec (t,id1,p,c1); :};
 
 
 param_list     ::= param_list COMMA param 
@@ -223,24 +222,29 @@ param_list     ::= param_list COMMA param
 comp_stmt      ::={ local_dec stmt_list}
                   {: RESULT=l; :}
 
-exp_stmt       ::= exp:e ; 
-                  {: RESULT=e; :}
+exp_stmt       ::= exp:e SEMI 
+                  {: RESULT= new VarExp (e); :}
+                  | {: RESULT= new NilExp (); }
   
                 | ;
                 {: RESULT=l; :}
-iter_stmt      ::= while LPAREN exp RPAREN stmt 
-                {: RESULT=f; :}
 
-exp             ::= var=exp 
-                {: RESULT=f; :}
+iter_stmt      ::= WHILE LPAREN exp:e RPAREN stmt:s 
+                {: RESULT= new WhileExp (e,s); :}
+
+exp             ::= var EQ exp 
+                {: RESULT= ; :}
                 | smpl_exp {: RESULT=l;}
 
+add_exp         ::= add_exp:a1 add_op term:t1| term
+                 //wrong.Fix.
+                  {: RESULT= new OpExp (a1,OpExp.PLUS,t1)  : }
+
+term            ::= term mulop factor| factor
 
 /****To be completed
 smpl_exp        ::= add_exp relop add_exp| add_exp
-add_exp         ::= add_exp add_op term| term
 
-term            ::= term mulop factor| factor
 
 factor          ::= LPAREN exp RPAREN |var |call| NUM 
 
