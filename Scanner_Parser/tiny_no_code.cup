@@ -180,7 +180,8 @@ return_stmt    ::= RETURN:r SEMI
 
                 ;
 
-exp            ::= var ASSIGN exp 
+exp            ::= var:v ASSIGN exp:e 
+                {: RESULT = new AssignExp(vleft, v, e); :}
                 | 
                 smpl_exp 
                 ;
@@ -192,55 +193,65 @@ var            ::= ID:i
                 ;            
 
 
-smpl_exp        ::= add_exp relop add_exp| add_exp
+smpl_exp        ::= add_exp relop add_exp
+                
+                | add_exp
                 ;
 
 relop            ::= LTEQ
-
+                 {: RESULT = OpExp.LE; :}
                 |  LT
-
+                 {: RESULT = OpExp.LT; :} 
                 |  GT
-
+                 {: RESULT = OpExp.GT; :}
                 |  GTEQ
-
+                 {: RESULT = OpExp.GE; :}
                 |  EQ
-
+                 {: RESULT = OpExp.EQ; :}
                 |  NOTEQ
+                 {: RESULT = OpExp.NE; :}
+                 ;
 
-                ;
 
-
-add_exp         ::= add_exp:a1 add_op term:t1| term
+add_exp         ::= add_exp:a1 add_op:op term:t1
+                 {: RESULT = new OpExp(a1left, a1, op, t1); :}
+                | term
                 ;
 
 
 add_op           ::= PLUS
-
+                 {: RESULT = OpExp.PLUS; :}
                 |  MINUS 
- 
-                ;
+                 {: RESULT = OpExp.MINUS; :}  
+                 ;
 
-term            ::= term mul_op fact | fact
+term            ::= term:t mul_op:op fact:f
+                {: RESULT = new OpExp(tleft, t, op, f); :} 
+                | fact:f
+                  {: RESULT = f; :}
                 ;
 
 mul_op            ::= TIMES
-
+                 {: RESULT = OpExp.MUL; :}
                 |  OVER 
-
-                ;
+                 {: RESULT = OpExp.DIV; :}  
+                 ;
 
 
 fact          ::= LPAREN exp RPAREN 
                 |
-                var 
+                var:v 
+                {: RESULT = new VarExp(vleft,v); :} 
                 |
-                call
+                call:c
+                {: RESULT = c; :} 
                 | 
-                NUM 
+                NUM:n
+                {: RESULT = new IntExp(nleft,n); :} 
                 ;
 
 call           ::= ID:i LPAREN args:a RPAREN
-
+                {: RESULT = new CallExp(ileft,i,a); :} 
                 ;
 
 args            ::= arg_list:l
