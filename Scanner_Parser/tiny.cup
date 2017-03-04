@@ -203,3 +203,48 @@ arg_list        ::= arg_list COMMA exp
                 |  exp
                  {: RESULT = f; :} 
                  ; 
+
+/*********************Saho, to be fixed*/
+var_dec         :: type_spec ID SEMI
+                  {: RESULT=l; :} 
+                  | type_spec LSQUARE NUM RSQUARE SEMI
+                  {: RESULT=f; :}
+
+
+
+func_dec       ::= type_spec ID LPAREN params RPAREN comp_stmt
+                {: RESULT=l; :}
+
+
+param_list     ::= param_list COMMA param 
+                {:RESULT=l; :}|
+                 param {: RESULT=f; :}
+
+comp_stmt      ::={ local_dec stmt_list}
+                  {: RESULT=l; :}
+
+exp_stmt       ::= exp:e ; 
+                  {: RESULT=e; :}
+  
+                | ;
+                {: RESULT=l; :}
+iter_stmt      ::= while LPAREN exp RPAREN stmt 
+                {: RESULT=f; :}
+
+exp             ::= var=exp 
+                {: RESULT=f; :}
+                | smpl_exp {: RESULT=l;}
+
+
+/****To be completed
+smpl_exp        ::= add_exp relop add_exp| add_exp
+add_exp         ::= add_exp add_op term| term
+
+term            ::= term mulop factor| factor
+
+factor          ::= LPAREN exp RPAREN |var |call| NUM 
+
+stmt_list       ::= stmt_list stmt | {: : }
+
+arg_list        ::= arg_list COMMA exp | exp
+/*Saho to fix ************************************************/
