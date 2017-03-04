@@ -96,11 +96,19 @@ dec         ::= var_dec:v
 
                ;
 
+var_dec         ::= type_spec:t1  ID:id1 SEMI
+
+                | type_spec:t1 ID:id1 LSQUARE NUM:n1 RSQUARE SEMI
+                ;
+
 type_spec      ::= INT:i
 
                | VOID:i
 
                ;
+
+func_dec       ::= type_spec:t ID:id1 LPAREN params:p RPAREN comp_stmt:c1
+                ;
 
 params         ::= param_list:l
 
@@ -108,11 +116,21 @@ params         ::= param_list:l
 
                 ;
 
+param_list     ::= param_list COMMA param 
+
+                |
+
+                ;
+
 param         ::= type_spec:s ID:id 
 
                |  type_spec:s ID:id LSQUARE RSQUARE
 
-                 ;
+                ;
+
+comp_stmt      ::= LCURL local_dec stmt_list RCURL
+                ;
+
 
 local_dec        ::= local_dec:l var_dec:v
 
@@ -120,7 +138,11 @@ local_dec        ::= local_dec:l var_dec:v
 
                 | /*empty*/
 
-                  ;
+                ;
+
+
+stmt_list       ::= stmt_list stmt 
+                ;
 
 stmt        ::= exp_stmt:es 
 
@@ -132,26 +154,42 @@ stmt        ::= exp_stmt:es
 
                 |  return_stmt:rs
 
-                 ;
+                ;
 
+
+exp_stmt       ::= exp:e SEMI 
+                | 
+                ;
 
 select_stmt    ::= IF LPAREN exp:e RPAREN stmt:s
 
                 |  IF LPAREN exp:e RPAREN stmt:s1 ELSE stmt:s2
 
-                 ;
+                ;
+
+iter_stmt      ::= WHILE LPAREN exp:e RPAREN stmt:s 
+                ;
 
 return_stmt    ::= RETURN:r SEMI
 
                 | RETURN:r exp:e SEMI
 
-                 ;
+                ;
+
+exp            ::= var ASSIGN exp 
+                | 
+                smpl_exp 
+                ;
 
 var            ::= ID:i
 
                 |  ID:i LSQUARE exp:e RSQUARE 
 
-                 ;            
+                ;            
+
+
+smpl_exp        ::= add_exp relop add_exp| add_exp
+                ;
 
 relop            ::= LTEQ
 
@@ -165,76 +203,28 @@ relop            ::= LTEQ
 
                 |  NOTEQ
 
-                 ;
-
-add_op           ::= PLUS
-
-                |  MINUS 
- 
-                 ;
-
-mul_op            ::= TIMES
-
-                |  OVER 
-
-                 ;
-
-call           ::= ID:i LPAREN args:a RPAREN
-
-                 ;
-
-
-arg_list        ::= arg_list:l COMMA exp:e
-
-                |  exp:e
-
-                 ; 
-/*********************Saho, to be fixed*/
-var_dec         ::= type_spec:t1  ID:id1 SEMI
-
-                | type_spec:t1 ID:id1 LSQUARE NUM:n1 RSQUARE SEMI
                 ;
 
-
-
-func_dec       ::= type_spec:t ID:id1 LPAREN params:p RPAREN comp_stmt:c1
-                ;
-
-
-param_list     ::= param_list COMMA param 
-
-                |
-
-                ;
-
-comp_stmt      ::= local_dec stmt_list
-                ;
-
-
-exp_stmt       ::= exp:e SEMI 
-                  | 
-                  ;
-
-
-iter_stmt      ::= WHILE LPAREN exp:e RPAREN stmt:s 
-                ;
-
-
-exp            ::= var EQ exp 
-                | 
-                smpl_exp 
-                ;
 
 add_exp         ::= add_exp:a1 add_op term:t1| term
                 ;
 
 
+add_op           ::= PLUS
+
+                |  MINUS 
+ 
+                ;
+
 term            ::= term mul_op fact | fact
                 ;
 
+mul_op            ::= TIMES
 
-smpl_exp        ::= add_exp relop add_exp| add_exp
+                |  OVER 
+
                 ;
+
 
 fact          ::= LPAREN exp RPAREN 
                 |
@@ -245,10 +235,35 @@ fact          ::= LPAREN exp RPAREN
                 NUM 
                 ;
 
-stmt_list       ::= stmt_list stmt 
+call           ::= ID:i LPAREN args:a RPAREN
+
                 ;
 
-arg_list        ::= arg_list COMMA exp | exp
+args            ::= arg_list:l
+                
+                |         
                 ;
 
-/*Saho to fix *************************ll***********************/
+arg_list        ::= arg_list:l COMMA exp:e
+
+                |  exp:e
+                ; 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
