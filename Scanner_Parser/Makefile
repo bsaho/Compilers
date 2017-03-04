@@ -2,8 +2,8 @@ JAVA=java
 JAVAC=javac
 JFLEX=jflex
 CLASSPATH=-classpath /usr/share/java/cup.jar:.
-#CUP=$(JAVA) $(CLASSPATH) java_cup.Main <
-CUP=cup
+CUP=$(JAVA) $(CLASSPATH) java_cup.Main <
+#CUP=cup
 
 all: Main.class
 
@@ -16,7 +16,7 @@ Lexer.java: tiny.flex
 	$(JFLEX) tiny.flex
 
 parser.java: tiny.cup
-	$(CUP) -dump -expect 3 tiny.cup
+	$(CUP) tiny.cup
 
 clean:
 	rm -f parser.java Lexer.java sym.java *.class absyn/*.class *~
