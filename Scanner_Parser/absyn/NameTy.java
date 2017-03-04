@@ -7,7 +7,7 @@ public class NameTy{
 
   final static int NameTy.INT, NameTy.VOID;
 
-  public VarDec( int pos, int typ ) {
+  public NameTy( int pos, int typ ) {
     this.pos = pos;
     this.typ = typ;
   }
