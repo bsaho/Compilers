@@ -92,6 +92,7 @@ program	     ::= dec_list:s
                ;
 
 dec_list     ::= dec_list:s1 dec:s2 
+              | dec
                ;
 
 dec         ::= var_dec:v
