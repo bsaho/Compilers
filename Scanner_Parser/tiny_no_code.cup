@@ -144,6 +144,7 @@ local_dec        ::= local_dec:l var_dec:v
 
 
 stmt_list       ::= stmt_list stmt 
+                |
                 ;
 
 stmt        ::= exp_stmt:es 
