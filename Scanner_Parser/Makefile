@@ -16,7 +16,7 @@ Lexer.java: tiny.flex
 	$(JFLEX) tiny.flex
 
 parser.java: tiny.cup
-	$(CUP) tiny.cup
+	$(CUP) tiny_no_code.cup
 
 clean:
 	rm -f parser.java Lexer.java sym.java *.class absyn/*.class *~
