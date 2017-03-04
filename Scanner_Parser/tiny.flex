@@ -136,8 +136,8 @@ identifier = {letter}+
 
 .                  { return symbol(sym.ERROR); }
 
-/************************Old Definitions***********************************/
- 
+
+/************************Old Definitions***********************************
 "if"               { return symbol(sym.IF); }
 "then"             { return symbol(sym.THEN); }
 "else"             { return symbol(sym.ELSE); }
@@ -162,44 +162,4 @@ identifier = {letter}+
 {WhiteSpace}*      { /* skip whitespace */ }   
 "{"[^\}]*"}"       { /* skip comments */ }
 .                  { return symbol(sym.ERROR); }
-
-/************************************************
-1st Half - Stephen
-
-1) else
-2) if
-3) int
-4) return
-5) void 
-6) while
-7) +
-9) -
-10) *
-11) /
-12) <
-13) <=
-14) >
-15) >=
-16) ==
-17) !=
-
-2nd Half - Bashir
-
-18) =
-19) ;
-20) ,
-21) (
-22) )
-23) [
-24) ]
-25) {
-26) }
-27) /*
-28) */
-29) ID
-30) NUM
-31) letter
-32) digit
-33) whitespace (blanks,newlines,tabs)
-
-************************************************/
+*****************************************************************************/
