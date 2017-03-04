@@ -1,5 +1,3 @@
-ReturnExp(int pos, Exp exp)
-
 package absyn;
 
 public class ReturnExp extends Exp {
