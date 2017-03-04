@@ -82,6 +82,10 @@ non terminal ExpList program, dec_list, param_list, stmt_list, arg_list, local_d
 non terminal Exp dec, var_dec, type_spec, func_dec, params, param, comp_stmt, stmt, exp_stmt, select_stmt, iter_stmt, return_stmt;
 non terminal Exp exp, var, smpl_exp, relop, add_exp, add_op, term, mul_op, fact, call, args;  
 
+precedence left LPAREN, RPAREN;
+precedence left LCURL, RCURL;
+precedence left LSQUARE, RSQUARE;
+
 /* ----------------------------Grammar Section-------------------- */
    
 program	     ::= dec_list:s
@@ -158,7 +162,7 @@ stmt        ::= exp_stmt:es
 
 
 exp_stmt       ::= exp:e SEMI 
-                | 
+                | SEMI
                 ;
 
 select_stmt    ::= IF LPAREN exp:e RPAREN stmt:s
