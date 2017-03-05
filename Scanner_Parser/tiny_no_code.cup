@@ -70,13 +70,13 @@ parser code {:
    
 /* ------------Declaration of Terminals and Non Terminals Section----------- */
    
-terminal ELSE, IF, INT, RETURN, VOID, WHILE;
+ terminal ELSE, IF, INT, RETURN, VOID, WHILE;
 terminal PLUS, MINUS, TIMES, OVER;
 terminal LT, LTEQ, GT, GTEQ, EQ, NOTEQ;
 terminal ASSIGN, SEMI, COMMA, LPAREN, RPAREN;
 terminal LSQUARE, RSQUARE, LCURL, RCURL;
 terminal String ID;
-terminal String NUM;
+terminal String  NUM;
 terminal ERROR;
 
 non terminal ExpList program, dec_list, param_list, stmt_list, arg_list,  args;
@@ -94,9 +94,9 @@ precedence left LPAREN, RPAREN;
 precedence left LCURL, RCURL;
 precedence left LSQUARE, RSQUARE;
 
+
 /* ----------------------------Grammar Section-------------------- */
-   
-program	     ::= dec_list:s
+program      ::= dec_list:s
                ;
 
 dec_list     ::= dec_list:s1 dec:s2 
@@ -145,43 +145,42 @@ comp_stmt      ::= LCURL local_dec:l stmt_list:s RCURL
 local_dec        ::= local_dec var_dec
                 | 
                 ;
+/**** Bashir ***/
 
+stmt_list       ::= stmt_list stmt
 
-stmt_list       ::= stmt_list stmt 
                 |
                 ;
 
 stmt        ::= exp_stmt:es 
-
+                 {: RESULT = es; :}
                 |  comp_stmt:cs
-
+                 {: RESULT = cs; :}
                 |  select_stmt:ss
-
+                 {: RESULT = ss; :}
                 |  iter_stmt:is
-
+                 {: RESULT = is; :}
                 |  return_stmt:rs
-
-                ;
-
+                 {: RESULT = rs; :}
+                 ;
 
 exp_stmt       ::= exp:e SEMI 
+
                 | SEMI
                 ;
 
 select_stmt    ::= IF LPAREN exp:e RPAREN stmt:s
-
+                  {: RESULT = new IfExp(eleft, e, s); :}
                 |  IF LPAREN exp:e RPAREN stmt:s1 ELSE stmt:s2
-
-                ;
-
-iter_stmt      ::= WHILE LPAREN exp:e RPAREN stmt:s 
-                ;
+                  {: RESULT = new IfExp(eleft, e, s1, s2); :}
+                 ;
 
 return_stmt    ::= RETURN:r SEMI
-
+                 {: RESULT = new ReturnExp(rleft, new NilExp(rleft)); :}
                 | RETURN:r exp:e SEMI
+                 {: RESULT = new ReturnExp(rleft, e); :}
+                 ;
 
-                ;
 
 exp            ::= var:v ASSIGN exp:e 
                 {: RESULT = new AssignExp(vleft, v, e); :}
@@ -190,15 +189,18 @@ exp            ::= var:v ASSIGN exp:e
                 ;
 
 var            ::= ID:i
-                {: RESULT = new SimpleVar(ileft, i); :}
+
                 |  ID:i LSQUARE exp:e RSQUARE 
-                {: RESULT = new IndexVar(ileft, i, e); :}
+
                 ;            
 
 
-smpl_exp        ::= add_exp relop add_exp
+smpl_exp        ::= add_exp:a relop:r add_exp:a2
+                    {: RESULT =OpExp (aleft,a,r,a2) :}
                 
-                | add_exp
+                | add_exp:a
+                {: RESULT= a;: }
+
                 ;
 
 relop            ::= LTEQ
@@ -218,7 +220,9 @@ relop            ::= LTEQ
 
 add_exp         ::= add_exp:a1 add_op:op term:t1
                  {: RESULT = new OpExp(a1left, a1, op, t1); :}
-                | term
+                | term:t
+                {: RESULT= t;:}
+
                 ;
 
 
@@ -239,6 +243,36 @@ mul_op            ::= TIMES
                 |  OVER 
                  {: RESULT = OpExp.DIV; :}  
                  ;
+
+
+fact          ::= LPAREN exp RPAREN 
+                |
+                var:v 
+                {: RESULT = new VarExp(vleft,v); :} 
+                |
+                call:c
+                {: RESULT = c; :} 
+                | 
+                NUM:n
+                {: RESULT = new IntExp(nleft,Integer.valueOf(n));:}        
+                 ;
+
+call           ::= ID:i LPAREN args:a RPAREN
+                {: RESULT = new CallExp(ileft,i,a); :} 
+                ;
+
+args            ::= arg_list:l
+
+                
+                |         
+                ;
+
+arg_list        ::= arg_list:l COMMA exp:e
+
+
+                |  exp:e
+                ; 
+
 
 
 fact          ::= LPAREN exp RPAREN 
