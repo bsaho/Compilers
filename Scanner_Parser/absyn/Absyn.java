@@ -91,21 +91,29 @@ static private void showTree( Var tree, int spaces ) {
         indent( spaces );
     System.out.println( "NameTy:" + tree.typ );
 
+  }
 
+    static private void showTree( CompoundExp  tree, int spaces ) {
+    indent( spaces );
+    showTree( tree.decs, spaces );
+    showTree( tree.exps, spaces );
   }
 
   static private void showTree( FunctionDec tree, int spaces ) {
         indent( spaces );
     System.out.println( "FunctionDec:" + tree.func );
     spaces += SPACES;
-    showTree (tree.result);
-    showTree (tree.params);
-    showTree (tree.body);
-
-
-
+    showTree (tree.result, spaces );
+    showTree (tree.params, spaces );
+    showTree (tree.body, spaces );
 
   }
+
+    static private void showTree( IntExp tree, int spaces ) {
+    indent( spaces );
+    System.out.println( "IntExp: " + tree.value ); 
+  }
+
   static private void showTree( SimpleDec tree, int spaces ) {
        indent( spaces );
     System.out.println( "Simple: Type " +tree.typ + "Name: " + tree.name );
@@ -115,7 +123,7 @@ static private void showTree( Var tree, int spaces ) {
   static private void showTree( ArrayDec tree, int spaces ) {
    indent( spaces );
     System.out.println( "ArrayDec: Type " +tree.typ + "Name: " + tree.name );
-    showTree (tree.size);
+    showTree (tree.size, spaces );
 
 
   }
@@ -162,11 +170,6 @@ static private void showTree( Var tree, int spaces ) {
   }
 
 
-
-  static private void showTree( IntExp tree, int spaces ) {
-    indent( spaces );
-    System.out.println( "IntExp: " + tree.value ); 
-  }
 
 
   static private void showTree( SimpleVar tree, int spaces ) {
@@ -222,11 +225,6 @@ static private void showTree( Var tree, int spaces ) {
   }
 
 
-  static private void showTree( CompoundExp tree, int spaces ) {
-    indent( spaces );
-    showTree( tree.decs, spaces );
-    showTree( tree.exps, spaces );
-  }
 
 
 
