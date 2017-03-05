@@ -86,7 +86,7 @@ non terminal CompoundExp comp_stmt;
 non terminal DecList program, dec_list;  
 non terminal VarDecList params, local_dec, param_list;  
 non terminal VarDec var_dec, param;  
-non terminal Dec dec,func_dec;  
+non terminal Dec dec,func_dec, empty_dec;  
 non terminal NameTy type_spec;  
 non terminal Var var;  
 non terminal Integer relop, add_op, mul_op;
@@ -128,15 +128,14 @@ var_dec           ::= type_spec:t  ID:id SEMI
                     Absyn.showTree( RESULT, 0 );:}
                   | 
                   type_spec:t ID:id LSQUARE NUM:n RSQUARE SEMI
-              //    {: RESULT = new ArrayDec(tleft, t, id, new IntExp(tleft,Integer.valueOf(n))); :}
+                  {: RESULT = new ArrayDec(tleft, t, id, new IntExp(tleft,Integer.valueOf(n)));  Absyn.showTree( RESULT, 0 );:}
                   ;
 
 type_spec         ::= INT:i
-                {: RESULT= new NameTy (ileft,NameTy.INT);:}
+                  {: RESULT= new NameTy (ileft,NameTy.INT);:}
                   | 
                   VOID:v
-                {: RESULT= new NameTy (vleft,NameTy.VOID);:}
-
+                  {: RESULT= new NameTy (vleft,NameTy.VOID);:}
                   ;
 
 func_dec          ::= type_spec:t ID:id LPAREN params:p RPAREN comp_stmt:c
@@ -175,14 +174,8 @@ comp_stmt         ::= LCURL local_dec:l stmt_list:s RCURL
 
 
 local_dec         ::= local_dec:l var_dec:v
-								/*	{: VarDecList t = l;
-                    while( t.tail != null )
-                      t = t.tail;
-                    t.tail = new VarDecList(v, null);
-                    RESULT = l;
-                  :}*/
-                  | 
-                  /*Empty*/
+								  {: RESULT = new VarDecList(v, l); Absyn.showTree( RESULT, 0 ); :}
+                  |
                   ;
 
 
@@ -249,7 +242,7 @@ var               ::= ID:i
                   {:RESULT= new SimpleVar (ileft,i);:}
                   |  
                   ID:i LSQUARE exp:e RSQUARE 
-                 {: RESULT= new IndexVar(ileft,i,e);:}
+                  {: RESULT= new IndexVar(ileft,i,e);:}
                   ;            
 
 
@@ -289,18 +282,18 @@ add_exp           ::= add_exp:a1 add_op:op term:t1
 
 
 add_op            ::= PLUS
-                 // {: RESULT = OpExp.PLUS; :}
+                  {: RESULT = OpExp.PLUS; :}
                   |  
                   MINUS 
-                 // {: RESULT = OpExp.MINUS; :}  
+                  {: RESULT = OpExp.MINUS; :}  
                   ;
 
 term              ::= term:t mul_op:op fact:f
-                 {: RESULT = new OpExp(tleft, t, op, f); 
+                  {: RESULT = new OpExp(tleft, t, op, f); 
                   Absyn.showTree( RESULT, 0 );:} 
                   | 
                   fact:f
-                 {: RESULT = f; :}
+                  {: RESULT = f; :}
                   ;
 
 mul_op            ::= TIMES
