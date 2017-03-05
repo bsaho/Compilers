@@ -189,8 +189,10 @@ exp            ::= var:v ASSIGN exp:e
                 ;
 
 var            ::= ID:i
+                  {:RESULT= new VarExp (ileft,i);:}
 
                 |  ID:i LSQUARE exp:e RSQUARE 
+                {: RESULT= new IndexVar (ileft,i,e);:}
 
                 ;            
 
@@ -267,11 +269,6 @@ args            ::= arg_list:l
                 |         
                 ;
 
-arg_list        ::= arg_list:l COMMA exp:e
-
-
-                |  exp:e
-                ; 
 
 
 
