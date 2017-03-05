@@ -75,12 +75,15 @@ terminal PLUS, MINUS, TIMES, OVER;
 terminal LT, LTEQ, GT, GTEQ, EQ, NOTEQ;
 terminal ASSIGN, SEMI, COMMA, LPAREN, RPAREN;
 terminal LSQUARE, RSQUARE, LCURL, RCURL;
-terminal String ID, NUM;
+terminal String ID;
+terminal Integer NUM;
 terminal ERROR;
 
-non terminal ExpList program, dec_list, param_list, stmt_list, arg_list, local_dec;
+non terminal ExpList program, dec_list, param_list, stmt_list, arg_list, local_dec, args;
 non terminal Exp dec, var_dec, type_spec, func_dec, params, param, comp_stmt, stmt, exp_stmt, select_stmt, iter_stmt, return_stmt;
-non terminal Exp exp, var, smpl_exp, relop, add_exp, add_op, term, mul_op, fact, call, args;  
+non terminal Exp exp, smpl_exp, add_exp, term, fact, call;  
+non terminal Var var;  
+non terminal Integer relop, add_op, mul_op;
 
 precedence left LPAREN, RPAREN;
 precedence left LCURL, RCURL;
@@ -187,9 +190,9 @@ exp            ::= var:v ASSIGN exp:e
                 ;
 
 var            ::= ID:i
-
+                {: RESULT = new SimpleVar(ileft, i); :}
                 |  ID:i LSQUARE exp:e RSQUARE 
-
+                {: RESULT = new IndexVar(ileft, i, e); :}
                 ;            
 
 
@@ -241,28 +244,33 @@ mul_op            ::= TIMES
 fact          ::= LPAREN exp RPAREN 
                 |
                 var:v 
-                {: RESULT = new VarExp(vleft,v); :} 
+               {: RESULT = new VarExp(vleft,v); :} 
                 |
                 call:c
                 {: RESULT = c; :} 
                 | 
                 NUM:n
-                {: RESULT = new IntExp(nleft,n); :} 
+               {: RESULT = new IntExp(nleft,n); :} 
                 ;
 
 call           ::= ID:i LPAREN args:a RPAREN
-                {: RESULT = new CallExp(ileft,i,a); :} 
+              {: RESULT = new CallExp(ileft,i,a); :} 
                 ;
 
-args            ::= arg_list:l
-                
+args            ::= arg_list          
                 |         
                 ;
 
 arg_list        ::= arg_list:l COMMA exp:e
-
+                 {: ExpList t = l;
+                    while( t.tail != null )
+                      t = t.tail;
+                    t.tail = new ExpList(e, null);
+                    RESULT = l;
+                  :}
                 |  exp:e
-                ; 
+                 {: RESULT =  new ExpList(e, null); :} 
+                 ; 
 
 
 
