@@ -33,10 +33,18 @@ abstract public class Absyn {
       showTree ((ReturnExp) tree, spaces);
     else if (tree instanceof CallExp )
       showTree ((CallExp) tree, spaces);
+    // else if (tree instanceof Var)
+    //   showTree ((Var) tree, spaces);
     else {
       indent( spaces );
       System.out.println( "Illegal expression at line " + tree.pos  );
     }
+  }
+  static private void showTree( Var tree, int spaces ) {
+        indent( spaces );
+    System.out.println( "Var:" + tree.name );
+
+
   }
 
   // static private void showTree( AssignExp tree, int spaces ) {
