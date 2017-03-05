@@ -166,8 +166,12 @@ stmt        ::= exp_stmt:es
 
 exp_stmt       ::= exp:e SEMI 
 
+
                 | SEMI
                 ;
+
+iter_stmt      ::= WHILE LPAREN exp:e RPAREN stmt:s 
+                {: RESULT= new WhileExp (eleft,e,s); :};
 
 select_stmt    ::= IF LPAREN exp:e RPAREN stmt:s
                   {: RESULT = new IfExp(eleft, e, s); :}
@@ -201,7 +205,7 @@ smpl_exp        ::= add_exp:a relop:r add_exp:a2
                     {: RESULT =OpExp (aleft,a,r,a2); :}
                 
                 | add_exp:a
-                {: RESULT= a;: }
+                {: RESULT= a; : }
 
                 ;
 
