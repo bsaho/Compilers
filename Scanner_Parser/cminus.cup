@@ -210,6 +210,7 @@ stmt              ::= exp_stmt:es
                   ;
 
 exp_stmt          ::= exp:e SEMI 
+									{: RESULT = e; :}
                   | 
                   SEMI
                   ;
@@ -321,7 +322,8 @@ call              ::= ID:i LPAREN args:a RPAREN
                   {: RESULT = new CallExp(ileft,i,a); :} 
                   ;
 
-args              ::= arg_list          
+args              ::= arg_list:l
+									{: RESULT = l; :}           
                   |
                   /*Empty*/         
                   ;
