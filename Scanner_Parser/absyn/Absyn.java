@@ -1,3 +1,4 @@
+
 package absyn;
 
 abstract public class Absyn {
@@ -32,9 +33,9 @@ abstract public class Absyn {
 
 
   static private void showTree( Exp tree, int spaces ) {
-    if( tree instanceof AssignExp )
-      showTree( (AssignExp)tree, spaces );
-    else if( tree instanceof IfExp )
+    // if( tree instanceof AssignExp )
+    //   showTree( (AssignExp)tree, spaces );
+     if( tree instanceof IfExp )
       showTree( (IfExp)tree, spaces );
     else if( tree instanceof IntExp )
       showTree( (IntExp)tree, spaces );
@@ -48,23 +49,77 @@ abstract public class Absyn {
       showTree ((ReturnExp) tree, spaces);
     else if (tree instanceof CallExp )
       showTree ((CallExp) tree, spaces);
-    else if (tree instanceof NilExp )
-      showTree ((CallExp) tree, spaces);
+        else if (tree instanceof NilExp )
+      showTree ((NilExp) tree, spaces);
     else if (tree instanceof CompoundExp )
-      showTree ((CallExp) tree, spaces);
+      showTree ((CompoundExp) tree, spaces);
+
+
     else {
       indent( spaces );
       System.out.println( "Illegal expression at line " + tree.pos  );
     }
   }
-  static private void showTree( Var tree, int spaces ) {
+static private void showTree( Var tree, int spaces ) {
        if( tree instanceof SimpleVar )
       showTree( (SimpleVar )tree, spaces );
     else if( tree instanceof IndexVar )
       showTree( (IndexVar )tree, spaces );
+    else {
+      indent( spaces );
+      System.out.println( "Illegal expression at line " + tree.pos  );
+    }
+
+
+ }
+
+  static private void showTree(  Dec tree, int spaces ) {
+    if (tree instanceof FunctionDec)
+      showTree ((FunctionDec) tree, spaces);
+
+    else if (tree instanceof SimpleDec)
+      showTree ((SimpleDec) tree, spaces);
+    else if (tree instanceof ArrayDec)
+      showTree ((ArrayDec) tree, spaces); 
+    else {
+      indent( spaces );
+      System.out.println( "Illegal expression at line " + tree.pos  );
+    }
+}
+
+  static private void showTree(  NameTy tree, int spaces ) {
+        indent( spaces );
+    System.out.println( "NameTy:" + tree.typ );
 
 
   }
+
+  static private void showTree( FunctionDec tree, int spaces ) {
+        indent( spaces );
+    System.out.println( "FunctionDec:" + tree.func );
+    spaces += SPACES;
+    showTree (tree.result);
+    showTree (tree.params);
+    showTree (tree.body);
+
+
+
+
+  }
+  static private void showTree( SimpleDec tree, int spaces ) {
+       indent( spaces );
+    System.out.println( "Simple: Type " +tree.typ + "Name: " + tree.name );
+
+
+  }
+  static private void showTree( ArrayDec tree, int spaces ) {
+   indent( spaces );
+    System.out.println( "ArrayDec: Type " +tree.typ + "Name: " + tree.name );
+    showTree (tree.size);
+
+
+  }
+
 
   static private void showTree( AssignExp tree, int spaces ) {
     indent( spaces );
@@ -160,6 +215,7 @@ abstract public class Absyn {
     showTree( tree.right, spaces ); 
   }
 
+
   static private void showTree( NilExp tree, int spaces ) {
     indent( spaces );
     System.out.println( "Nil" );
@@ -171,6 +227,7 @@ abstract public class Absyn {
     showTree( tree.decs, spaces );
     showTree( tree.exps, spaces );
   }
+
 
 
   static private void showTree( VarExp tree, int spaces ) {
