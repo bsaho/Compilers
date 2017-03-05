@@ -79,13 +79,14 @@ terminal String ID;
 terminal String  NUM;
 terminal ERROR;
 
-non terminal ExpList program, dec_list, param_list, stmt_list, arg_list,  args;
-non terminal Exp dec, stmt, exp_stmt, select_stmt, iter_stmt, return_stmt;
+non terminal ExpList  stmt_list, arg_list,  args;
+non terminal Exp stmt, exp_stmt, select_stmt, iter_stmt, return_stmt;
 non terminal Exp exp, smpl_exp, add_exp, term, fact, call;  
 non terminal CompoundExp comp_stmt;  
-non terminal VarDecList params, local_dec;  
+non terminal DecList program, dec_list;  
+non terminal VarDecList params, local_dec, param_list;  
 non terminal VarDec var_dec, param;  
-non terminal Dec func_dec;  
+non terminal Dec dec,func_dec;  
 non terminal NameTy type_spec;  
 non terminal Var var;  
 non terminal Integer relop, add_op, mul_op;
@@ -96,17 +97,30 @@ precedence left LSQUARE, RSQUARE;
 
 
 /* ----------------------------Grammar Section-------------------- */
-program           ::= dec_list:s
+program           ::= dec_list:d
+									{: RESULT = d;
+                    System.out.println( "The abstract syntax tree is:" );
+                    /*Absyn.showTree( RESULT, 0 );*/
+                 	:}
                   ;
 
-dec_list          ::= dec_list:s1 dec:s2 
-                  | 
-                  dec
+dec_list          ::= dec_list:l dec:d
+									{: DecList t = l;
+                    while( t.tail != null )
+                      t = t.tail;
+                    t.tail = new DecList(d, null);
+                    RESULT = l;
+                  :}
+                  |
+                  dec:d
+                  {: RESULT =  new DecList(d, null); :}
                   ;
 
 dec               ::= var_dec:v
+									{: RESULT = v; :}
                   | 
                   func_dec:f
+                  {: RESULT = f; :}
                   ;
 
 var_dec           ::= type_spec:t  ID:id SEMI
@@ -125,14 +139,23 @@ func_dec          ::= type_spec:t ID:id LPAREN params:p RPAREN comp_stmt:c
                   {: RESULT = new FunctionDec(tleft, t, id, p, c); :}
                   ;
 
-params            ::= param_list
+params            ::= param_list:p
+									{: RESULT = p; :}
                   |  
                   VOID
+                  /*If parameters is VOID then the parenthesis should be empty*/
                   ;
 
-param_list        ::= param_list COMMA param 
-                  | 
-                  param
+param_list        ::= param_list:l COMMA param:p
+									{: VarDecList t = l;
+                    while( t.tail != null )
+                      t = t.tail;
+                    t.tail = new VarDecList(p, null);
+                    RESULT = l;
+                  :}
+                  |
+                  param:p
+                  {: RESULT =  new VarDecList(p, null); :}
                   ;
 
 param             ::= type_spec:s ID:id 
@@ -147,13 +170,25 @@ comp_stmt         ::= LCURL local_dec:l stmt_list:s RCURL
                   ;
 
 
-local_dec         ::= local_dec var_dec
+local_dec         ::= local_dec:l var_dec:v
+									{: VarDecList t = l;
+                    while( t.tail != null )
+                      t = t.tail;
+                    t.tail = new VarDecList(v, null);
+                    RESULT = l;
+                  :}
                   | 
                   /*Empty*/
                   ;
 
 
-stmt_list         ::= stmt_list stmt
+stmt_list         ::= stmt_list:l stmt:s
+									{: ExpList t = l;
+                    while( t.tail != null )
+                      t = t.tail;
+                    t.tail = new ExpList(s, null);
+                    RESULT = l;
+                  :}
                   |
                   /*Empty*/
                   ;
@@ -201,7 +236,8 @@ return_stmt       ::= RETURN:r SEMI
 exp               ::= var:v ASSIGN exp:e 
                   {: RESULT = new AssignExp(vleft, v, e); :}
                   | 
-                  smpl_exp 
+                  smpl_exp:s 
+                  {: RESULT = s; :}
                   ;
 
 var               ::= ID:i
