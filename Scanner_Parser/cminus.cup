@@ -98,29 +98,29 @@ precedence left LSQUARE, RSQUARE;
 
 /* ----------------------------Grammar Section-------------------- */
 program           ::= dec_list:d
-									/*{: RESULT = d;
+									{: RESULT = d;
                     System.out.println( "The abstract syntax tree is:" );
                     Absyn.showTree( RESULT, 0 );
-                 	:}*/
+                 	:}
                   ;
 
 dec_list          ::= dec_list:l dec:d
-									/*{: DecList t =  l;
+									{: DecList t =  l;
                     while( t.tail != null )
                       t = t.tail;
                     t.tail = new DecList(d, null);
                     RESULT = l;
-                  :}*/
+                  :}
                   |
                   dec:d
-                 /* {: RESULT =  new DecList(d, null); :}*/
+                 {: RESULT =  new DecList(d, null); :}
                   ;
 
 dec               ::= var_dec:v
-									/*{: RESULT = v; :}*/
+									{: RESULT = v; :}
                   | 
                   func_dec:f
-                 /* {: RESULT = f; :}*/
+                  {: RESULT = f; :}
                   ;
 
 var_dec           ::= type_spec:t  ID:id SEMI
@@ -128,7 +128,7 @@ var_dec           ::= type_spec:t  ID:id SEMI
                     Absyn.showTree( RESULT, 0 );:}
                   | 
                   type_spec:t ID:id LSQUARE NUM:n RSQUARE SEMI
-                  {: RESULT = new ArrayDec(tleft, t, id, new IntExp(tleft,Integer.valueOf(n)));  Absyn.showTree( RESULT, 0 );:}
+                  {: RESULT = new ArrayDec(tleft, t, id, new IntExp(tleft,Integer.valueOf(n)));:}
                   ;
 
 type_spec         ::= INT:i
@@ -139,11 +139,11 @@ type_spec         ::= INT:i
                   ;
 
 func_dec          ::= type_spec:t ID:id LPAREN params:p RPAREN comp_stmt:c
-                 // {: RESULT = new FunctionDec(tleft, t, id, p, c); :}
+                 {: RESULT = new FunctionDec(tleft, t, id, p, c); :}
                   ;
 
 params            ::= param_list:p
-								//	{: RESULT = p; :}
+								  {: RESULT = p; :}
                   |  
                   VOID
                   /*If parameters is VOID then the parenthesis should be empty*/
@@ -169,12 +169,12 @@ param             ::= type_spec:s ID:id
                   ;
 
 comp_stmt         ::= LCURL local_dec:l stmt_list:s RCURL
-                 // {: RESULT = new CompoundExp(lleft, l, s); :}
+                 {: RESULT = new CompoundExp(lleft, l, s); :}
                   ;
 
 
 local_dec         ::= local_dec:l var_dec:v
-								  {: RESULT = new VarDecList(v, l); Absyn.showTree( RESULT, 0 ); :}
+								  {: RESULT = new VarDecList(v, l); :}
                   |
                   ;
 
@@ -191,7 +191,7 @@ stmt_list         ::= stmt_list:l stmt:s
                   ;
 
 stmt              ::= exp_stmt:es 
-                 // {: RESULT = es; :}
+                 {: RESULT = es; :}
                   |  
                   comp_stmt:cs
                   //{: RESULT = cs; :}
@@ -207,7 +207,7 @@ stmt              ::= exp_stmt:es
                   ;
 
 exp_stmt          ::= exp:e SEMI 
-								//	{: RESULT = e; :}
+								  {: RESULT = e; :}
                   | 
                   SEMI
                   ;
@@ -232,10 +232,10 @@ return_stmt       ::= RETURN:r SEMI
 
 
 exp               ::= var:v ASSIGN exp:e 
-                //  {: RESULT = new AssignExp(vleft, v, e); :}
+                  {: RESULT = new AssignExp(vleft, v, e); :}
                   | 
                   smpl_exp:s 
-                 // {: RESULT = s; :}
+                  {: RESULT = s; :}
                   ;
 
 var               ::= ID:i
@@ -247,37 +247,37 @@ var               ::= ID:i
 
 
 smpl_exp          ::= add_exp:a relop:r add_exp:a2
-                //  {: RESULT = new OpExp(aleft,a,r,a2); :}
+                  {: RESULT = new OpExp(aleft,a,r,a2); :}
                   | 
                   add_exp:a
-                //  {: RESULT = a; :}
+                  {: RESULT = a; :}
                   ;
 
 relop             ::= LTEQ
-                  //{: RESULT = OpExp.LE; :}
+                  {: RESULT = OpExp.LE; :}
                   |  
                   LT
-                 // {: RESULT = OpExp.LT; :} 
+                  {: RESULT = OpExp.LT; :} 
                   |  
                   GT
-                 // {: RESULT = OpExp.GT; :}
+                  {: RESULT = OpExp.GT; :}
                   |  
                   GTEQ
-                 // {: RESULT = OpExp.GE; :}
+                  {: RESULT = OpExp.GE; :}
                   |  
                   EQ
-                 // {: RESULT = OpExp.EQ; :}
+                  {: RESULT = OpExp.EQ; :}
                   |  
                   NOTEQ
-                //  {: RESULT = OpExp.NE; :}
+                  {: RESULT = OpExp.NE; :}
                   ;
 
 
 add_exp           ::= add_exp:a1 add_op:op term:t1
-                  //{: RESULT = new OpExp(a1left, a1, op, t1); :}
+                  {: RESULT = new OpExp(a1left, a1, op, t1); :}
                   | 
                   term:t
-                  //{: RESULT= t; :}
+                  {: RESULT= t; :}
                   ;
 
 
@@ -289,8 +289,7 @@ add_op            ::= PLUS
                   ;
 
 term              ::= term:t mul_op:op fact:f
-                  {: RESULT = new OpExp(tleft, t, op, f); 
-                  Absyn.showTree( RESULT, 0 );:} 
+                  {: RESULT = new OpExp(tleft, t, op, f); :} 
                   | 
                   fact:f
                   {: RESULT = f; :}

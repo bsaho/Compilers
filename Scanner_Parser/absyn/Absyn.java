@@ -9,7 +9,14 @@ abstract public class Absyn {
   static private void indent( int spaces ) {
     for( int i = 0; i < spaces; i++ ) System.out.print( " " );
   }
-
+  
+  static public void showTree( DecList tree, int spaces ) {
+    while( tree != null ) {
+      showTree( tree.head, spaces );
+      tree = tree.tail;
+    } 
+  }
+  
   static public void showTree( ExpList tree, int spaces ) {
     while( tree != null ) {
       showTree( tree.head, spaces );
@@ -17,14 +24,7 @@ abstract public class Absyn {
     } 
   }
 
-    static public void showTree( DecList tree, int spaces ) {
-    while( tree != null ) {
-      showTree( tree.head, spaces );
-      tree = tree.tail;
-    } 
-  }
-
-      static public void showTree( VarDecList tree, int spaces ) {
+  static public void showTree( VarDecList tree, int spaces ) {
     while( tree != null ) {
       showTree( tree.head, spaces );
       tree = tree.tail;
@@ -121,15 +121,17 @@ static public void showTree( Var tree, int spaces ) {
   }
 
   static public void showTree( SimpleDec tree, int spaces ) {
-       indent( spaces );
+    indent( spaces );
     System.out.println( "Simple: Type ");
     showTree(tree.typ, spaces);
     System.out.println( "Name: " + tree.name );
 
   }
   static public void showTree( ArrayDec tree, int spaces ) {
-   indent( spaces );
-    System.out.println( "ArrayDec: Type " +tree.typ + "Name: " + tree.name );
+    indent( spaces );
+    System.out.println( "Simple: Type ");
+    showTree(tree.typ, spaces);
+    System.out.println( "Name: " + tree.name );
     showTree (tree.size, spaces );
 
 
