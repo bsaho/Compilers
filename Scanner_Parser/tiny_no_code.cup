@@ -198,7 +198,7 @@ var            ::= ID:i
 
 
 smpl_exp        ::= add_exp:a relop:r add_exp:a2
-                    {: RESULT =OpExp (aleft,a,r,a2) :}
+                    {: RESULT =OpExp (aleft,a,r,a2); :}
                 
                 | add_exp:a
                 {: RESULT= a;: }
@@ -245,31 +245,6 @@ mul_op            ::= TIMES
                 |  OVER 
                  {: RESULT = OpExp.DIV; :}  
                  ;
-
-
-fact          ::= LPAREN exp RPAREN 
-                |
-                var:v 
-                {: RESULT = new VarExp(vleft,v); :} 
-                |
-                call:c
-                {: RESULT = c; :} 
-                | 
-                NUM:n
-                {: RESULT = new IntExp(nleft,Integer.valueOf(n));:}        
-                 ;
-
-call           ::= ID:i LPAREN args:a RPAREN
-                {: RESULT = new CallExp(ileft,i,a); :} 
-                ;
-
-args            ::= arg_list:l
-
-                
-                |         
-                ;
-
-
 
 
 fact          ::= LPAREN exp RPAREN 
