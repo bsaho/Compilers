@@ -98,207 +98,209 @@ precedence left LSQUARE, RSQUARE;
 
 /* ----------------------------Grammar Section-------------------- */
 program           ::= dec_list:d
-									{: RESULT = d;
+									/*{: RESULT = d;
                     System.out.println( "The abstract syntax tree is:" );
-                    /*Absyn.showTree( RESULT, 0 );*/
-                 	:}
+                    Absyn.showTree( RESULT, 0 );
+                 	:}*/
                   ;
 
 dec_list          ::= dec_list:l dec:d
-									{: DecList t =  l;
+									/*{: DecList t =  l;
                     while( t.tail != null )
                       t = t.tail;
                     t.tail = new DecList(d, null);
                     RESULT = l;
-                  :}
+                  :}*/
                   |
                   dec:d
-                  {: RESULT =  new DecList(d, null); :}
+                 /* {: RESULT =  new DecList(d, null); :}*/
                   ;
 
 dec               ::= var_dec:v
-									{: RESULT = v; :}
+									/*{: RESULT = v; :}*/
                   | 
                   func_dec:f
-                  {: RESULT = f; :}
+                 /* {: RESULT = f; :}*/
                   ;
 
 var_dec           ::= type_spec:t  ID:id SEMI
-                  {: RESULT = new SimpleDec(tleft, t, id); :}
+                  {: RESULT = new SimpleDec(tleft, t, id); 
+                    Absyn.showTree( RESULT, 0 );:}
                   | 
                   type_spec:t ID:id LSQUARE NUM:n RSQUARE SEMI
-                  {: RESULT = new ArrayDec(tleft, t, id, new IntExp(tleft,Integer.valueOf(n))); :}
+              //    {: RESULT = new ArrayDec(tleft, t, id, new IntExp(tleft,Integer.valueOf(n))); :}
                   ;
 
 type_spec         ::= INT:i
-                  {: RESULT= new NameTy (ileft,0);:}
+                {: RESULT= new NameTy (ileft,NameTy.INT);:}
                   | 
                   VOID:v
-                  {: RESULT= new NameTy (vleft,1);:}
+                {: RESULT= new NameTy (vleft,NameTy.VOID);:}
 
                   ;
 
 func_dec          ::= type_spec:t ID:id LPAREN params:p RPAREN comp_stmt:c
-                  {: RESULT = new FunctionDec(tleft, t, id, p, c); :}
+                 // {: RESULT = new FunctionDec(tleft, t, id, p, c); :}
                   ;
 
 params            ::= param_list:p
-									{: RESULT = p; :}
+								//	{: RESULT = p; :}
                   |  
                   VOID
                   /*If parameters is VOID then the parenthesis should be empty*/
                   ;
 
 param_list        ::= param_list:l COMMA param:p
-									{: VarDecList t = l;
+									/*{: VarDecList t = l;
                     while( t.tail != null )
                       t = t.tail;
                     t.tail = new VarDecList(p, null);
                     RESULT = l;
-                  :}
+                  :}*/
                   |
                   param:p
-                  {: RESULT =  new VarDecList(p, null); :}
+                 // {: RESULT =  new VarDecList(p, null); :}
                   ;
 
 param             ::= type_spec:s ID:id 
-                  {: RESULT = new SimpleDec(sleft, s, id); :}
+                //  {: RESULT = new SimpleDec(sleft, s, id); :}
                   |  
                   type_spec:s ID:id LSQUARE RSQUARE
-                  {: RESULT = new SimpleDec(sleft, s, id); :}
+                //  {: RESULT = new SimpleDec(sleft, s, id); :}
                   ;
 
 comp_stmt         ::= LCURL local_dec:l stmt_list:s RCURL
-                  {: RESULT = new CompoundExp(lleft, l, s); :}
+                 // {: RESULT = new CompoundExp(lleft, l, s); :}
                   ;
 
 
 local_dec         ::= local_dec:l var_dec:v
-									{: VarDecList t = l;
+								/*	{: VarDecList t = l;
                     while( t.tail != null )
                       t = t.tail;
                     t.tail = new VarDecList(v, null);
                     RESULT = l;
-                  :}
+                  :}*/
                   | 
                   /*Empty*/
                   ;
 
 
 stmt_list         ::= stmt_list:l stmt:s
-									{: ExpList t = l;
+									/*{: ExpList t = l;
                     while( t.tail != null )
                       t = t.tail;
                     t.tail = new ExpList(s, null);
                     RESULT = l;
-                  :}
+                  :}*/
                   |
                   /*Empty*/
                   ;
 
 stmt              ::= exp_stmt:es 
-                  {: RESULT = es; :}
+                 // {: RESULT = es; :}
                   |  
                   comp_stmt:cs
-                  {: RESULT = cs; :}
-                  |  
+                  //{: RESULT = cs; :}
+                 |  
                   select_stmt:ss
-                  {: RESULT = ss; :}
+              //    {: RESULT = ss; :}
                   |  
                   iter_stmt:is
-                  {: RESULT = is; :}
+                //  {: RESULT = is; :}
                   |  
                   return_stmt:rs
-                  {: RESULT = rs; :}
+               //   {: RESULT = rs; :}
                   ;
 
 exp_stmt          ::= exp:e SEMI 
-									{: RESULT = e; :}
+								//	{: RESULT = e; :}
                   | 
                   SEMI
                   ;
 
 select_stmt       ::= IF LPAREN exp:e RPAREN stmt:s
-                  {: RESULT = new IfExp(eleft, e, s); :}
+                //  {: RESULT = new IfExp(eleft, e, s); :}
                   |  
                   IF LPAREN exp:e RPAREN stmt:s1 ELSE stmt:s2
-                  {: RESULT = new IfExp(eleft, e, s1, s2); :}
+               //   {: RESULT = new IfExp(eleft, e, s1, s2); :}
                   ;
 
 iter_stmt         ::= WHILE LPAREN exp:e RPAREN stmt:s 
-                  {: RESULT= new WhileExp (eleft,e,s); :}
+                 // {: RESULT= new WhileExp (eleft,e,s); :}
                   ;
 
 return_stmt       ::= RETURN:r SEMI
-                  {: RESULT = new ReturnExp(rleft, new NilExp(rleft)); :}
+                //  {: RESULT = new ReturnExp(rleft, new NilExp(rleft)); :}
                   | 
                   RETURN:r exp:e SEMI
-                  {: RESULT = new ReturnExp(rleft, e); :}
+                //  {: RESULT = new ReturnExp(rleft, e); :}
                   ;
 
 
 exp               ::= var:v ASSIGN exp:e 
-                  {: RESULT = new AssignExp(vleft, v, e); :}
+                //  {: RESULT = new AssignExp(vleft, v, e); :}
                   | 
                   smpl_exp:s 
-                  {: RESULT = s; :}
+                 // {: RESULT = s; :}
                   ;
 
 var               ::= ID:i
                   {:RESULT= new SimpleVar (ileft,i);:}
                   |  
                   ID:i LSQUARE exp:e RSQUARE 
-                  {: RESULT= new IndexVar(ileft,i,e);:}
+                 {: RESULT= new IndexVar(ileft,i,e);:}
                   ;            
 
 
 smpl_exp          ::= add_exp:a relop:r add_exp:a2
-                  {: RESULT = new OpExp(aleft,a,r,a2); :}
+                //  {: RESULT = new OpExp(aleft,a,r,a2); :}
                   | 
                   add_exp:a
-                  {: RESULT = a; :}
+                //  {: RESULT = a; :}
                   ;
 
 relop             ::= LTEQ
-                  {: RESULT = OpExp.LE; :}
+                  //{: RESULT = OpExp.LE; :}
                   |  
                   LT
-                  {: RESULT = OpExp.LT; :} 
+                 // {: RESULT = OpExp.LT; :} 
                   |  
                   GT
-                  {: RESULT = OpExp.GT; :}
+                 // {: RESULT = OpExp.GT; :}
                   |  
                   GTEQ
-                  {: RESULT = OpExp.GE; :}
+                 // {: RESULT = OpExp.GE; :}
                   |  
                   EQ
-                  {: RESULT = OpExp.EQ; :}
+                 // {: RESULT = OpExp.EQ; :}
                   |  
                   NOTEQ
-                  {: RESULT = OpExp.NE; :}
+                //  {: RESULT = OpExp.NE; :}
                   ;
 
 
 add_exp           ::= add_exp:a1 add_op:op term:t1
-                  {: RESULT = new OpExp(a1left, a1, op, t1); :}
+                  //{: RESULT = new OpExp(a1left, a1, op, t1); :}
                   | 
                   term:t
-                  {: RESULT= t; :}
+                  //{: RESULT= t; :}
                   ;
 
 
 add_op            ::= PLUS
-                  {: RESULT = OpExp.PLUS; :}
+                 // {: RESULT = OpExp.PLUS; :}
                   |  
                   MINUS 
-                  {: RESULT = OpExp.MINUS; :}  
+                 // {: RESULT = OpExp.MINUS; :}  
                   ;
 
 term              ::= term:t mul_op:op fact:f
-                  {: RESULT = new OpExp(tleft, t, op, f); :} 
+                 {: RESULT = new OpExp(tleft, t, op, f); 
+                  Absyn.showTree( RESULT, 0 );:} 
                   | 
                   fact:f
-                  {: RESULT = f; :}
+                 {: RESULT = f; :}
                   ;
 
 mul_op            ::= TIMES
@@ -312,35 +314,35 @@ mul_op            ::= TIMES
 fact              ::= LPAREN exp RPAREN 
                   |
                   var:v 
-                  {: RESULT = new VarExp(vleft,v); :} 
+                 {: RESULT = new VarExp(vleft,v); :} 
                   |
                   call:c
-                  {: RESULT = c; :} 
+                 // {: RESULT = c; :} 
                   | 
                   NUM:n  /*Can probably cast the string value of NUM to an Integer*/
-                  {: RESULT = new IntExp(nleft,Integer.valueOf(n));:}
+                 {: RESULT = new IntExp(nleft,Integer.valueOf(n)); :}
                   ;
 
 call              ::= ID:i LPAREN args:a RPAREN
-                  {: RESULT = new CallExp(ileft,i,a); :} 
+                  //{: RESULT = new CallExp(ileft,i,a); :} 
                   ;
 
 args              ::= arg_list:l
-									{: RESULT = l; :}           
+									//{: RESULT = l; :}           
                   |
                   /*Empty*/         
                   ;
 
 arg_list          ::= arg_list:l COMMA exp:e
-                  {: ExpList t = l;
-                    while( t.tail != null )
-                      t = t.tail;
-                    t.tail = new ExpList(e, null);
-                    RESULT = l;
-                  :}
+                  // {: ExpList t = l;
+                  //   while( t.tail != null )
+                  //     t = t.tail;
+                  //   t.tail = new ExpList(e, null);
+                  //   RESULT = l;
+                  // :}
                   |  
                   exp:e
-                  {: RESULT =  new ExpList(e, null); :} 
+                  //{: RESULT =  new ExpList(e, null); :} 
                   ; 
 
 
