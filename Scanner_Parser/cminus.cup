@@ -105,7 +105,7 @@ program           ::= dec_list:d
                   ;
 
 dec_list          ::= dec_list:l dec:d
-									{: DecList t = l;
+									{: DecList t =  l;
                     while( t.tail != null )
                       t = t.tail;
                     t.tail = new DecList(d, null);
@@ -130,9 +130,12 @@ var_dec           ::= type_spec:t  ID:id SEMI
                   {: RESULT = new ArrayDec(tleft, t, id, new IntExp(tleft,Integer.valueOf(n))); :}
                   ;
 
-type_spec         ::= INT
+type_spec         ::= INT:i
+                  {: RESULT= new NameTy (ileft,0);:}
                   | 
-                  VOID
+                  VOID:v
+                  {: RESULT= new NameTy (vleft,1);:}
+
                   ;
 
 func_dec          ::= type_spec:t ID:id LPAREN params:p RPAREN comp_stmt:c
