@@ -1,4 +1,4 @@
-(/* A program to perform selection on a 10 element array*/
+/* A program to perform selection on a 10 element array*/
 
 int x[10];
 int z;
@@ -34,12 +34,14 @@ numerator / divisor;
 156 - 99;
  red (1);
  red ();
- (x+y);
- (x=y+2)
-	return k;
-	return ;
-	
+x=y+2;
+(x+y);
+(x=(z*2) +4);	
+66;
+lol (6,8);
+functioncall ();
+(in[455]);
 }
 /*
 
-*/)
+*/

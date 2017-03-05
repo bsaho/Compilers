@@ -33,8 +33,8 @@ abstract public class Absyn {
 
 
   static public void showTree( Exp tree, int spaces ) {
-    // if( tree instanceof AssignExp )
-    //   showTree( (AssignExp)tree, spaces );
+    if( tree instanceof AssignExp )
+       showTree( (AssignExp)tree, spaces );
      if( tree instanceof IfExp )
       showTree( (IfExp)tree, spaces );
     else if( tree instanceof IntExp )
@@ -152,7 +152,9 @@ static public void showTree( Var tree, int spaces ) {
     spaces += SPACES;
     showTree( tree.test, spaces );
     showTree( tree.thenp, spaces );
+    if (tree.elsep != null ){
     showTree( tree.elsep, spaces );
+  }
   }
 
   static public void showTree( IndexVar tree, int spaces ) {
@@ -248,7 +250,8 @@ static public void showTree( Var tree, int spaces ) {
 
   static public void showTree( VarExp tree, int spaces ) {
     indent( spaces );
-    System.out.println( "VarExp: " + tree.variable );
-  }
+    System.out.println( "VarExp: ");
+    showTree(tree.variable,spaces );
+  }  
 
 }

@@ -1,6 +1,7 @@
 void main (void)
 { 
-	int i;
-	i=0;
-	i=i*1;
+    int y[10];
+    int i;
+    i = 0;
+    4 > 5;
 }
