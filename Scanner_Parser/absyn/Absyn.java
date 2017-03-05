@@ -17,9 +17,9 @@ abstract public class Absyn {
   }
 
   static private void showTree( Exp tree, int spaces ) {
-    if( tree instanceof AssignExp )
-      showTree( (AssignExp)tree, spaces );
-    else if( tree instanceof IfExp )
+    // if( tree instanceof AssignExp )
+    //   showTree( (AssignExp)tree, spaces );
+     if( tree instanceof IfExp )
       showTree( (IfExp)tree, spaces );
     else if( tree instanceof IntExp )
       showTree( (IntExp)tree, spaces );
@@ -27,19 +27,25 @@ abstract public class Absyn {
       showTree( (OpExp)tree, spaces );
     else if( tree instanceof VarExp )
       showTree( (VarExp)tree, spaces );
+    else if (tree instanceof WhileExp)
+      showTree ((WhileExp) tree, spaces);
+    else if (tree instanceof ReturnExp)
+      showTree ((ReturnExp) tree, spaces);
+    else if (tree instanceof CallExp )
+      showTree ((CallExp) tree, spaces);
     else {
       indent( spaces );
       System.out.println( "Illegal expression at line " + tree.pos  );
     }
   }
 
-  static private void showTree( AssignExp tree, int spaces ) {
-    indent( spaces );
-    System.out.println( "AssignExp:" );
-    spaces += SPACES;
-    showTree( tree.lhs, spaces );
-    showTree( tree.rhs, spaces );
-  }
+  // static private void showTree( AssignExp tree, int spaces ) {
+  //   indent( spaces );
+  //   System.out.println( "AssignExp:" );
+  //   spaces += SPACES;
+  //   showTree( tree.lhs, spaces );
+  //   showTree( tree.rhs, spaces );
+  // }
 
   static private void showTree( IfExp tree, int spaces ) {
     indent( spaces );
@@ -50,10 +56,49 @@ abstract public class Absyn {
     showTree( tree.elsep, spaces );
   }
 
+  static private void showTree( IndexVar tree, int spaces ) {
+    indent( spaces );
+    System.out.println( "IndexVar:" + tree.name );
+    spaces += SPACES;
+    showTree( tree.index, spaces );
+  }
+
+  static private void showTree( WhileExp tree, int spaces ) {
+    indent( spaces );
+    System.out.println( "WhileExp:"  );
+    spaces += SPACES;
+    showTree( tree.test, spaces );
+    showTree( tree.body, spaces );
+
+  }
+
+
+  static private void showTree( ReturnExp tree, int spaces ) {
+    indent( spaces );
+    System.out.println( "ReturnExp: " );
+    showTree (tree.exp, spaces); 
+  }
+
+
+
   static private void showTree( IntExp tree, int spaces ) {
     indent( spaces );
     System.out.println( "IntExp: " + tree.value ); 
   }
+
+
+  static private void showTree( SimpleVar tree, int spaces ) {
+    indent( spaces );
+    System.out.println( "SimpleVar: " + tree.name ); 
+  }
+
+  static private void showTree( CallExp tree, int spaces ) {
+    indent( spaces );
+    System.out.println( "CallExp: " + tree.func ); 
+    showTree (tree.args, spaces);
+  }
+
+
 
   static private void showTree( OpExp tree, int spaces ) {
     indent( spaces );
