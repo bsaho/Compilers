@@ -150,22 +150,22 @@ params            ::= param_list:p
                   ;
 
 param_list        ::= param_list:l COMMA param:p
-									/*{: VarDecList t = l;
+									{: VarDecList t = l;
                     while( t.tail != null )
                       t = t.tail;
                     t.tail = new VarDecList(p, null);
                     RESULT = l;
-                  :}*/
+                  :}
                   |
                   param:p
-                 // {: RESULT =  new VarDecList(p, null); :}
+                  {: RESULT =  new VarDecList(p, null); :}
                   ;
 
 param             ::= type_spec:s ID:id 
-                //  {: RESULT = new SimpleDec(sleft, s, id); :}
+                  {: RESULT = new SimpleDec(sleft, s, id); :}
                   |  
                   type_spec:s ID:id LSQUARE RSQUARE
-                //  {: RESULT = new SimpleDec(sleft, s, id); :}
+                  {: RESULT = new SimpleDec(sleft, s, id); :}
                   ;
 
 comp_stmt         ::= LCURL local_dec:l stmt_list:s RCURL
@@ -180,30 +180,25 @@ local_dec         ::= local_dec:l var_dec:v
 
 
 stmt_list         ::= stmt_list:l stmt:s
-									/*{: ExpList t = l;
-                    while( t.tail != null )
-                      t = t.tail;
-                    t.tail = new ExpList(s, null);
-                    RESULT = l;
-                  :}*/
+									{: RESULT = new ExpList(s, l); :}
                   |
                   /*Empty*/
                   ;
 
 stmt              ::= exp_stmt:es 
-                 {: RESULT = es; :}
+                  {: RESULT = es; :}
                   |  
                   comp_stmt:cs
-                  //{: RESULT = cs; :}
-                 |  
+                  {: RESULT = cs; :}
+                  |  
                   select_stmt:ss
-              //    {: RESULT = ss; :}
+                  {: RESULT = ss; :}
                   |  
                   iter_stmt:is
-                //  {: RESULT = is; :}
+                  {: RESULT = is; :}
                   |  
                   return_stmt:rs
-               //   {: RESULT = rs; :}
+                  {: RESULT = rs; :}
                   ;
 
 exp_stmt          ::= exp:e SEMI 
@@ -213,21 +208,21 @@ exp_stmt          ::= exp:e SEMI
                   ;
 
 select_stmt       ::= IF LPAREN exp:e RPAREN stmt:s
-                //  {: RESULT = new IfExp(eleft, e, s); :}
+                  {: RESULT = new IfExp(eleft, e, s); :}
                   |  
                   IF LPAREN exp:e RPAREN stmt:s1 ELSE stmt:s2
-               //   {: RESULT = new IfExp(eleft, e, s1, s2); :}
+                  {: RESULT = new IfExp(eleft, e, s1, s2); :}
                   ;
 
 iter_stmt         ::= WHILE LPAREN exp:e RPAREN stmt:s 
-                 // {: RESULT= new WhileExp (eleft,e,s); :}
+                  {: RESULT= new WhileExp (eleft,e,s); :}
                   ;
 
 return_stmt       ::= RETURN:r SEMI
-                //  {: RESULT = new ReturnExp(rleft, new NilExp(rleft)); :}
+                  {: RESULT = new ReturnExp(rleft, new NilExp(rleft)); :}
                   | 
                   RETURN:r exp:e SEMI
-                //  {: RESULT = new ReturnExp(rleft, e); :}
+                  {: RESULT = new ReturnExp(rleft, e); :}
                   ;
 
 
@@ -309,32 +304,32 @@ fact              ::= LPAREN exp RPAREN
                  {: RESULT = new VarExp(vleft,v); :} 
                   |
                   call:c
-                 // {: RESULT = c; :} 
+                  {: RESULT = c; :} 
                   | 
                   NUM:n  /*Can probably cast the string value of NUM to an Integer*/
                  {: RESULT = new IntExp(nleft,Integer.valueOf(n)); :}
                   ;
 
 call              ::= ID:i LPAREN args:a RPAREN
-                  //{: RESULT = new CallExp(ileft,i,a); :} 
+                  {: RESULT = new CallExp(ileft,i,a); :} 
                   ;
 
 args              ::= arg_list:l
-									//{: RESULT = l; :}           
+									{: RESULT = l; :}           
                   |
                   /*Empty*/         
                   ;
 
 arg_list          ::= arg_list:l COMMA exp:e
-                  // {: ExpList t = l;
-                  //   while( t.tail != null )
-                  //     t = t.tail;
-                  //   t.tail = new ExpList(e, null);
-                  //   RESULT = l;
-                  // :}
+                  {: ExpList t = l;
+                    while( t.tail != null )
+                      t = t.tail;
+                    t.tail = new ExpList(e, null);
+                    RESULT = l;
+                  :}
                   |  
                   exp:e
-                  //{: RESULT =  new ExpList(e, null); :} 
+                  {: RESULT =  new ExpList(e, null); :} 
                   ; 
 
 
