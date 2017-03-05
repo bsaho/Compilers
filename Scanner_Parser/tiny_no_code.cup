@@ -76,12 +76,17 @@ terminal LT, LTEQ, GT, GTEQ, EQ, NOTEQ;
 terminal ASSIGN, SEMI, COMMA, LPAREN, RPAREN;
 terminal LSQUARE, RSQUARE, LCURL, RCURL;
 terminal String ID;
-terminal Integer NUM;
+terminal String NUM;
 terminal ERROR;
 
-non terminal ExpList program, dec_list, param_list, stmt_list, arg_list, local_dec, args;
-non terminal Exp dec, var_dec, type_spec, func_dec, params, param, comp_stmt, stmt, exp_stmt, select_stmt, iter_stmt, return_stmt;
+non terminal ExpList program, dec_list, param_list, stmt_list, arg_list,  args;
+non terminal Exp dec, stmt, exp_stmt, select_stmt, iter_stmt, return_stmt;
 non terminal Exp exp, smpl_exp, add_exp, term, fact, call;  
+non terminal CompoundExp comp_stmt;  
+non terminal VarDecList params, local_dec;  
+non terminal VarDec var_dec, param;  
+non terminal Dec func_dec;  
+non terminal NameTy type_spec;  
 non terminal Var var;  
 non terminal Integer relop, add_op, mul_op;
 
@@ -104,45 +109,40 @@ dec         ::= var_dec:v
 
                ;
 
-var_dec         ::= type_spec:t1  ID:id1 SEMI
-
-                | type_spec:t1 ID:id1 LSQUARE NUM:n1 RSQUARE SEMI
+var_dec         ::= type_spec:t  ID:id SEMI
+               {: RESULT = new SimpleDec(tleft, t, id); :}
+                | type_spec:t ID:id LSQUARE NUM:n RSQUARE SEMI
+                {: RESULT = new ArrayDec(tleft, t, id, new IntExp(tleft,Integer.valueOf(n))); :}
                 ;
 
-type_spec      ::= INT:i
-
-
-               | VOID:i
-
+type_spec      ::= INT
+               | VOID
                ;
 
-func_dec       ::= type_spec:t ID:id1 LPAREN params:p RPAREN comp_stmt:c1
+func_dec       ::= type_spec:t ID:id LPAREN params:p RPAREN comp_stmt:c
+                {: RESULT = new FunctionDec(tleft, t, id, p, c); :}
                 ;
 
-params         ::= param_list:l
-
+params         ::= param_list
                |  VOID
-
-                ;
+               ;
 
 param_list     ::= param_list COMMA param 
-
                 | param
-
                 ;
 
 param         ::= type_spec:s ID:id 
-
+                {: RESULT = new SimpleDec(sleft, s, id); :}
                |  type_spec:s ID:id LSQUARE RSQUARE
-
+                {: RESULT = new SimpleDec(sleft, s, id); :}
                 ;
 
-comp_stmt      ::= LCURL local_dec stmt_list RCURL
+comp_stmt      ::= LCURL local_dec:l stmt_list:s RCURL
+                {: RESULT = new CompoundExp(lleft, l, s); :}
                 ;
 
 
-local_dec        ::= local_dec:l var_dec:v
-
+local_dec        ::= local_dec var_dec
                 | 
                 ;
 
@@ -249,8 +249,8 @@ fact          ::= LPAREN exp RPAREN
                 call:c
                 {: RESULT = c; :} 
                 | 
-                NUM:n
-               {: RESULT = new IntExp(nleft,n); :} 
+                NUM:n  /*Can probably cast the string value of NUM to an Integer*/
+                {: RESULT = new IntExp(nleft,Integer.valueOf(n));:}
                 ;
 
 call           ::= ID:i LPAREN args:a RPAREN
