@@ -302,8 +302,7 @@ fact              ::= LPAREN exp:e RPAREN
                     {: RESULT  = e; :}
                   |
                   var:v 
-                 {: RESULT = new VarExp(vleft,v);
-                  :} 
+                 {: RESULT = new VarExp(vleft,v);:} 
                   |
                   call:c
                   {: RESULT = c; :} 

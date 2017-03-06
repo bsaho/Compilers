@@ -35,7 +35,7 @@ abstract public class Absyn {
   static public void showTree( Exp tree, int spaces ) {
     if( tree instanceof AssignExp )
        showTree( (AssignExp)tree, spaces );
-     if( tree instanceof IfExp )
+    else if( tree instanceof IfExp )
       showTree( (IfExp)tree, spaces );
     else if( tree instanceof IntExp )
       showTree( (IntExp)tree, spaces );
@@ -49,12 +49,10 @@ abstract public class Absyn {
       showTree ((ReturnExp) tree, spaces);
     else if (tree instanceof CallExp )
       showTree ((CallExp) tree, spaces);
-        else if (tree instanceof NilExp )
+    else if (tree instanceof NilExp )
       showTree ((NilExp) tree, spaces);
     else if (tree instanceof CompoundExp )
       showTree ((CompoundExp) tree, spaces);
-
-
     else {
       indent( spaces );
       System.out.println( "Illegal expression at line " + tree.pos  );
