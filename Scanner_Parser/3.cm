@@ -1,0 +1,10 @@
+int getNum(void)
+{
+    return 5;
+}
+
+int main(void)
+{
+inct x;
+  x =  getNum();
+}
