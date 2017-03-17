@@ -31,9 +31,25 @@ class SymbolTable
 
 
     //Lookup Method
-    public void lookup()
+    public void lookup(String valName)
     {
+        System.out.println (table.keySet ().size ());
+        System.out.println (table.keySet());
+        int size=table.keySet().size ();
+        Set scopeNames=table.keySet();
+        ArrayList <symbolList> temp;
+        Iterator index= scopeNames.iterator ();
 
+        while (index.hasNext()){
+            String searchString=(String) index.next();
+            temp=table.get(searchString);
+            for (int i=0;i<temp.size ();i++){
+                if (valName.equals(temp.get(i).symbolName)){
+                    System.out.println ("Symbol " + valName + " Found! In scope " + searchString);
+                }
+            }
+
+        }
     }
 
     //Insert Method for variable decs
@@ -95,9 +111,16 @@ class SymbolTable
                  t.add("C00", "Function",1);
          t.addScope("IF", "Loop",5); 
                   t.add("lol2", "String",5); 
+         t.add("lol", "String",5); 
 
          t.add("Lola", "If-Block",6);
+                  t.add("toops", "void",6);
+
         t.printSymbolList (t.table.get(t.currentScope));
+        t.lookup ("lol");
+        t.lookup ("toops");
+                t.lookup ("Lola");
+
 
 
 
