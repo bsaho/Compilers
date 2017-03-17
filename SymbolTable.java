@@ -3,12 +3,12 @@ import java.util.*;
 
 class SymbolTable 
 {
-    HashMap<Integer, ArrayList> table;
+    HashMap<String, ArrayList> table;
 
     //Constructor
     public SymbolTable()
     {
-        table = new HashMap<Integer, ArrayList >();
+        table = new HashMap<String, ArrayList >();
     }
 
 
@@ -34,18 +34,18 @@ class SymbolTable
     {    
         SymbolTable t = new SymbolTable();
 
-        t.table.put(1, new ArrayList());
-        t.table.put(2, new ArrayList());
-        t.table.put(3, new ArrayList());
+        t.table.put("1", new ArrayList());
+        t.table.put("2", new ArrayList());
+        t.table.put("3", new ArrayList());
 
         ArrayList current;
 
-        current = t.table.get(3);
+        current = t.table.get("3");
 
         current.add("C00");
         current.add("B00");
 
-        System.out.println("Output: " + t.table.get(3));
+        System.out.println("Output: " + t.table.get("3"));
 
     }
 }
