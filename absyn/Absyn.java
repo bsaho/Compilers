@@ -196,8 +196,12 @@ abstract public class Absyn
 	    indent( spaces );
 	    System.out.print( "Array Dec: Type: ");
 	    showTree(tree.typ, spaces);
-	    System.out.println( "Name: " + tree.name );
-	    showTree (tree.size, spaces );
+	    System.out.print( "Name: " + tree.name );
+	    spaces += SPACES;
+	    if (tree.hasSize == true) 
+	    {
+			showTree (tree.size, spaces );
+	    }
   	}
 
 
