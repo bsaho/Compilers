@@ -10,11 +10,16 @@
 /* Import the class java_cup.runtime.*  */
 import java_cup.runtime.*;
 import absyn.*;
-   
+ 
+ action code
+{: 
+  boolean hasError = false;
+:};
+
 /* Parser code to change the way the parser reports errors (include
    line and column number of the error). */
 parser code {:
-    
+
     /* Change the method report_error so it will display the line and
        column of where the error occurred in the input as well as the
        reason for the error which is passed into the method in the
@@ -53,7 +58,9 @@ parser code {:
    
         /* Print the contents of the StringBuffer 'm', which contains
            an error message, out on a line. */
-        System.err.println(m);
+        System.err.println("\n"+m);
+        //System.err.println("An error");
+
     }
    
     /* Change the method report_fatal_error so when it reports a fatal
@@ -86,7 +93,7 @@ non terminal CompoundExp comp_stmt;
 non terminal DecList program, dec_list;  
 non terminal VarDecList params, local_dec, param_list;  
 non terminal VarDec var_dec, param;  
-non terminal Dec dec,func_dec, empty_dec;  
+non terminal Dec dec,func_dec;  
 non terminal NameTy type_spec;  
 non terminal Var var;  
 non terminal Integer relop, add_op, mul_op;
@@ -99,9 +106,12 @@ precedence left LSQUARE, RSQUARE;
 /* ----------------------------Grammar Section-------------------- */
 program           ::= dec_list:d
 									{: RESULT = d;
-                    System.out.println( "\nThe abstract syntax tree is:\n" );
-                    Absyn.showTree( RESULT, 0 );
-                    System.out.println(" ");
+                    if(hasError == false)
+                    {
+                      System.out.println( "\nThe abstract syntax tree is:\n" );
+                      Absyn.showTree( RESULT, 0 );
+                      System.out.println(" ");
+                    }
                  	:}
                   ;
 
@@ -129,6 +139,10 @@ var_dec           ::= type_spec:t  ID:id SEMI
                   | 
                   type_spec:t ID:id LSQUARE NUM:n RSQUARE SEMI
                   {: RESULT = new ArrayDec(tleft, t, id, new IntExp(tleft,Integer.valueOf(n)));:}
+                  | 
+                  error:e SEMI
+                  {: System.out.println( "ERROR: Invalid type in declaration" ); 
+                  hasError = true;:}
                   ;
 
 type_spec         ::= INT:i
@@ -139,7 +153,11 @@ type_spec         ::= INT:i
                   ;
 
 func_dec          ::= type_spec:t ID:id LPAREN params:p RPAREN comp_stmt:c
-                 {: RESULT = new FunctionDec(tleft, t, id, p, c); :}
+                  {: RESULT = new FunctionDec(tleft, t, id, p, c); :}
+                  | 
+                  error:e ID
+                  {: System.out.println( "ERROR: Invalid type in function declaration" ); 
+                  hasError = true;:}
                   ;
 
 params            ::= param_list:p
@@ -166,10 +184,14 @@ param             ::= type_spec:s ID:id
                   |  
                   type_spec:s ID:id LSQUARE RSQUARE
                   {: RESULT = new ArrayDec(sleft, s, id); :}
+                  | 
+                  error:e ID
+                  {: System.out.println( "ERROR: Invalid type in param declaration" ); 
+                  hasError = true;:}
                   ;
 
 comp_stmt         ::= LCURL local_dec:l stmt_list:s RCURL
-                 {: RESULT = new CompoundExp(lleft, l, s); :}
+                  {: RESULT = new CompoundExp(lleft, l, s); :}
                   ;
 
 
@@ -212,6 +234,10 @@ select_stmt       ::= IF LPAREN exp:e RPAREN stmt:s1 ELSE stmt:s2
                   |  
                   IF LPAREN exp:e RPAREN stmt:s
                   {: RESULT = new IfExp(eleft, e, s); :}
+                  | 
+                  IF error stmt:s
+                  {: System.out.println( "ERROR: Incomplete If statement" ); 
+                  hasError = true;:}
                   ;
 
 iter_stmt         ::= WHILE LPAREN exp:e RPAREN stmt:s 
