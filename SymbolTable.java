@@ -9,13 +9,24 @@ class SymbolTable
        public String symbolName;
        public String symbolType;
        public int lineNo;
+       public int arraySize;
 
         public symbolList(String name, String type, int lineNum) 
         {
             symbolName = name;
             symbolType = type;
             lineNo= lineNum ;
+            arraySize=0;
         }
+        public symbolList(String name, String type,int size, int lineNum) 
+        {
+            symbolName = name;
+            symbolType = type;
+            lineNo= lineNum ;
+            arraySize=size;
+        }
+
+
     }
 
     HashMap<String, ArrayList> table;
@@ -64,6 +75,14 @@ class SymbolTable
        	symbolList newSymbol = new symbolList (varName,varType,lineNum);
         current.add(newSymbol);  
     }
+    public  void add (String varName, String varType,int size, int lineNum)
+    {
+        ArrayList <symbolList> current;
+        current = table.get(currentScope);
+        symbolList newSymbol = new symbolList (varName,varType,size, lineNum);
+        current.add(newSymbol);  
+    }
+
 
     //Insert Method for new scopes
     public void addScope (String scopeName, String scopeType, int lineNum)
