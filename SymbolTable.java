@@ -90,13 +90,13 @@ class SymbolTable
 	        temp=list.get (i);
 	        System.out.println (temp.symbolName);
 	    }
+	    System.out.println("");
     }
 
     //Remove Method
     public void delete()
     {
     	Set scopeNames = table.keySet();
-        ArrayList <symbolList> temp;
         Iterator index = scopeNames.iterator ();
         String scopeName;
 
@@ -131,6 +131,7 @@ class SymbolTable
         t.add("toops", "void",6);
        // t.printSymbolList (t.table.get("Global"));
 		t.add("C00", "Function",1);
+
         t.addScope("IF", "Loop",5); 
 		t.add("lol2", "String",5); 
         t.add("lol", "String",5); 
