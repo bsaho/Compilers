@@ -207,11 +207,11 @@ exp_stmt          ::= exp:e SEMI
                   SEMI
                   ;
 
-select_stmt       ::= IF LPAREN exp:e RPAREN stmt:s
-                  {: RESULT = new IfExp(eleft, e, s); :}
-                  |  
-                  IF LPAREN exp:e RPAREN stmt:s1 ELSE stmt:s2
+select_stmt       ::= IF LPAREN exp:e RPAREN stmt:s1 ELSE stmt:s2
                   {: RESULT = new IfExp(eleft, e, s1, s2); :}
+                  |  
+                  IF LPAREN exp:e RPAREN stmt:s
+                  {: RESULT = new IfExp(eleft, e, s); :}
                   ;
 
 iter_stmt         ::= WHILE LPAREN exp:e RPAREN stmt:s 
