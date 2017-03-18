@@ -1,3 +1,4 @@
+package absyn;
 import java.io.*;
 import java.util.*;
 
@@ -72,8 +73,9 @@ class SymbolTable
     {
         ArrayList <symbolList> current;
         current = table.get(currentScope);
-       	symbolList newSymbol = new symbolList (varName,varType,lineNum);
+        symbolList newSymbol = new symbolList (varName,varType,lineNum);
         current.add(newSymbol);  
+        printSymbol (newSymbol);
     }
     public  void add (String varName, String varType,int size, int lineNum)
     {
@@ -81,6 +83,7 @@ class SymbolTable
         current = table.get(currentScope);
         symbolList newSymbol = new symbolList (varName,varType,size, lineNum);
         current.add(newSymbol);  
+        printSymbol (newSymbol);
     }
 
 
@@ -98,37 +101,47 @@ class SymbolTable
         
     }
 
+    public void printSymbol (symbolList list){
+        if (list.arraySize==0){
+        System.out.println ("Variable " + list.symbolName + " declared of type " + list.symbolType + " on line " + list.lineNo);
+        }else {
+                    System.out.println ("Variable " + list.symbolName + " declared of array type " + list.symbolType + " of size "
+                        + list.arraySize + " on line " + list.lineNo );
+
+        }
+
+    }
     public void printSymbolList (ArrayList <symbolList> list)
     {
-	    int size= list.size ();
-	    System.out.println ("Total list size is: " + size);
+        int size= list.size ();
+        System.out.println ("Total list size is: " + size);
 
-	    for (int i=0;i<size; i++)
-	    {
-	    	symbolList temp;
-	        temp=list.get (i);
-	        System.out.println (temp.symbolName);
-	    }
-	    System.out.println("");
+        for (int i=0;i<size; i++)
+        {
+            symbolList temp;
+            temp=list.get (i);
+            System.out.println (temp.symbolName);
+        }
+        System.out.println("");
     }
 
     //Remove Method
     public void delete()
     {
-    	Set scopeNames = table.keySet();
+        Set scopeNames = table.keySet();
         Iterator index = scopeNames.iterator ();
         String scopeName;
 
         //Look through each scope in the table
         while (index.hasNext())
         {
-        	scopeName = (String)index.next();
-        	if(lastScopeAdded.equals(scopeName) ) 
-        	{
-        		printSymbolList(table.get(scopeName));
-        		table.remove(scopeName);
-        		break;
-        	}
+            scopeName = (String)index.next();
+            if(lastScopeAdded.equals(scopeName) ) 
+            {
+                printSymbolList(table.get(scopeName));
+                table.remove(scopeName);
+                break;
+            }
 
         }
     }
@@ -149,10 +162,10 @@ class SymbolTable
         t.add("lol", "String",5); 
         t.add("toops", "void",6);
        // t.printSymbolList (t.table.get("Global"));
-		t.add("C00", "Function",1);
+        t.add("C00", "Function",1);
 
         t.addScope("IF", "Loop",5); 
-		t.add("lol2", "String",5); 
+        t.add("lol2", "String",5); 
         t.add("lol", "String",5); 
 
         t.add("Lola", "If-Block",6);
@@ -162,7 +175,7 @@ class SymbolTable
         //t.printSymbolList (t.table.get(t.currentScope));
         t.lookup ("lol");
         t.lookup ("toops");
-      	t.lookup ("Lola");
+        t.lookup ("Lola");
 
 
 

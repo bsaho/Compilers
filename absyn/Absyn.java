@@ -4,6 +4,7 @@ import java.util.*;
 abstract public class Absyn 
 {
 	public int pos;
+  public static  SymbolTable t=new SymbolTable ();
 
   	final static int SPACES = 4;
 
@@ -141,18 +142,20 @@ abstract public class Absyn
 	    }
 	}
 
-	static public void showTree(NameTy tree, int spaces ) 
-	{
-	    //indent( spaces );
-	    if (tree.typ == NameTy.INT) 
-	    {
-	        System.out.print( "Int " );
-	    }
-	    else if (tree.typ == NameTy.VOID) 
-	    {
-	        System.out.print( "Void " );
-	    }
-	}
+  static public String showTree(  NameTy tree, int spaces ) {
+        indent( spaces );
+        if (tree.typ == NameTy.INT) 
+        {
+           System.out.println( "NameTy: Int" );
+           return "Int";
+        }
+        else if (tree.typ == NameTy.VOID) 
+        {
+           System.out.println( "NameTy: Void" );
+           return "Void";
+        }
+        return "";
+  }
 
     static public void showTree( CompoundExp  tree, int spaces ) 
     {
@@ -174,32 +177,37 @@ abstract public class Absyn
 	    showTree (tree.body, spaces );
   	}
 
-    static public void showTree( IntExp tree, int spaces ) 
+    static public int showTree( IntExp tree, int spaces ) 
     {
     	System.out.println(" ");
 	   	indent( spaces );
 	    System.out.print( "IntExp: " + tree.value + " "); 
+	    return tree.value;
   	}
 
-  	static public void showTree( SimpleDec tree, int spaces ) 
-  	{
-  		System.out.println(" ");
-    	indent( spaces );
-	    System.out.print( "Simple Dec: Type: ");
-	    showTree(tree.typ, spaces);
-	    System.out.print( "Name: " + tree.name );
-  	}
+  static public void showTree( SimpleDec tree, int spaces ) {
+    indent( spaces );
+
+    System.out.println( "Simple: Type ");
+    String varName=showTree(tree.typ, spaces);
+
+    System.out.println( "Name: " + tree.name );
+    t.add (tree.name,varName,1);
+  }
 
  	static public void showTree( ArrayDec tree, int spaces ) 
  	{
  		System.out.println(" ");
 	    indent( spaces );
 	    System.out.print( "Array Dec: Type: ");
-	    showTree(tree.typ, spaces);
-	    System.out.print( "Name: " + tree.name );
+	    String varName=showTree(tree.typ, spaces);
+	    System.out.println( "Name: " + tree.name );
+	   int size= showTree (tree.size, spaces );
 	    spaces += SPACES;
 	    if (tree.hasSize == true) 
-	    {
+	    {	   
+	    	t.add (tree.name,varName,size,1);
+
 			showTree (tree.size, spaces );
 	    }
   	}
