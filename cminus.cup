@@ -99,8 +99,9 @@ precedence left LSQUARE, RSQUARE;
 /* ----------------------------Grammar Section-------------------- */
 program           ::= dec_list:d
 									{: RESULT = d;
-                    System.out.println( "The abstract syntax tree is:" );
+                    System.out.println( "\nThe abstract syntax tree is:\n" );
                     Absyn.showTree( RESULT, 0 );
+                    System.out.println(" ");
                  	:}
                   ;
 
@@ -124,8 +125,7 @@ dec               ::= var_dec:v
                   ;
 
 var_dec           ::= type_spec:t  ID:id SEMI
-                  {: RESULT = new SimpleDec(tleft, t, id); 
-                    Absyn.showTree( RESULT, 0 );:}
+                  {: RESULT = new SimpleDec(tleft, t, id); :}
                   | 
                   type_spec:t ID:id LSQUARE NUM:n RSQUARE SEMI
                   {: RESULT = new ArrayDec(tleft, t, id, new IntExp(tleft,Integer.valueOf(n)));:}
