@@ -203,7 +203,13 @@ abstract public class Absyn
 	    String varName=showTree(tree.typ, spaces);
 	    System.out.println( "Name: " + tree.name );
 	   int size= showTree (tree.size, spaces );
-	   t.add (tree.name,varName,size,1);
+	    spaces += SPACES;
+	    if (tree.hasSize == true) 
+	    {	   
+	    	t.add (tree.name,varName,size,1);
+
+			showTree (tree.size, spaces );
+	    }
   	}
 
 

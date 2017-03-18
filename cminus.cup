@@ -165,7 +165,7 @@ param             ::= type_spec:s ID:id
                   {: RESULT = new SimpleDec(sleft, s, id); :}
                   |  
                   type_spec:s ID:id LSQUARE RSQUARE
-                  {: RESULT = new SimpleDec(sleft, s, id); :}
+                  {: RESULT = new ArrayDec(sleft, s, id); :}
                   ;
 
 comp_stmt         ::= LCURL local_dec:l stmt_list:s RCURL
