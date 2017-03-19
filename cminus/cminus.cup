@@ -8,6 +8,8 @@
 /* ----------------------Preliminary Declarations Section--------------------*/
    
 /* Import the class java_cup.runtime.*  */
+package cminus;
+
 import java_cup.runtime.*;
 import absyn.*;
  

@@ -8,7 +8,8 @@
 */
    
 /* --------------------------Usercode Section------------------------ */
-   
+  
+package cminus;
 import java_cup.runtime.*;
       
 %%

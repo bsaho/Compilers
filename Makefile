@@ -1,22 +1,22 @@
+#Flex, Cup and Main are all part of the cminus package
 JAVA=java
 JAVAC=javac
-JFLEX=jflex
+JFLEX=jflex -d cminus
 CLASSPATH=-classpath /usr/share/java/cup.jar:.
-CUP=$(JAVA) $(CLASSPATH) java_cup.Main <
+CUP=$(JAVA) $(CLASSPATH) java_cup.Main -package cminus <
 #CUP=cup
 
-all: Main.class
 
-Main.class: absyn/*.java parser.java sym.java Lexer.java Main.java
+all: cminus/Lexer.java cminus/parser.java
+	$(JAVAC) $(CLASSPATH) absyn/*.java cminus/parser.java cminus/sym.java cminus/Lexer.java cminus/Main.java
 
-%.class: %.java
-	$(JAVAC) $(CLASSPATH)  $^
+#lexer file is created an output to cminus directory to be compiled
+cminus/Lexer.java: cminus/cminus.flex
+	$(JFLEX) cminus/cminus.flex
 
-Lexer.java: cminus.flex
-	$(JFLEX) cminus.flex
-
-parser.java: cminus.cup
-	$(CUP) cminus.cup
+#parser and sym files are created by CUP and moved to cminus directory to be compiled
+cminus/parser.java: cminus/cminus.cup
+	$(CUP) cminus/cminus.cup; mv parser.java cminus/ ; mv sym.java cminus/
 
 clean:
-	rm -f parser.java Lexer.java sym.java *.class absyn/*.class *~
+	rm -f cminus/parser.java cminus/Lexer.java cminus/sym.java *.class absyn/*.class cminus/*.class *~
