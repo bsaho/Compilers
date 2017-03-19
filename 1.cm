@@ -4,8 +4,12 @@ int shift (int r, int z, int y){
 void lol (void)
 {
 	int tell;
+	void tell[10];
+	void sell[10];
+	amran[lol]=3;
 	sell=2;
 	tell=4;
 	tell= 4/5;
 	shift(r,z,y);
+	return;
 }

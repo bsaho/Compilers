@@ -159,7 +159,7 @@ abstract public class Absyn
         else if (tree.typ == NameTy.VOID) 
         {
            System.out.println( "NameTy: Void" );
-           return "Void";
+           return "VOID";
         }
         return "";
   }
@@ -178,13 +178,19 @@ abstract public class Absyn
 	    System.out.print("FunctionDec: Name: " + tree.func );
 	    spaces += SPACES;
 	    System.out.print(" Type: ");
+
 	    t.add (tree.func,"FUNC",tree.pos);
 	    t.addScope (tree.func,"FUNC", tree.pos);
-	    showTree (tree.result, spaces );
+	    String result=showTree (tree.result, spaces );
 	    showTree (tree.params, spaces, 1);
 	    //System.out.println(" ");
 	    showTree (tree.body, spaces );
 	    //t.printAll ();
+	    if (result.equals("VOID") && t.lookup ("ReturnNull",0)){
+	    	System.out.println (" Error,illegal return statement on " + tree.pos + " void function " 
+	    		+ tree.func + " cannot return value");
+	    	
+	    }
   	}
 
     static public int showTree( IntExp tree, int spaces ) 
@@ -215,6 +221,11 @@ abstract public class Absyn
 	    indent( spaces );
 	    System.out.print( "Array Dec: Type: ");
 	    String varName=showTree(tree.typ, spaces);
+	    if (varName.equals ("VOID")){
+	    	 System.out.println ("Error, array variable " + tree.name + " on line " +tree.pos + " must be of type INT  "  );
+
+	    	return;
+	    }
 	    System.out.println( "Name: " + tree.name );
 	   int size= showTree (tree.size, spaces );
 	    spaces += SPACES;
@@ -240,7 +251,7 @@ abstract public class Absyn
 	    String varName=showTree( tree.lhs, spaces);
 	   	if (varName.length ()>0){
    		    if (!t.lookup (varName,0)){
-   		    	System.out.println ("Error, assiging to  undeclared variable on line  " + tree.pos);
+   		    	System.out.println ("Error, assiging to  undeclared variable " + varName + "on line  " + tree.pos);
    		    }
 	   	}
 
@@ -297,6 +308,11 @@ abstract public class Absyn
   		System.out.println(" ");
 	    indent( spaces );
 	    System.out.print( "ReturnExp: " );
+	    if (tree.exp instanceof NilExp){
+	    t.add ("ReturnNull","RETURN",tree.pos);
+		}else {
+			t.add ("ReturnExp","RETURN",tree.pos);
+		}
 	    spaces += SPACES;
 	    showTree (tree.exp, spaces); 
   	}
