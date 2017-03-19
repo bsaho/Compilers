@@ -3,6 +3,7 @@ import java.util.*;
 
 abstract public class Absyn 
 {
+	public static int genericScopeCounter=0;
 	public int pos;
   public static  SymbolTable t=new SymbolTable ();
 
@@ -61,6 +62,7 @@ abstract public class Absyn
 	  	while( tree != null ) 
 	    {
 	    	showTree(tree.head, spaces );
+
 	     	tree = tree.tail;
 	    } 
   	}
@@ -114,16 +116,21 @@ abstract public class Absyn
 	    }
 	}
 
-	static public void showTree(Var tree, int spaces ) 
+	static public String showTree(Var tree, int spaces ) 
 	{
-	    if( tree instanceof SimpleVar )
-	      showTree( (SimpleVar )tree, spaces );
-	    else if( tree instanceof IndexVar )
+	    if( tree instanceof SimpleVar ){
+	      String varName=showTree( (SimpleVar )tree, spaces );
+	      return varName;
+	    }
+	    else if( tree instanceof IndexVar ){
 	      showTree( (IndexVar )tree, spaces );
+	  		return "";
+	  	}
 	    else 
 	    {
 	      indent( spaces );
 	      System.out.println( "Illegal Variable Declarion at line " + tree.pos  );
+	      return "";
 	    }
 	}
 
@@ -171,10 +178,13 @@ abstract public class Absyn
 	    System.out.print("FunctionDec: Name: " + tree.func );
 	    spaces += SPACES;
 	    System.out.print(" Type: ");
+	    t.add (tree.func,"FUNC",tree.pos);
+	    t.addScope (tree.func,"FUNC", tree.pos);
 	    showTree (tree.result, spaces );
 	    showTree (tree.params, spaces, 1);
 	    //System.out.println(" ");
 	    showTree (tree.body, spaces );
+	    //t.printAll ();
   	}
 
     static public int showTree( IntExp tree, int spaces ) 
@@ -192,7 +202,11 @@ abstract public class Absyn
     String varName=showTree(tree.typ, spaces);
 
     System.out.println( "Name: " + tree.name );
+     if (t.lookup (tree.name,0)==true) {
+     	System.out.println ("Error, redeclaration of existing variable " + tree.name + " at line " + tree.pos);
+     }
     t.add (tree.name,varName,1);
+   
   }
 
  	static public void showTree( ArrayDec tree, int spaces ) 
@@ -204,6 +218,10 @@ abstract public class Absyn
 	    System.out.println( "Name: " + tree.name );
 	   int size= showTree (tree.size, spaces );
 	    spaces += SPACES;
+	    if (t.lookup (tree.name,0)==true) {
+     		System.out.println ("Error, redeclaration of existing variable " + tree.name + " at line " + tree.pos);
+     	}
+
 	    if (tree.hasSize == true) 
 	    {	   
 	    	t.add (tree.name,varName,size,1);
@@ -219,7 +237,15 @@ abstract public class Absyn
 	    indent( spaces );
 	    System.out.print( "AssignExp: " );
 	    spaces += SPACES;
-	    showTree( tree.lhs, spaces);
+	    String varName=showTree( tree.lhs, spaces);
+	   	if (varName.length ()>0){
+   		    if (!t.lookup (varName,0)){
+   		    	System.out.println ("Error, assiging to  undeclared variable on line  " + tree.pos);
+   		    }
+	   	}
+
+
+
 	    //System.out.println(" ");
 	    showTree( tree.rhs, spaces );
   	}
@@ -230,12 +256,17 @@ abstract public class Absyn
 	    indent( spaces );
 	    System.out.print( "IfExp:" );
 	    spaces += SPACES;
+
+	    String scopeName= "IfScope" + String.valueOf(genericScopeCounter);
+	    System.out.println (scopeName);
+	    t.addScope (scopeName,"IF",tree.pos);
 	    showTree( tree.test, spaces );
 	    showTree( tree.thenp, spaces );
 	    if (tree.elsep != null )
 	    {
 	    	showTree( tree.elsep, spaces );
 	  	}
+	  	t.delete ();
   	}
 
   	static public void showTree( IndexVar tree, int spaces ) 
@@ -253,8 +284,12 @@ abstract public class Absyn
 	    indent( spaces );
 	    System.out.print("WhileExp:"  );
 	    spaces += SPACES;
+	    String scopeName= "WhileScope" + String.valueOf(genericScopeCounter);
+	    t.addScope (scopeName,"WHILE",tree.pos);
+
 	    showTree( tree.test, spaces );
 	    showTree( tree.body, spaces );
+	    t.delete ();
   	}
 
   	static public void showTree( ReturnExp tree, int spaces ) 
@@ -266,11 +301,12 @@ abstract public class Absyn
 	    showTree (tree.exp, spaces); 
   	}
 
-  	static public void showTree( SimpleVar tree, int spaces ) 
+  	static public String showTree( SimpleVar tree, int spaces ) 
   	{
   		System.out.println(" ");
 	    indent( spaces );
-	    System.out.print( "SimpleVar: " + tree.name + " "); 
+	    System.out.print( "SimpleVar: " + tree.name + " ");
+	    return tree.name; 
   	}
 
   	static public void showTree( CallExp tree, int spaces ) 
@@ -278,6 +314,9 @@ abstract public class Absyn
   		System.out.println(" "); 
 	    indent( spaces );
 	    System.out.print( "CallExp: " + tree.func + " " ); 
+	    if (!t.lookup (tree.func)){
+	    	System.out.println (" Error, failed function call on line "+ tree.pos + " , function does not exist");
+	    }
 	    //System.out.println(" ");
 	    spaces += SPACES;
 	    showTree (tree.args, spaces, 1);

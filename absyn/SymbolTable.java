@@ -40,18 +40,35 @@ class SymbolTable
         table = new HashMap<String, ArrayList >();
         table.put("Global", new ArrayList());
         currentScope="Global";
+        lastScopeAdded=currentScope;
     }
 
+    //Lookup Method
+    public boolean lookup(String valName,int choice){
+            ArrayList <symbolList> temp;
+            temp = table.get(currentScope);
+            for (int i=0;i<temp.size();i++)
+            {
+                if (valName.equals(temp.get(i).symbolName))
+                {
+                    //System.out.println ("Symbol " + valName + " Found! In restricted scope " + currentScope);
+                    return true;
+                }
+            }
+            //System.out.println ("lookup " + valName);
+            return false;
+        
+    }
 
     //Lookup Method
-    public void lookup(String valName)
-    {
-        System.out.println(table.keySet ().size ());
-        System.out.println(table.keySet());
+    public boolean lookup(String valName){
+        //System.out.println(table.keySet ().size ());
+        //System.out.println(table.keySet());
         int size = table.keySet().size ();
         Set scopeNames = table.keySet();
         ArrayList <symbolList> temp;
         Iterator index = scopeNames.iterator ();
+        System.out.println ("Search string " + valName);
 
         while (index.hasNext())
         {
@@ -61,11 +78,12 @@ class SymbolTable
             {
                 if (valName.equals(temp.get(i).symbolName))
                 {
-                    System.out.println ("Symbol " + valName + " Found! In scope " + searchString);
+                    return true;
                 }
             }
 
         }
+         return false;
     }
 
     //Insert Method for variable decs
@@ -75,7 +93,7 @@ class SymbolTable
         current = table.get(currentScope);
         symbolList newSymbol = new symbolList (varName,varType,lineNum);
         current.add(newSymbol);  
-        printSymbol (newSymbol);
+       // printSymbol (newSymbol);
     }
     public  void add (String varName, String varType,int size, int lineNum)
     {
@@ -83,7 +101,7 @@ class SymbolTable
         current = table.get(currentScope);
         symbolList newSymbol = new symbolList (varName,varType,size, lineNum);
         current.add(newSymbol);  
-        printSymbol (newSymbol);
+       // printSymbol (newSymbol);
     }
 
 
@@ -96,8 +114,12 @@ class SymbolTable
         ArrayList <symbolList> current;
         current = table.get(currentScope);
         symbolList newSymbol = new symbolList (scopeName,scopeType,lineNum);
+        printSymbol (newSymbol);
         current.add (newSymbol);
         lastScopeAdded = scopeName;
+
+
+
         
     }
 
@@ -111,6 +133,28 @@ class SymbolTable
         }
 
     }
+    public void printAll (){
+         int size = table.keySet().size ();
+        Set scopeNames = table.keySet();
+        ArrayList <symbolList> temp;
+        Iterator index = scopeNames.iterator ();
+
+        while (index.hasNext())
+        {
+            String searchString = (String) index.next();
+            temp = table.get(searchString);
+            for (int i=0;i<temp.size();i++)
+            {       
+                    symbolList symbolTemp=temp.get(i);
+                    System.out.println ("Symbol " + symbolTemp.symbolName + " Found! In scope " + searchString);
+                
+            }
+
+        }
+
+
+
+    }
     public void printSymbolList (ArrayList <symbolList> list)
     {
         int size= list.size ();
@@ -120,9 +164,9 @@ class SymbolTable
         {
             symbolList temp;
             temp=list.get (i);
-            System.out.println (temp.symbolName);
+            System.out.println (temp.symbolName + " of type " + temp.symbolType);
         }
-        System.out.println("");
+        
     }
 
     //Remove Method
@@ -171,9 +215,8 @@ class SymbolTable
         t.add("Lola", "If-Block",6);
         t.add("toops", "void",6);
 
-        t.delete();
         //t.printSymbolList (t.table.get(t.currentScope));
-        t.lookup ("lol");
+        t.lookup ("lol",0);
         t.lookup ("toops");
         t.lookup ("Lola");
 
