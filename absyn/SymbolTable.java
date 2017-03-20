@@ -43,9 +43,32 @@ class SymbolTable
         lastScopeAdded=currentScope;
     }
 
+    public String lookup(String valName,String choice){
+            ArrayList <symbolList> temp;
+            temp = table.get(currentScope);
+            if (valName.length ()<1){
+                return "NULL";
+            }
+
+            for (int i=0;i<temp.size();i++)
+            {
+                if (valName.equals(temp.get(i).symbolName))
+                {
+                    //System.out.println ("Symbol " + valName + " Found! In restricted scope " + currentScope);
+                    return temp.get(i).symbolType;
+                }
+            }
+            //System.out.println ("lookup " + valName);
+            return "NULL";
+        
+    }
+
     //Lookup Method
     public boolean lookup(String valName,int choice){
             ArrayList <symbolList> temp;
+            if (valName.length ()<1){
+                return false;
+            }
             temp = table.get(currentScope);
             for (int i=0;i<temp.size();i++)
             {
@@ -64,6 +87,10 @@ class SymbolTable
     public boolean lookup(String valName){
         //System.out.println(table.keySet ().size ());
         //System.out.println(table.keySet());
+        if (valName.length ()<1){
+                return false;
+            }
+
         int size = table.keySet().size ();
         Set scopeNames = table.keySet();
         ArrayList <symbolList> temp;
@@ -227,4 +254,5 @@ class SymbolTable
 
     }
 }
+
 
