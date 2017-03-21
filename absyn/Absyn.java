@@ -330,24 +330,22 @@ abstract public class Absyn
                     }
 		        }
    	        }
-   	        else if (tree.rhs instanceof OpExp){
+   	        else if (tree.rhs instanceof OpExp)
+            {
    	        	int opNum=showTree((OpExp) tree.rhs,spaces);
-   	        	if (opNum>4){
+   	        	if (opNum>4)
+                {
    	        		System.out.print ("Error on line " + tree.pos + " cannot use assignment with Symbol ");
    	        		if (opNum==5) System.out.println ("<");
    	        		else if (opNum==6) System.out.println ("<=");
    	        		else if (opNum==7) System.out.println (">.");
    	        		else if (opNum==8) System.out.println (">=.");
    	        		else if (opNum==9) System.out.println ("=.");
-
-
    	        	}
-
-
    	        }
 	   	}
 	    
-	    showTree( tree.rhs, spaces );
+	   // showTree( tree.rhs, spaces );
   	}
 
   	static public void showTree( IfExp tree, int spaces ) {
