@@ -224,6 +224,7 @@ abstract public class Absyn
 	    	System.out.println (" Error,no return statement, " + " int function " 
 	    		+ tree.func + " must return int value");
 	    }
+        t.delete();
   	}
 
     static public int showTree( IntExp tree, int spaces ) 
@@ -392,7 +393,7 @@ abstract public class Absyn
 	    {
 	    	showTree( tree.elsep, spaces );
 	  	}
-	  	//t.delete ();
+	  	t.delete ();
   	}
 
   	static public void showTree( IndexVar tree, int spaces ) 
@@ -451,7 +452,7 @@ abstract public class Absyn
 	    showTree( tree.test, spaces );
 	    showTree( tree.body, spaces );
 
-	   // t.delete ();
+	   t.delete ();
   	}
 
   	static public void showTree( ReturnExp tree, int spaces ) 
