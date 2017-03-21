@@ -60,7 +60,7 @@ parser code {:
    
         /* Print the contents of the StringBuffer 'm', which contains
            an error message, out on a line. */
-        System.err.println("\n"+m);
+        System.err.println(m);
         //System.err.println("An error");
 
     }
@@ -89,7 +89,7 @@ terminal String  NUM;
 terminal ERROR;
 
 non terminal ExpList  stmt_list, arg_list,  args;
-non terminal Exp stmt, exp_stmt, select_stmt, iter_stmt, return_stmt;
+non terminal Exp stmt, exp_stmt, select_stmt, iter_stmt, return_stmt, then_stmt;
 non terminal Exp exp, smpl_exp, add_exp, term, fact, call;  
 non terminal CompoundExp comp_stmt;  
 non terminal DecList program, dec_list;  
@@ -100,9 +100,7 @@ non terminal NameTy type_spec;
 non terminal Var var;  
 non terminal Integer relop, add_op, mul_op;
 
-precedence left LPAREN, RPAREN;
-precedence left LCURL, RCURL;
-precedence left LSQUARE, RSQUARE;
+precedence left ELSE;
 
 
 /* ----------------------------Grammar Section-------------------- */
@@ -139,11 +137,7 @@ var_dec           ::= type_spec:t  ID:id SEMI
                   {: RESULT = new SimpleDec(tleft, t, id); :}
                   | 
                   type_spec:t ID:id LSQUARE NUM:n RSQUARE SEMI
-                  {: RESULT = new ArrayDec(tleft, t, id, new IntExp(tleft,Integer.valueOf(n)));:}
-                  | 
-                  error:e SEMI
-                  {: System.out.println( "ERROR: Invalid type in declaration" ); 
-                  hasError = true;:}
+                  {: RESULT = new ArrayDec(tleft, t, id, new IntExp(tleft,Integer.valueOf(n)));:} 
                   ;
 
 type_spec         ::= INT:i
@@ -155,10 +149,6 @@ type_spec         ::= INT:i
 
 func_dec          ::= type_spec:t ID:id LPAREN params:p RPAREN comp_stmt:c
                   {: RESULT = new FunctionDec(tleft, t, id, p, c); :}
-                  | 
-                  error:e ID
-                  {: System.out.println( "ERROR: Invalid type in function declaration" ); 
-                  hasError = true;:}
                   ;
 
 params            ::= param_list:p
@@ -185,10 +175,6 @@ param             ::= type_spec:s ID:id
                   |  
                   type_spec:s ID:id LSQUARE RSQUARE
                   {: RESULT = new ArrayDec(sleft, s, id); :}
-                  | 
-                  error:e ID
-                  {: System.out.println( "ERROR: Invalid type in param declaration" ); 
-                  hasError = true;:}
                   ;
 
 comp_stmt         ::= LCURL local_dec:l stmt_list:s RCURL
@@ -230,16 +216,18 @@ exp_stmt          ::= exp:e SEMI
                   SEMI
                   ;
 
-select_stmt       ::= IF LPAREN exp:e RPAREN stmt:s1 ELSE stmt:s2
+select_stmt       ::= IF LPAREN exp:e RPAREN stmt:s
+                  {: RESULT = new IfExp(eleft, e, s); :}
+                  |
+                  IF LPAREN exp:e RPAREN stmt:s1 ELSE stmt:s2
+                  {: RESULT = new IfExp(eleft, e, s1, s2); :}
+                  ;
+
+
+/*then_stmt       ::= IF LPAREN exp:e RPAREN then_stmt:s1 ELSE then_stmt:s2
                   {: RESULT = new IfExp(eleft, e, s1, s2); :}
                   |  
-                  IF LPAREN exp:e RPAREN stmt:s
-                  {: RESULT = new IfExp(eleft, e, s); :}
-                  | 
-                  IF error stmt:s
-                  {: System.out.println( "ERROR: Incomplete If statement" ); 
-                  hasError = true;:}
-                  ;
+                  ;*/
 
 iter_stmt         ::= WHILE LPAREN exp:e RPAREN stmt:s 
                   {: RESULT= new WhileExp (eleft,e,s); :}
@@ -259,6 +247,10 @@ exp               ::= var:v ASSIGN exp:e
                   smpl_exp:s 
                   {: RESULT = s; :}
                   ;
+
+/*return_stmt       ::= ELSE return_stmt:f
+                  {: RESULT = f; :}
+                  ;*/
 
 var               ::= ID:i
                   {:RESULT= new SimpleVar (ileft,i);:}
