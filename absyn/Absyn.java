@@ -139,8 +139,8 @@ abstract public class Absyn
 	    }
 	    else if( tree instanceof IndexVar )
         {
-	       showTree( (IndexVar )tree, spaces );
-	  	   return "";
+	       String varName=showTree( (IndexVar )tree, spaces );
+	  	   return varName;
 	  	}
 	    else 
 	    {
@@ -188,7 +188,7 @@ abstract public class Absyn
 	    showTree( tree.exps, spaces );
   	}
 
-  	static public void showTree( FunctionDec tree, int spaces ) 
+  	static public String showTree( FunctionDec tree, int spaces ) 
   	{
 
       	System.out.println("");
@@ -196,11 +196,18 @@ abstract public class Absyn
         System.out.print("FunctionDec: Name: " + tree.func );
         spaces += SPACES;
         System.out.print(" ReturnType: ");
-
-	    t.add (tree.func,"FUNC",tree.pos);
-	    t.addScope (tree.func,"FUNC", tree.pos);
-	    
         String result=showTree(tree.result, 0 );
+
+	    if (result.equals("VOID")){
+	    	t.add (tree.func,"FUNCVOID",tree.pos);
+	    	t.addScope (tree.func,"FUNCVOID", tree.pos);
+	    }
+	    else if (result.equals("Int")){
+	    	t.add (tree.func,"FUNCINT",tree.pos);
+	    	t.addScope (tree.func,"FUNCINT", tree.pos);
+	    }
+
+	    
        // System.out.println("");
 	    
         showTree (tree.params, spaces, 1);
@@ -228,6 +235,7 @@ abstract public class Absyn
 	    		+ tree.func + " must return int value");
 	    }
         t.delete();
+        return tree.func;
   	}
 
     static public int showTree( IntExp tree, int spaces ) 
@@ -331,14 +339,25 @@ abstract public class Absyn
                 {
 		    		String lhsName= t.lookup (varName,"Search");
 		    		String rhsName=t.lookup (searchString,"Search");
-		    		if (!rhsName.equals(lhsName))
+		    		if (!rhsName.equals("VOID") || lhsName.equals ("VOID"))
                     {
                         System.out.println(" ");
                         indent( spaces );
-		    		    System.out.println ("ERROR: Mismatched types on line  " + tree.pos);
+		    		    System.out.println ("ERROR:  on line  " + tree.pos + " cannot use void types in assignments");
                     }
 		        }
-   	        }
+   	        }else if (tree.rhs instanceof CallExp){
+	    	String varName2= showTree ((CallExp) tree.rhs,spaces);
+	    	System.out.println ("CallExp" + varName2);
+	    	if (!t.lookup (varName2)){
+	    		System.out.println ("Error on line " + tree.pos + ", function " + varName2 + " in assignment doesn't exist");
+	    	}else if (!t.lookup (varName,"Search","Search").equals("FUNCINT")  ){
+	    		System.out.println ("Error on line " + tree.pos + ",  function " + varName2  + " in assignment is not of type int");
+
+
+	    	}
+	    }
+	  
    	        else if (tree.rhs instanceof OpExp)
             {
    	        	int opNum=showTree((OpExp) tree.rhs,spaces);
@@ -377,24 +396,40 @@ abstract public class Absyn
             System.out.print(scopeName); 
         }
 	   
-	  	    if (tree.test instanceof VarExp)
+  	    if (tree.test instanceof VarExp){
+	    	String varName= showTree((VarExp) tree.test,spaces);
+	    	if (varName.length()>0)
             {
-    	    	String varName= showTree((VarExp) tree.test,spaces);
-    	    	if (varName.length()>0)
+	    		if (!t.lookup(varName,"Search").equals("Int"))
                 {
-    	    		if (!t.lookup(varName,"Search").equals("Int"))
-                    {
-                       System.out.println(" ");
-                       indent( spaces );
-    	               System.out.println ("ERROR: On line " + tree.pos + ", condition must be INT");
-    	    		}
-                    else if (!t.lookup (varName))
-                    {
-                        System.out.println(" ");
-                        indent( spaces );
-    	    			System.out.println ("ERROR: On line " + tree.pos + ", condition must exist");
-    	    		}
-    	       }
+                   System.out.println(" ");
+                   indent( spaces );
+	               System.out.println ("ERROR: On line " + tree.pos + ", condition must be INT");
+	    		}
+                else if (!t.lookup (varName))
+                {
+                    System.out.println(" ");
+                    indent( spaces );
+	    			System.out.println ("ERROR: On line " + tree.pos + ", condition must exist");
+	    		}
+	       }
+	    }else if (tree.test instanceof CallExp){
+	    	String varName= showTree((CallExp) tree.test,spaces);
+	    	if (varName.length()>0)
+            {
+	    		if (!t.lookup(varName,"Search","Search").equals("FUNCINT"))
+                {
+                   System.out.println(" ");
+                   indent( spaces );
+	               System.out.println ("ERROR: On line " + tree.pos + ", function type of " + varName +" must be INT for conditionals");
+	    		}
+                else if (!t.lookup (varName))
+                {
+                    System.out.println(" ");
+                    indent( spaces );
+	    			System.out.println ("ERROR: On line " + tree.pos + ", function "+ varName + "doesn't exist");
+	    		}
+	    	}
 	    }
   		t.addScope (scopeName,"IF",tree.pos);
 
@@ -407,7 +442,7 @@ abstract public class Absyn
 	  	t.delete ();
   	}
 
-  	static public void showTree( IndexVar tree, int spaces ) 
+  	static public String showTree( IndexVar tree, int spaces ) 
   	{
   		if (flagOption=='a')
         {
@@ -438,6 +473,7 @@ abstract public class Absyn
             }
 	    }
 	    showTree( tree.index, spaces );
+	    return tree.name;
 
   	}
 
@@ -461,6 +497,24 @@ abstract public class Absyn
     	{	
             System.out.print(scopeName); 	
     	}
+    	 if (tree.test instanceof CallExp){
+	    	String varName= showTree((CallExp) tree.test,spaces);
+	    	if (varName.length()>0)
+            {
+	    		if (!t.lookup(varName,"Search","Search").equals("FUNCINT"))
+                {
+                   System.out.println(" ");
+                   indent( spaces );
+	               System.out.println ("ERROR: On line " + tree.pos + ", function type of " + varName +" must be INT for loops");
+	    		}
+                else if (!t.lookup (varName))
+                {
+                    System.out.println(" ");
+                    indent( spaces );
+	    			System.out.println ("ERROR: On line " + tree.pos + ", function "+ varName + "doesn't exist");
+	    		}
+	    	}
+	    }
 
 	    showTree( tree.test, spaces );
 	    showTree( tree.body, spaces );
@@ -504,7 +558,7 @@ abstract public class Absyn
 	    return tree.name; 
   	}
 
-static public void showTree( CallExp tree, int spaces ) {
+static public String showTree( CallExp tree, int spaces ) {
   		if(flagOption == 'a')
   		{
   			System.out.println(" "); 
@@ -514,18 +568,20 @@ static public void showTree( CallExp tree, int spaces ) {
 	    
 	    if (flagOption == 's')
 	   	{
-	   		if (!t.lookup (tree.func))
+	   		if (!t.lookup (tree.func) )
 	   		{
                 System.out.println(" ");
                 indent( spaces );
-	    		System.out.println (" ERROR: Failed function call on line "+ tree.pos + " , function does not exist");
+	    		System.out.println (" ERROR: Failed function call of function " + tree.func+ " on line "+ tree.pos + " , function does not exist");
 	    	}
 	    }
+
 	   
 	    //System.out.println(" ");
 	    spaces += SPACES;
 	    showTree (tree.args, spaces, 1);
 	    //System.out.print("\n");
+	    return tree.func;
   	}
  static public int showTree( OpExp tree, int spaces ) {
   		if(flagOption == 'a')
@@ -571,11 +627,55 @@ static public void showTree( CallExp tree, int spaces ) {
   		}
   		
 	    spaces += SPACES;
-	    //System.out.println(" ");
+	    if (tree.left instanceof VarExp){
+	    	String varName= showTree ((VarExp) tree.left,spaces);
+	    	if (!t.lookup (varName,0)){
+	    		System.out.println ("Error on line " + tree.pos + ", variable " + varName + " in expression doesn't exist");
+	    	}else if (!t.lookup (varName,"Search").equals("Int") ){
+	    		System.out.println ("Error on line " + tree.pos + ", variable  " + varName  + " in operation not of type int");
+
+
+	    	}
+	    }
+	     if (tree.right instanceof VarExp){
+	    	String varName= showTree ((VarExp) tree.right,spaces);
+	    	if (!t.lookup (varName,0)){
+	    		System.out.println ("Error on line " + tree.pos + ", variable " + varName + " in expression doesn't exist");
+	    	}else if (!t.lookup (varName,"Search").equals("Int") ){
+	    		System.out.println ("Error on line " + tree.pos + ", variable  " + varName  + " in operation not of type int");
+
+
+	    	}
+	    }
+
+	    else if (tree.right instanceof CallExp){
+	    	String varName= showTree ((CallExp) tree.right,spaces);
+	    	if (!t.lookup (varName)){
+	    		System.out.println ("Error on line " + tree.pos + ", function " + varName + " in expression doesn't exist");
+	    	}else if (!t.lookup (varName,"Search","Search").equals("FUNCINT")  ){
+	    		System.out.println ("Error on line " + tree.pos + ",  function " + varName  + " in operation is not of type int");
+
+
+	    	}
+	    }
+
+	    else if (tree.left instanceof CallExp){
+	    	String varName= showTree ((CallExp) tree.left,spaces);
+	    		    	System.out.println ("CallExp" + varName);
+
+	    	if (!t.lookup (varName)){
+	    		System.out.println ("Error on line " + tree.pos + ", function " + varName + " in expression doesn't exist");
+	    	}else if (!t.lookup (varName,"Search","Search").equals("FUNCINT")  ){
+	    		System.out.println ("Error on line " + tree.pos + ",  function " + varName  + " is not of type int");
+
+
+	    	}
+	    }
+
+
 	    showTree( tree.left, spaces);
-	   // System.out.println(" ");
 	    showTree( tree.right, spaces); 
-	   // System.out.print("\n");
+
 	    return tree.op;
   	}
 

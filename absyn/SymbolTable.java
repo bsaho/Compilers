@@ -60,6 +60,34 @@ class SymbolTable
         lastScopeAdded=currentScope;
     }
 
+    public String lookup(String valName, String choice, String choice2){
+        //System.out.println(table.keySet ().size ());
+        //System.out.println(table.keySet());
+            if (valName.length ()<1){
+                return "NULL";
+            }
+
+        int size = table.keySet().size ();
+        Set scopeNames = table.keySet();
+        ArrayList <symbolListItem> temp;
+        Iterator index = scopeNames.iterator ();
+        //System.out.println ("Search string " + valName);
+
+        while (index.hasNext())
+        {
+            String searchString = (String) index.next();
+            temp = table.get(searchString).contents;
+            for (int i=0;i<temp.size();i++)
+            {
+                if (valName.equals(temp.get(i).symbolName))
+                {
+                    return temp.get(i).symbolType;
+                }
+            }
+
+        }
+         return "NULL";
+    }
     public String lookup(String valName,String choice){
             ArrayList <symbolListItem> temp;
             temp = table.get(currentScope).contents;
@@ -112,7 +140,7 @@ class SymbolTable
         Set scopeNames = table.keySet();
         ArrayList <symbolListItem> temp;
         Iterator index = scopeNames.iterator ();
-        System.out.println ("Search string " + valName);
+       // System.out.println ("Search string " + valName);
 
         while (index.hasNext())
         {
@@ -221,6 +249,7 @@ class SymbolTable
             scopeName = (String)index.next();
             if(currentScope.equals(scopeName) ) 
             {
+                ArrayList <symbolListItem> tempItem=table.get (scopeName).contents;
                 //Set the scope back to previous
                 currentScope = table.get(scopeName).prevScope;
                 table.remove(scopeName);

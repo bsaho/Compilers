@@ -1,9 +1,19 @@
+int shell (void){
+	int y;
+	return y;
+}
+void men (int y){
+	ten=0;
+}
+
 void main (void){
 	int x; void y;
-    int y;
-	x=y+2*1;
-	x=x*2+1;
+	while (men(z)){}
+	x=y/men (z);
+	x=lol/ y;
 	y=x+z;
 	x=y/5;
-	x=y>5;
+	x=y>5;	
+	x= men (z);
+
 }
