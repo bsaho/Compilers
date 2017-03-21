@@ -110,7 +110,6 @@ program           ::= dec_list:d
 									{: RESULT = d;
                     if(hasError == false)
                     {
-                      System.out.println( "\nThe abstract syntax tree is:\n" );
                       Absyn.showTree( RESULT, 0 );
                       System.out.println(" ");
                     }

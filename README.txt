@@ -1,16 +1,18 @@
 =====================================================================
-CIS*4650 Project Checkpoint 1
+CIS*4650 Project Checkpoint 2
 Written By: Stephen Deline and Bashir Saho
-March 6, 2017
+March 22, 2017
 =====================================================================
 
 
 Description
 =====================================================================
 This project is designed to create a complier for the 
-Cminus language. This checkpoint contains code that will
-create and print an abstract syntax tree for provided 
-Cminus source code.
+Cminus language.
+
+This checkpoint contains code that will create and print an 
+abstract syntax tree and a symbol table 
+for provided Cminus source code.
 
 
 How To Build
@@ -22,7 +24,7 @@ directory and running 'make'
 How to Run
 =====================================================================
 The program can be run using:
-java -classpath /usr/share/java/cup.jar:. Main [FileToParse]
+java -classpath /usr/share/java/cup.jar:. cminus/Main [FileToParse]
 
 
 References

@@ -141,7 +141,7 @@ class SymbolTable
         ArrayList <symbolList> current;
         current = table.get(currentScope);
         symbolList newSymbol = new symbolList (scopeName,scopeType,lineNum);
-        printSymbol (newSymbol);
+        //printSymbol (newSymbol);
         current.add (newSymbol);
         lastScopeAdded = scopeName;
 
@@ -209,7 +209,7 @@ class SymbolTable
             scopeName = (String)index.next();
             if(lastScopeAdded.equals(scopeName) ) 
             {
-                printSymbolList(table.get(scopeName));
+                //printSymbolList(table.get(scopeName));
                 table.remove(scopeName);
                 break;
             }
