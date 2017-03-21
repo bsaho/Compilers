@@ -209,19 +209,22 @@ abstract public class Absyn
 	    if (result.equals("VOID") && t.lookup ("ReturnExp",0))
         {
             System.out.println(" ");
-	    	System.out.println (" Error,illegal return statement, " + " void function " 
+            indent( spaces );
+	    	System.out.println (" ERROR: Illegal return statement, " + " void function " 
 	    		+ tree.func + " cannot return value");    	
 	    }
         else if (result.equals ("Int") && t.lookup ("ReturnNull",0))
         {
             System.out.println(" ");
-	    	System.out.println (" Error,illegal return statement, " + " int function " 
+            indent( spaces );
+	    	System.out.println (" ERROR: Illegal return statement, " + " int function " 
 	    		+ tree.func + " must return value other than null");
 	    }
         else if (result.equals ("Int") && !t.lookup ("ReturnExp",0))
         {
             System.out.println(" ");
-	    	System.out.println (" Error,no return statement, " + " int function " 
+            indent( spaces );
+	    	System.out.println (" ERROR: No return statement, " + " int function " 
 	    		+ tree.func + " must return int value");
 	    }
         t.delete();
@@ -251,7 +254,8 @@ abstract public class Absyn
         if (t.lookup (tree.name,0)==true)
         {
             System.out.println(" ");
-         	System.out.println ("Error, redeclaration of existing variable " + tree.name + " at line " + tree.pos);
+            indent( spaces );
+         	System.out.println ("ERROR: Redeclaration of existing variable " + tree.name + " at line " + tree.pos);
         }
         t.add (tree.name,varName,1);  
     }
@@ -269,7 +273,8 @@ abstract public class Absyn
         if (varName.equals ("VOID"))
         {
             System.out.println(" ");
-	    	System.out.println ("Error, array variable " + tree.name + " on line " +tree.pos + " must be of type INT  "  );
+            indent( spaces );
+	    	System.out.println ("ERROR: Array variable " + tree.name + " on line " +tree.pos + " must be of type INT  "  );
 	    	return;
 	    }
 	    
@@ -281,7 +286,8 @@ abstract public class Absyn
 	    if (t.lookup (tree.name,0)==true) 
         {
             System.out.println(" ");
-     		System.out.println ("Error, redeclaration of existing variable " + tree.name + " at line " + tree.pos);
+            indent( spaces );
+     		System.out.println ("ERROR: Redeclaration of existing variable " + tree.name + " at line " + tree.pos);
      	}
 
 	    if (tree.hasSize == true) 
@@ -308,7 +314,8 @@ abstract public class Absyn
    		    if (!t.lookup (varName,0))
             {
                 System.out.println(" ");
-   		    	System.out.println ("Error, assigning to undeclared variable " + varName + " on line  " + tree.pos);
+                indent( spaces );
+   		    	System.out.println ("ERROR: Assigning to undeclared variable " + varName + " on line  " + tree.pos);
    		    }
    		    else if (tree.rhs instanceof VarExp)
             {
@@ -316,7 +323,8 @@ abstract public class Absyn
    		    	if (searchString.length ()>0 && !t.lookup (searchString,0))
                 {
                     System.out.println(" ");
-		    	   	System.out.println ("Error, assigning from undeclared variable " + searchString 
+                    indent( spaces );
+		    	   	System.out.println ("ERROR: Assigning from undeclared variable " + searchString 
 		    	   		  + "on line  " + tree.pos);
 		    	}
                 else if (searchString.length ()>0)
@@ -326,7 +334,8 @@ abstract public class Absyn
 		    		if (!rhsName.equals(lhsName))
                     {
                         System.out.println(" ");
-		    		    System.out.println ("Error, mismatched types on line  " + tree.pos);
+                        indent( spaces );
+		    		    System.out.println ("ERROR: Mismatched types on line  " + tree.pos);
                     }
 		        }
    	        }
@@ -335,7 +344,9 @@ abstract public class Absyn
    	        	int opNum=showTree((OpExp) tree.rhs,spaces);
    	        	if (opNum>4)
                 {
-   	        		System.out.print ("Error on line " + tree.pos + " cannot use assignment with Symbol ");
+                    System.out.println(" ");
+                    indent( spaces );
+   	        		System.out.print ("ERROR: On line " + tree.pos + " cannot use assignment with Symbol ");
    	        		if (opNum==5) System.out.println ("<");
    	        		else if (opNum==6) System.out.println ("<=");
    	        		else if (opNum==7) System.out.println (">.");
@@ -374,12 +385,14 @@ abstract public class Absyn
     	    		if (!t.lookup(varName,"Search").equals("Int"))
                     {
                        System.out.println(" ");
-    	               System.out.println ("Error on line " + tree.pos + ", condition must be INT");
+                       indent( spaces );
+    	               System.out.println ("ERROR: On line " + tree.pos + ", condition must be INT");
     	    		}
                     else if (!t.lookup (varName))
                     {
                         System.out.println(" ");
-    	    			System.out.println ("Error on line " + tree.pos + ", condition must exist");
+                        indent( spaces );
+    	    			System.out.println ("ERROR: On line " + tree.pos + ", condition must exist");
     	    		}
     	       }
 	    }
@@ -412,13 +425,15 @@ abstract public class Absyn
 		    	if (!t.lookup(searchString,0))
                 {
                     System.out.println(" ");
-		    		System.out.println (" Error, array index variable at "+ tree.pos + " ,  does not exist");
+                    indent( spaces );
+		    		System.out.println (" ERROR: Array index variable at "+ tree.pos + " ,  does not exist");
 		    	}
 		    	String searchResult=t.lookup (searchString,"Search");
 		    	if (t.lookup(searchString,0) && !searchResult.equals("Int"))
                 {
                     System.out.println(" ");
-                    System.out.println (" Error at  "+ tree.pos + " array index must be int");
+                    indent( spaces );
+                    System.out.println (" ERROR: At  "+ tree.pos + " array index must be int");
 		    	}
             }
 	    }
@@ -502,7 +517,8 @@ static public void showTree( CallExp tree, int spaces ) {
 	   		if (!t.lookup (tree.func))
 	   		{
                 System.out.println(" ");
-	    		System.out.println (" Error, failed function call on line "+ tree.pos + " , function does not exist");
+                indent( spaces );
+	    		System.out.println (" ERROR: Failed function call on line "+ tree.pos + " , function does not exist");
 	    	}
 	    }
 	   
