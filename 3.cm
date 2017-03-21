@@ -5,6 +5,6 @@ int getNum(void)
 
 int main(void)
 {
-inct x;
+int x;
   x =  getNum();
 }

@@ -221,8 +221,8 @@ abstract public class Absyn
         else if (result.equals ("Int") && !t.lookup ("ReturnExp",0))
         {
             System.out.println(" ");
-	    	System.out.println (" Error,illegal return statement, " + " int function " 
-	    		+ tree.func + " must return value");
+	    	System.out.println (" Error,no return statement, " + " int function " 
+	    		+ tree.func + " must return int value");
 	    }
   	}
 
@@ -329,8 +329,23 @@ abstract public class Absyn
                     }
 		        }
    	        }
+   	        else if (tree.rhs instanceof OpExp){
+   	        	int opNum=showTree((OpExp) tree.rhs,spaces);
+   	        	if (opNum>4){
+   	        		System.out.print ("Error on line " + tree.pos + " cannot use assignment with Symbol ");
+   	        		if (opNum==5) System.out.println ("<");
+   	        		else if (opNum==6) System.out.println ("<=");
+   	        		else if (opNum==7) System.out.println (">.");
+   	        		else if (opNum==8) System.out.println (">=.");
+   	        		else if (opNum==9) System.out.println ("=.");
+
+
+   	        	}
+
+
+   	        }
 	   	}
-	    //System.out.println(" ");
+	    
 	    showTree( tree.rhs, spaces );
   	}
 
@@ -345,6 +360,7 @@ abstract public class Absyn
 	    spaces += SPACES;
 
 	    String scopeName= "IfScope" + String.valueOf(genericScopeCounter);
+	    genericScopeCounter++;
         
         if (flagOption == 's') 
         {
@@ -424,6 +440,7 @@ abstract public class Absyn
 	    spaces += SPACES;
 	    
         String scopeName= "WhileScope" + String.valueOf(genericScopeCounter);
+        genericScopeCounter++;
         t.addScope (scopeName,"WHILE",tree.pos);
 	    
         if (flagOption == 's')
@@ -495,7 +512,7 @@ static public void showTree( CallExp tree, int spaces ) {
 	    showTree (tree.args, spaces, 1);
 	    //System.out.print("\n");
   	}
- static public void showTree( OpExp tree, int spaces ) {
+ static public int showTree( OpExp tree, int spaces ) {
   		if(flagOption == 'a')
   		{
   			System.out.println(" "); 
@@ -544,6 +561,7 @@ static public void showTree( CallExp tree, int spaces ) {
 	   // System.out.println(" ");
 	    showTree( tree.right, spaces); 
 	   // System.out.print("\n");
+	    return tree.op;
   	}
 
   	static public void showTree( NilExp tree, int spaces ) 

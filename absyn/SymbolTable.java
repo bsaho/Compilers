@@ -141,7 +141,6 @@ class SymbolTable
         ArrayList <symbolList> current;
         current = table.get(currentScope);
         symbolList newSymbol = new symbolList (scopeName,scopeType,lineNum);
-        //printSymbol (newSymbol);
         current.add (newSymbol);
         lastScopeAdded = scopeName;
 
