@@ -9,7 +9,7 @@ public class NameTy{
   public final static int VOID = 1;
 
   public NameTy( int pos, int typ ) {
-    this.pos = pos;
+    this.pos = pos+1;
     this.typ = typ;
   }
 }

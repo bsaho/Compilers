@@ -6,7 +6,7 @@ public class SimpleDec extends VarDec  {
 
   public SimpleDec(int pos, NameTy typ, String name)
   {
-  	this.pos=pos;
+  	this.pos=pos+1;
     this.typ = typ;
     this.name = name;
   }

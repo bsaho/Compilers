@@ -1,5 +1,10 @@
 int shell (void){
 	int y;
+    int x;
+    void z;
+
+    y = x + z;
+
 	return y;
 }
 void men (int y){

@@ -7,7 +7,7 @@ public class ArrayDec extends VarDec  {
     public boolean hasSize;
 
   public ArrayDec(int pos, NameTy typ, String name, IntExp size)  {
-    this.pos=pos;
+    this.pos=pos+1;
     this.typ = typ;
     this.name = name;
     this.size=size;
@@ -15,7 +15,7 @@ public class ArrayDec extends VarDec  {
   }
 
   public ArrayDec(int pos, NameTy typ, String name)  {
-    this.pos=pos;
+    this.pos=pos+1;
     this.typ = typ;
     this.name = name;
     hasSize = false;
