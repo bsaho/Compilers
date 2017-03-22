@@ -1,11 +1,13 @@
-/* A program to perform selection on a 10 element array*/
+/* A test program to show working var declarations and to show errors for redefining and non-existent values*/
+/* error on 7: cannot assign  a void,error on 10: cannot redeclare existing variable,*/
 
-int x[10];
-int z;
-int minloc ( int low, int high){ 
-	int i; int x; int k;
-	if (4>5){
-    int p;
-	
+void main (void){
+	int x; void y;
+	int z[10];
+	x=y;
+	if (x){
+	int lol;
+	void lol;
+	z[10]=x;
 	}
 }

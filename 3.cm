@@ -1,10 +1,23 @@
+/* Test program to test operations. compare operations should fail outside of conditionals, conditionals should be able to take things like function calls without failing but neither conditionals nor loops take voids */
+
 int getNum(void)
 {
     return 5;
 }
 
-int main(void)
+void main(void)
 {
-int x;
-  x =  getNum();
+int x; void ent;
+if (getNum () ){
+	int y; int z;void g;
+	y=z*z*12;
+	z=y*g;
+	y=z>6;
+
+}
+while (ent){
+int lol;
+	
+}
+
 }
