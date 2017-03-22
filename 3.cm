@@ -1,4 +1,7 @@
 /* Test program to test operations. compare operations should fail outside of conditionals, conditionals should be able to take things like function calls without failing but neither conditionals nor loops take voids */
+void getDiv (void){
+	
+}
 
 int getNum(void)
 {
@@ -7,7 +10,7 @@ int getNum(void)
 
 void main(void)
 {
-int x; void ent;
+int x; void xx;
 if (getNum () ){
 	int y; int z;void g;
 	y=z*z*12;
@@ -15,7 +18,7 @@ if (getNum () ){
 	y=z>6;
 
 }
-while (ent){
+while (getDiv ()){
 int lol;
 	
 }
