@@ -60,10 +60,12 @@ class SymbolTable
         lastScopeAdded=currentScope;
     }
 
-    public String lookup(String valName, String choice, String choice2){
+    public String lookup(String valName, String choice, String choice2)
+    {
         //System.out.println(table.keySet ().size ());
         //System.out.println(table.keySet());
-            if (valName.length ()<1){
+            if (valName.length ()<1)
+            {
                 return "NULL";
             }
 
@@ -71,6 +73,8 @@ class SymbolTable
         Set scopeNames = table.keySet();
         ArrayList <symbolListItem> temp;
         Iterator index = scopeNames.iterator ();
+        String upperScope;
+        
         //System.out.println ("Search string " + valName);
 
         while (index.hasNext())
@@ -86,12 +90,44 @@ class SymbolTable
             }
 
         }
+
+
+        //Check for varName in higher scopes until Global scope is reached
+        upperScope = table.get(currentScope).prevScope;
+        while(!upperScope.equals("Global"))
+        {   
+            temp = table.get(upperScope).contents;
+            for (int i=0;i<temp.size();i++)
+            {
+                if (valName.equals(temp.get(i).symbolName))
+                {
+                    //System.out.println ("Symbol " + valName + " Found! In restricted scope " + currentScope);
+                    return temp.get(i).symbolType;
+                }
+            }
+            upperScope = table.get(upperScope).prevScope;
+        }
+        //At end,check Global scope too
+        temp = table.get("Global").contents;
+        for (int i=0;i<temp.size();i++)
+        {
+            if (valName.equals(temp.get(i).symbolName))
+            {
+                //System.out.println ("Symbol " + valName + " Found! In restricted scope " + currentScope);
+                return temp.get(i).symbolType;
+            }
+        }
+
          return "NULL";
     }
-    public String lookup(String valName,String choice){
+    public String lookup(String valName,String choice)
+    {
             ArrayList <symbolListItem> temp;
+            String upperScope;
+
             temp = table.get(currentScope).contents;
-            if (valName.length ()<1){
+            if (valName.length ()<1)
+            {
                 return "NULL";
             }
 
@@ -103,17 +139,52 @@ class SymbolTable
                     return temp.get(i).symbolType;
                 }
             }
+
+            if (choice.equals("2")) 
+            {
+                //Check for varName in higher scopes until Global scope is reached
+                upperScope = table.get(currentScope).prevScope;
+                while(!upperScope.equals("Global"))
+                {   
+                    temp = table.get(upperScope).contents;
+                    for (int i=0;i<temp.size();i++)
+                    {
+                        if (valName.equals(temp.get(i).symbolName))
+                        {
+                            //System.out.println ("Symbol " + valName + " Found! In restricted scope " + currentScope);
+                            return temp.get(i).symbolType;
+                        }
+                    }
+                    upperScope = table.get(upperScope).prevScope;
+                }
+                //At end,check Global scope too
+                temp = table.get("Global").contents;
+                for (int i=0;i<temp.size();i++)
+                {
+                    if (valName.equals(temp.get(i).symbolName))
+                    {
+                        //System.out.println ("Symbol " + valName + " Found! In restricted scope " + currentScope);
+                        return temp.get(i).symbolType;
+                    }
+                }
+            }
+
             //System.out.println ("lookup " + valName);
             return "NULL";
         
     }
 
     //Lookup Method
-    public boolean lookup(String valName,int choice){
+    public boolean lookup(String valName,int choice)
+    {
             ArrayList <symbolListItem> temp;
-            if (valName.length ()<1){
+            String upperScope;
+
+            if (valName.length ()<1)
+            {
                 return false;
             }
+
             temp = table.get(currentScope).contents;
             for (int i=0;i<temp.size();i++)
             {
@@ -123,18 +194,55 @@ class SymbolTable
                     return true;
                 }
             }
+
+            //Check in higher scopes 
+            if (choice == 2) 
+            {
+                //Check for varName in higher scopes until Global scope is reached
+                upperScope = table.get(currentScope).prevScope;
+                while(!upperScope.equals("Global"))
+                {   
+                    temp = table.get(upperScope).contents;
+                    for (int i=0;i<temp.size();i++)
+                    {
+                        if (valName.equals(temp.get(i).symbolName))
+                        {
+                            //System.out.println ("Symbol " + valName + " Found! In restricted scope " + currentScope);
+                            return true;
+                        }
+                    }
+                    upperScope = table.get(upperScope).prevScope;
+                }
+
+                 //At end,check Global scope too
+                temp = table.get("Global").contents;
+                for (int i=0;i<temp.size();i++)
+                {
+                    if (valName.equals(temp.get(i).symbolName))
+                    {
+                        //System.out.println ("Symbol " + valName + " Found! In restricted scope " + currentScope);
+                        return true;
+                    }
+                }
+            }
+            
             //System.out.println ("lookup " + valName);
             return false;
         
     }
 
     //Lookup Method
-    public boolean lookup(String valName){
+    public boolean lookup(String valName)
+    {
         //System.out.println(table.keySet ().size ());
         //System.out.println(table.keySet());
-        if (valName.length ()<1){
-                return false;
-            }
+
+        String upperScope;
+
+        if (valName.length ()<1)
+        {
+            return false;
+        }
 
         int size = table.keySet().size ();
         Set scopeNames = table.keySet();
@@ -142,19 +250,33 @@ class SymbolTable
         Iterator index = scopeNames.iterator ();
        // System.out.println ("Search string " + valName);
 
-        while (index.hasNext())
-        {
-            String searchString = (String) index.next();
-            temp = table.get(searchString).contents;
+        //Check for varName in higher scopes until Global scope is reached
+        upperScope = table.get(currentScope).prevScope;
+        while(!upperScope.equals("Global"))
+        {   
+            temp = table.get(upperScope).contents;
             for (int i=0;i<temp.size();i++)
             {
                 if (valName.equals(temp.get(i).symbolName))
                 {
+                    //System.out.println ("Symbol " + valName + " Found! In restricted scope " + currentScope);
                     return true;
                 }
             }
-
+            upperScope = table.get(upperScope).prevScope;
         }
+
+         //At end,check Global scope too
+        temp = table.get("Global").contents;
+        for (int i=0;i<temp.size();i++)
+        {
+            if (valName.equals(temp.get(i).symbolName))
+            {
+                //System.out.println ("Symbol " + valName + " Found! In restricted scope " + currentScope);
+                return true;
+            }
+        }
+
          return false;
     }
 

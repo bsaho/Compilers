@@ -1,10 +1,22 @@
+/*=======================================================
+File: 4.cm                                             
+Description: This test file will produce errors 
+caused by an array indexed by a void variable and 
+mismatching function declaration and return types                           
+=======================================================*/
+
 int exfunc(int x)
 {
     int o;
     int t;
+    void v;
+    int arr[10];
+
+    arr[v] = 1;
+
     t = 0;
 
-    if(t>1)
+    if(4>1)
     {
         int t;
         while(t<4)
@@ -14,10 +26,10 @@ int exfunc(int x)
         return 0;
     }
 
-    while( t >= 20)
+    while( 21 >= 20)
     {
-    int i;
-        while(s>0)
+        int i;
+        while(1>0)
         {
         int i;
         i = i +1;

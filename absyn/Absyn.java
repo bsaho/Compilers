@@ -276,7 +276,7 @@ abstract public class Absyn
     	System.out.print( "Array Dec: Type: ");
 		
 
-	    String varName=showTree(tree.typ, spaces);
+	    String varName=showTree(tree.typ, 0);
 	    
         if (varName.equals ("VOID"))
         {
@@ -303,6 +303,10 @@ abstract public class Absyn
             int size= showTree (tree.size, spaces );  
 	    	t.add (tree.name,varName,size,1);
 	    }
+        else
+        {
+           t.add (tree.name,varName,1); 
+        }
   	}
 
 
@@ -319,7 +323,7 @@ abstract public class Absyn
 	   	
         if (varName.length ()>0)
         {
-   		    if (!t.lookup (varName,0))
+   		    if (!t.lookup (varName,2))
             {
                 System.out.println(" ");
    		    	System.out.println ("ERROR: Assigning to undeclared variable " + varName + " on line  " + tree.pos);
@@ -327,56 +331,54 @@ abstract public class Absyn
    		    else if (tree.rhs instanceof VarExp)
             {
                 String searchString= showTree ((VarExp) tree.rhs,spaces);
-   		    	if (searchString.length ()>0 && !t.lookup (searchString,0))
+   		    	if (searchString.length ()>0 && !t.lookup (searchString,2))
                 {
                     System.out.println(" ");
-		    	   	System.out.println ("ERROR: Assigning from undeclared variable " + searchString 
-		    	   		  + "on line  " + tree.pos);
+		    	   	System.out.println ("ERROR: Assigning from undeclared variable " + searchString + " on line  " + tree.pos);
 		    	}
                 else if (searchString.length ()>0)
                 {
-		    		String lhsName= t.lookup (varName,"Search");
-		    		String rhsName=t.lookup (searchString,"Search");
-		    		if (!rhsName.equals("VOID") || lhsName.equals ("VOID"))
+		    		String lhsName= t.lookup (varName,"2");
+		    		String rhsName=t.lookup (searchString,"2");
+		    		if (rhsName.equals("VOID") || lhsName.equals ("VOID"))
                     {
                         System.out.println(" ");
-		    		    System.out.println ("ERROR:  on line  " + tree.pos + " cannot use void types in assignments");
+		    		    System.out.println ("ERROR: On line " + tree.pos + " cannot use void types in assignments");
                     }
 		        }
    	        }
             else if (tree.rhs instanceof CallExp)
             {
-	    	String varName2= showTree ((CallExp) tree.rhs,spaces);
-	    	System.out.println ("CallExp" + varName2);
-	    	if (!t.lookup (varName2))
-            {   
-                System.out.println(" ");
-	    		System.out.println ("Error on line " + tree.pos + ", function " + varName2 + " in assignment doesn't exist");
-	    	}
-            else if (!t.lookup (varName,"Search","Search").equals("FUNCINT")  )
-            {
-                System.out.println(" ");
-	    		System.out.println ("Error on line " + tree.pos + ",  function " + varName2  + " in assignment is not of type int");
-
-
-	    	}
-	    }
-	  
-   	        else if (tree.rhs instanceof OpExp)
-            {
-   	        	int opNum=showTree((OpExp) tree.rhs,spaces);
-   	        	if (opNum>4)
+    	    	String varName2= showTree ((CallExp) tree.rhs,spaces);
+    	    	//System.out.println ("CallExp" + varName2);
+    	    	if (!t.lookup (varName2))
+                {   
+                    System.out.println(" ");
+    	    		System.out.println ("Error on line " + tree.pos + ", function " + varName2 + " in assignment doesn't exist");
+    	    	}
+                else if (!t.lookup (varName2,"Search","Search").equals("FUNCINT")  )
                 {
                     System.out.println(" ");
-   	        		System.out.print ("ERROR: On line " + tree.pos + " cannot use assignment with Symbol ");
-   	        		if (opNum==5) System.out.println ("<");
-   	        		else if (opNum==6) System.out.println ("<=");
-   	        		else if (opNum==7) System.out.println (">.");
-   	        		else if (opNum==8) System.out.println (">=.");
-   	        		else if (opNum==9) System.out.println ("=.");
-   	        	}
-   	        }
-	   	}
+    	    		System.out.println ("Error on line " + tree.pos + ",  function " + varName2  + " in assignment is not of type int");
+
+
+    	    	}
+	        }
+            else if (tree.rhs instanceof OpExp)
+            {
+                int opNum=showTree((OpExp) tree.rhs,spaces);
+                if (opNum>4)
+                {
+                   System.out.println(" ");
+                      System.out.print ("ERROR: On line " + tree.pos + " cannot use assignment with Symbol ");
+                      if (opNum==5) System.out.println ("!=");
+                      else if (opNum==6) System.out.println ("<");
+                      else if (opNum==7) System.out.println ("<=.");
+                      else if (opNum==8) System.out.println (">.");
+                      else if (opNum==9) System.out.println (">=.");
+                  }
+        }
+	}
 	    
 	   // showTree( tree.rhs, spaces );
   	}
@@ -456,13 +458,13 @@ abstract public class Absyn
 	    	String searchString=  showTree((VarExp) tree.index,spaces);
 	    	if (searchString.length ()>0)
             {
-		    	if (!t.lookup(searchString,0))
+		    	if (!t.lookup(searchString,2))
                 {
                     System.out.println(" ");
 		    		System.out.println (" ERROR: Array index variable at "+ tree.pos + " ,  does not exist");
 		    	}
-		    	String searchResult=t.lookup (searchString,"Search");
-		    	if (t.lookup(searchString,0) && !searchResult.equals("Int"))
+		    	String searchResult=t.lookup (searchString,"2");
+		    	if (t.lookup(searchString,2) && !searchResult.equals("Int"))
                 {
                     System.out.println(" ");
                     System.out.println (" ERROR: At  "+ tree.pos + " array index must be int");
@@ -621,14 +623,15 @@ static public String showTree( CallExp tree, int spaces ) {
   		}
   		
 	    spaces += SPACES;
-	    if (tree.left instanceof VarExp){
+	    if (tree.left instanceof VarExp)
+        {
 	    	String varName= showTree ((VarExp) tree.left,spaces);
-	    	if (!t.lookup (varName,0))
+	    	if (!t.lookup (varName,2))
             {
                 System.out.println(" ");
 	    		System.out.println ("ERROR: On line " + tree.pos + ", variable " + varName + " in expression doesn't exist");
 	    	}
-            else if (!t.lookup (varName,"Search").equals("Int") )
+            else if (!t.lookup (varName,"2").equals("Int") )
             {
                 System.out.println(" ");
 	    		System.out.println ("ERROR: On line " + tree.pos + ", variable  " + varName  + " in operation not of type int");
@@ -636,19 +639,20 @@ static public String showTree( CallExp tree, int spaces ) {
 	    }
 	     if (tree.right instanceof VarExp){
 	    	String varName= showTree ((VarExp) tree.right,spaces);
-	    	if (!t.lookup (varName,0))
+	    	if (!t.lookup (varName,2))
             {
                 System.out.println(" ");
 	    		System.out.println ("ERROR: On line " + tree.pos + ", variable " + varName + " in expression doesn't exist");
 	    	}
-            else if (!t.lookup (varName,"Search").equals("Int") )
+            else if (!t.lookup (varName,"2").equals("Int") )
             {
                 System.out.println(" ");
 	    		System.out.println ("ERROR: On line " + tree.pos + ", variable  " + varName  + " in operation not of type int");
 	    	}
 	    }
 
-	    else if (tree.right instanceof CallExp){
+	    else if (tree.right instanceof CallExp)
+        {
 	    	String varName= showTree ((CallExp) tree.right,spaces);
 	    	if (!t.lookup (varName))
             {
@@ -662,9 +666,11 @@ static public String showTree( CallExp tree, int spaces ) {
 	    	}
 	    }
 
-	    else if (tree.left instanceof CallExp){
+	    else if (tree.left instanceof CallExp)
+        {
 	    	String varName= showTree ((CallExp) tree.left,spaces);
-	    		    	System.out.println ("CallExp" + varName);
+           // System.out.println(" ");
+	    	//System.out.print("CallExp" + varName);
 
 	    	if (!t.lookup (varName))
             {

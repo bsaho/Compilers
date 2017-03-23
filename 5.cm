@@ -1,4 +1,9 @@
-/* A program to perform selection on a 10 element array*/
+/*=======================================================
+File: 5.cm                                             
+Description: This test file will produce various errors
+related to nonexistent function calls and invalid returns                             
+=======================================================*/
+
 
 int x[10];
 int z;
@@ -20,26 +25,6 @@ while (i<high){
 3 <= 9;
 89 >= i;x = 1;
 
-9 / 3;
-
-6 + 12;
-
-8 != 156;
-156 - 99;
-1000 < 9;
-i > j;
-addition + aa;
-numerator / divisor;
-8 != 156;
-156 - 99;
- red (1);
- red ();
-x=y+2;
-(x+y);
-(x=(z*2) +4);	
-66;
-lol (6,8);
-functioncall ();
 (in[455]);
 }
 
