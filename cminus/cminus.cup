@@ -12,6 +12,7 @@ package cminus;
 
 import java_cup.runtime.*;
 import absyn.*;
+import codeGen.*;
  
  action code
 {: 
@@ -109,6 +110,7 @@ program           ::= dec_list:d
                     if(hasError == false)
                     {
                       Absyn.showTree( RESULT, 0 );
+                      CodeGen.start(RESULT);
                       System.out.println(" ");
                     }
                  	:}

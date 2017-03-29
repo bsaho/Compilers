@@ -8,7 +8,7 @@ CUP=$(JAVA) $(CLASSPATH) java_cup.Main -package cminus <
 
 
 all: cminus/Lexer.java cminus/parser.java
-	$(JAVAC) $(CLASSPATH) absyn/*.java cminus/parser.java cminus/sym.java cminus/Lexer.java cminus/Main.java
+	$(JAVAC) $(CLASSPATH) absyn/*.java codeGen/*.java cminus/parser.java cminus/sym.java cminus/Lexer.java cminus/Main.java
 
 #lexer file is created an output to cminus directory to be compiled
 cminus/Lexer.java: cminus/cminus.flex
@@ -19,4 +19,4 @@ cminus/parser.java: cminus/cminus.cup
 	$(CUP) cminus/cminus.cup; mv parser.java cminus/ ; mv sym.java cminus/
 
 clean:
-	rm -f cminus/parser.java cminus/Lexer.java cminus/sym.java *.class absyn/*.class cminus/*.class *~
+	rm -f cminus/parser.java cminus/Lexer.java cminus/sym.java *.class absyn/*.class codeGen/*.class cminus/*.class *~
