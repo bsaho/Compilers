@@ -579,26 +579,144 @@ public static void emitRM_Abs( String op,int r, int a, String c )
 
             break;
 
-        //   case OpExp.EQ:
-        //     System.out.print( " = " );
-        //     break;
-        //   case OpExp.NE:
-        //     System.out.print( " != " );
-        //     break;
-        //   case OpExp.LT:
-        //     System.out.print( " < " );
-        //     break;
-        //   case OpExp.LE:
-        //     System.out.print( " <= " );
-        //     break;
-        //   case OpExp.GT:
-        //     System.out.print( " > " );
-        //     break;
-        //   case OpExp.GE:
-        //     System.out.print( " >= " );
-        //     break;
-        //   default:
-        //     System.out.println( "Unrecognized operator at line " + tree.pos);         
+          case OpExp.EQ:
+         if (tree.left instanceof VarExp)
+        {
+            String varName= codeGen ((VarExp) tree.left);
+         
+                leftOffset=table.getOffset (varName,currentScope);
+
+            
+        }
+         if (tree.right instanceof VarExp){
+            String varName= codeGen ((VarExp) tree.right);
+           
+             rightOffset=table.getOffset (varName,currentScope);
+            
+        }
+        if (rightOffset!=-1000 && leftOffset!=-1000){
+            emitRM( "LD", ac, rightOffset, fp, "setting for comparison" );
+           
+            emitRO ( "JEQ", ac, leftOffset, fp, "performing comparison" );
+
+
+        }
+          case OpExp.NE:
+         if (tree.left instanceof VarExp)
+        {
+            String varName= codeGen ((VarExp) tree.left);
+         
+                leftOffset=table.getOffset (varName,currentScope);
+
+            
+        }
+         if (tree.right instanceof VarExp){
+            String varName= codeGen ((VarExp) tree.right);
+           
+             rightOffset=table.getOffset (varName,currentScope);
+            
+        }
+        if (rightOffset!=-1000 && leftOffset!=-1000){
+            emitRM( "LD", ac, rightOffset, fp, "setting for comparison" );
+           
+            emitRO ( "JNE", ac, leftOffset, fp, "performing comparison" );
+
+
+        }
+            break;
+          case OpExp.LT:
+         if (tree.left instanceof VarExp)
+        {
+            String varName= codeGen ((VarExp) tree.left);
+         
+                leftOffset=table.getOffset (varName,currentScope);
+
+            
+        }
+         if (tree.right instanceof VarExp){
+            String varName= codeGen ((VarExp) tree.right);
+           
+             rightOffset=table.getOffset (varName,currentScope);
+            
+        }
+        if (rightOffset!=-1000 && leftOffset!=-1000){
+            emitRM( "LD", ac, rightOffset, fp, "setting for comparison" );
+           
+            emitRO ( "JLT", ac, leftOffset, fp, "performing comparison" );
+
+
+        }
+            break;
+          case OpExp.LE:
+         if (tree.left instanceof VarExp)
+        {
+            String varName= codeGen ((VarExp) tree.left);
+         
+                leftOffset=table.getOffset (varName,currentScope);
+
+            
+        }
+         if (tree.right instanceof VarExp){
+            String varName= codeGen ((VarExp) tree.right);
+           
+             rightOffset=table.getOffset (varName,currentScope);
+            
+        }
+        if (rightOffset!=-1000 && leftOffset!=-1000){
+            emitRM( "LD", ac, rightOffset, fp, "setting for comparison" );
+           
+            emitRO ( "JLE", ac, leftOffset, fp, "performing comparison" );
+
+
+        }
+            break;
+          case OpExp.GT:
+         if (tree.left instanceof VarExp)
+        {
+            String varName= codeGen ((VarExp) tree.left);
+         
+                leftOffset=table.getOffset (varName,currentScope);
+
+            
+        }
+         if (tree.right instanceof VarExp){
+            String varName= codeGen ((VarExp) tree.right);
+           
+             rightOffset=table.getOffset (varName,currentScope);
+            
+        }
+        if (rightOffset!=-1000 && leftOffset!=-1000){
+            emitRM( "LD", ac, rightOffset, fp, "setting for comparison" );
+           
+            emitRO ( "JGT", ac, leftOffset, fp, "performing comparison" );
+
+
+        }
+            break;
+          case OpExp.GE:
+         if (tree.left instanceof VarExp)
+        {
+            String varName= codeGen ((VarExp) tree.left);
+         
+                leftOffset=table.getOffset (varName,currentScope);
+
+            
+        }
+         if (tree.right instanceof VarExp){
+            String varName= codeGen ((VarExp) tree.right);
+           
+             rightOffset=table.getOffset (varName,currentScope);
+            
+        }
+        if (rightOffset!=-1000 && leftOffset!=-1000){
+            emitRM( "LD", ac, rightOffset, fp, "setting for comparison" );
+           
+            emitRO ( "JGE", ac, leftOffset, fp, "performing comparison" );
+
+
+        }
+            break;
+          default:
          }
 
         codeGen(tree.left);
