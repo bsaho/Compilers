@@ -6,11 +6,12 @@ abstract public class Absyn
 {
 	public static int genericScopeCounter=0;
 	public int pos;
-    public static  SymbolTable t=new SymbolTable ();
+    public static  SymbolTable t =new SymbolTable ();
     public static char flagOption;
 
 
   	final static int SPACES = 4;
+
 
   	static private void indent( int spaces ) 
   	{
@@ -234,7 +235,7 @@ abstract public class Absyn
 	    	System.out.println (" ERROR: No return statement, " + " int function " 
 	    		+ tree.func + " must return int value");
 	    }
-        t.delete();
+       // t.delete();
         return tree.func;
   	}
 
@@ -440,7 +441,7 @@ abstract public class Absyn
 	    {
 	    	showTree( tree.elsep, spaces );
 	  	}
-	  	t.delete ();
+	  	//t.delete ();
   	}
 
   	static public String showTree( IndexVar tree, int spaces ) 
@@ -516,7 +517,7 @@ abstract public class Absyn
 	    showTree( tree.test, spaces );
 	    showTree( tree.body, spaces );
 
-	    t.delete ();
+	   // t.delete ();
   	}
 
   	static public void showTree( ReturnExp tree, int spaces ) 

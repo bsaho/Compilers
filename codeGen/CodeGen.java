@@ -4,32 +4,33 @@ import java.util.*;
 import absyn.*;
 import cminus.Main;
 
+
 public class CodeGen
 {
     public static char flagOption;
-    public static int currentOutLine = 0;
     static int emitLoc = 0;
     static int highEmitLoc = 0;
     static int entry; /* absolute address for main */
     static int globalOffset; /* next available loc after global frame */
 
+    static String currentScope;
 
-    public static int pc = 7; //The program counter register
-    public static int gp = 6; //The global pointer register
-    public static int fp = 5; //The frame pointer register
-    public static int ac = 0; //The 1st storage register
-    public static int ac1 = 1; //The 2nd storage register
+    static int pc = 7; //The program counter register
+    static int gp = 6; //The global pointer register
+    static int fp = 5; //The frame pointer register
+    static int ac = 0; //The 1st storage register
+    static int ac1 = 1; //The 2nd storage register
 
 
-    public static int frameOffset = 0;
+    static int frameOffset = 0;
 
-    public static int ofpFO = 0; // Original frame pointer - Frame Offset
-    public static int retFO = -1; // Return Adress - Frame Offset
-    public static int initFO = -2; // Start of function parameters - Frame Offset
+    static int ofpFO = 0; // Original frame pointer - Frame Offset
+    static int retFO = -1; // Return Adress - Frame Offset
+    static int initFO = -2; // Start of function parameters - Frame Offset
 
     private static final String FILENAME = "output.tm";
 
-
+    public static SymbolTable table = Absyn.t;
 
     public static int emitSkip( int distance )
     {
@@ -212,8 +213,9 @@ public static void emitRM_Abs( String op,int r, int a, String c )
     }
 
     //VarDecList for parameters
-    static public void codeGen(VarDecList tree, int isParam) 
+    static public void codeGen(VarDecList tree) 
     {
+
         while( tree != null ) 
         {
             codeGen(tree.head);
@@ -223,10 +225,9 @@ public static void emitRM_Abs( String op,int r, int a, String c )
     }
 
     //VarDecList for normal lists
-    static public void codeGen(VarDecList tree) 
+    static public void codeGen(VarDecList tree, String currentScope) 
     {
-       ArrayList<VarDec> backlist = new ArrayList<VarDec>();
-
+        ArrayList<VarDec> backlist = new ArrayList<VarDec>();
         //Move through the list of VarDec and add to backlist
         while( tree != null ) 
         {
@@ -237,7 +238,7 @@ public static void emitRM_Abs( String op,int r, int a, String c )
         //Display VarDec in reverse order
         for (int i = backlist.size()-1; i >= 0 ; i-- ) 
         {
-            codeGen(backlist.get(i));
+            codeGen(backlist.get(i), currentScope);
         }
     }
 
@@ -266,24 +267,41 @@ public static void emitRM_Abs( String op,int r, int a, String c )
           codeGen ((CompoundExp) tree);
     }
 
-    static public void codeGen(Var tree) 
+    static public String codeGen(Var tree) 
     {
         if( tree instanceof SimpleVar )
         {
-            codeGen( (SimpleVar)tree );
+            return codeGen( (SimpleVar)tree );
         }
         else if( tree instanceof IndexVar )
         {
             codeGen( (IndexVar)tree );
+            return "";
         }
+        return "";
     }
 
     static public void codeGen(Dec tree) 
     {
+        //System.out.println( "Dec!");
         if (tree instanceof FunctionDec)
           codeGen( (FunctionDec)tree );
         else if (tree instanceof SimpleDec)
           codeGen( (SimpleDec)tree );
+        else if (tree instanceof ArrayDec)
+          codeGen( (ArrayDec)tree ); 
+        else 
+        {
+          //System.out.println( "Illegal expression at line " + tree.pos  );
+        }
+    }
+
+    static public void codeGen(Dec tree, String currentScope) 
+    {
+        if (tree instanceof FunctionDec)
+          codeGen( (FunctionDec)tree );
+        else if (tree instanceof SimpleDec)
+          codeGen( (SimpleDec)tree, currentScope );
         else if (tree instanceof ArrayDec)
           codeGen( (ArrayDec)tree ); 
         else 
@@ -310,6 +328,13 @@ public static void emitRM_Abs( String op,int r, int a, String c )
         codeGen(tree.exps);
     }
 
+    static public void codeGen(CompoundExp tree, String currentScope) 
+    {
+       // System.out.println( "Comp exp " + currentScope);
+        codeGen(tree.decs, currentScope);
+        codeGen(tree.exps);
+    }
+
     static public void codeGen(FunctionDec tree) 
     {
         //System.out.print("FunctionDec: Name: " + tree.func );
@@ -323,11 +348,14 @@ public static void emitRM_Abs( String op,int r, int a, String c )
             //System.out.println("entry: " + entry);
         }
 
+        //Set scope to the current function
+        currentScope = tree.func;
+
         emitRM("ST",ac,retFO,fp,"store return");
 
-        codeGen(tree.result);  
-        codeGen(tree.params);
-        codeGen(tree.body);  
+        //codeGen(tree.result);  
+        codeGen(tree.params, tree.func);
+        codeGen(tree.body, tree.func);  
 
         emitRM( "LD", pc, retFO, fp, "return to caller" );
 
@@ -336,6 +364,8 @@ public static void emitRM_Abs( String op,int r, int a, String c )
         emitRM_Abs("LDA",pc,savedLoc2,"");
         emitRestore();
 
+        //At end of function set scope back to global
+        currentScope = "Global";
 
     }
 
@@ -344,11 +374,25 @@ public static void emitRM_Abs( String op,int r, int a, String c )
         //System.out.print( "IntExp: " + tree.value + " ");  
     }
 
-    static public void codeGen(SimpleDec tree)
+
+        static public void codeGen(SimpleDec tree)
     {
         //System.out.print( "Simple Dec: Type: ");
         codeGen(tree.typ);
-       // System.out.print( "Name: " + tree.name );
+        System.out.println( "*Storing var " + tree.name);
+        //set the value of the offset in the symbol table
+        tree.offset = initFO; 
+        initFO -= 1;
+    }
+
+    static public void codeGen(SimpleDec tree, String currentScope)
+    {
+        //System.out.print( "Simple Dec: Type: ");
+        codeGen(tree.typ);
+        System.out.println( "*Storing var " + tree.name +" in scope "+ currentScope);
+        //set the value of the offset in the symbol table
+        table.SetOffset(tree.name, currentScope ,initFO); 
+        initFO -= 1;
     }
 
     static public void codeGen(ArrayDec tree) 
@@ -360,9 +404,21 @@ public static void emitRM_Abs( String op,int r, int a, String c )
 
     static public void codeGen(AssignExp tree) 
     {   
+        String leftVar;
+        int lhsOffset;
+        int rhsVal;
+        
+        //Retrive variable name
+        leftVar = codeGen(tree.lhs);
+        lhsOffset = table.getOffset(leftVar,currentScope);
 
-        //System.out.print( "AssignExp: " );     
-        codeGen(tree.lhs);
+        if( tree.rhs instanceof IntExp)
+        {
+            rhsVal = ((IntExp)tree.rhs).value;
+            System.out.println("*retrving var" + leftVar);
+            emitRM("LDA",ac,lhsOffset,fp,"retrving var");
+
+        }
         codeGen(tree.rhs);
     }
 
@@ -401,9 +457,9 @@ public static void emitRM_Abs( String op,int r, int a, String c )
         codeGen(tree.exp); 
     }
 
-    static public void codeGen(SimpleVar tree) 
+    static public String codeGen(SimpleVar tree) 
     {
-       
+       return tree.name;
        // System.out.print( "SimpleVar: " + tree.name + " ");
     }
 

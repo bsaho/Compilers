@@ -2,7 +2,7 @@ package absyn;
 import java.io.*;
 import java.util.*;
 
-class SymbolTable 
+public class SymbolTable 
 {
 
     class symbolListItem 
@@ -12,6 +12,7 @@ class SymbolTable
         public String symbolType;
         public int lineNo;
         public int arraySize;
+        public int offset;
 
         public symbolListItem(String name, String type, int lineNum) 
         {
@@ -59,6 +60,57 @@ class SymbolTable
         currentScope="Global";
         lastScopeAdded=currentScope;
     }
+
+    //Returns true if sucessful
+    public boolean SetOffset(String varName, String scopeLevel,int newOffset)
+    {
+        Set scopeNames = table.keySet();
+        ArrayList <symbolListItem> temp;
+        Iterator index = scopeNames.iterator ();
+
+        while (index.hasNext())
+        {
+            String searchString = (String) index.next();
+            temp = table.get(searchString).contents;
+            for (int i=0;i<temp.size();i++)
+            {
+                if (varName.equals(temp.get(i).symbolName))
+                {
+                    temp.get(i).offset = newOffset;
+                    return true;
+                }
+            }
+
+        }
+        return false;
+    }
+
+    //Returns offset value if found and -10000 if not found
+    public int getOffset(String varName, String scopeLevel)
+    {
+        Set scopeNames = table.keySet();
+        ArrayList <symbolListItem> temp;
+        Iterator index = scopeNames.iterator ();
+
+        while (index.hasNext())
+        {
+            String searchString = (String) index.next();
+
+            temp = table.get(searchString).contents;
+            for (int i=0;i<temp.size();i++)
+            {
+                if (varName.equals(temp.get(i).symbolName))
+                {
+                    return temp.get(i).offset ;
+                    
+                }
+            }
+
+        }
+        return -10000;
+    }
+
+
 
     public String lookup(String valName, String choice, String choice2)
     {
@@ -302,7 +354,7 @@ class SymbolTable
     //Insert Method for new scopes
     public void addScope (String scopeName, String scopeType, int lineNum)
     {   
-
+        //System.out.println ("\nAdding scope: " + scopeName);
         table.put(scopeName, new symbolList(currentScope));
         lastScopeAdded = currentScope;
         currentScope = scopeName;
