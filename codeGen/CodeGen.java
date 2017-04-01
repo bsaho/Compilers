@@ -8,8 +8,44 @@ public class CodeGen
 {
     public static char flagOption;
     public static int currentOutLine = 0;
+    static int emitLoc = 0;
+static int highEmitLoc = 0;
+static int entry; /* absolute address for main */
+static int globalOffset; /* next available loc after global frame */
 
-    public static void start( DecList tree )
+private static final String FILENAME = "output.tm";
+
+public static int emitSkip( int distance ) {
+     int i = emitLoc;
+     emitLoc += distance;
+     if( highEmitLoc < emitLoc )
+     {highEmitLoc = emitLoc;}
+     return i;
+}
+public static void emitBackup( int loc ) {
+ if( loc > highEmitLoc )
+{ //emitComment( "BUG in emitBackup" );
+System.out.println ("BUG in emitBackup");
+ } emitLoc = loc;
+}
+public static void emitRestore(  ) {
+ emitLoc = highEmitLoc;
+}
+
+// public static void emitRM_Abs( String op,int r, int a, String c ) {
+//     String content= Integer.toString(emitLoc) +": " + op +" " +Integer.toString(r) +", " + Integer.toString((a-(emitLoc+1))) + "(" + c +" )";
+    
+//      buffFileWriter.write (content);
+//      ++emitLoc;
+//       if( TraceCode ){ 
+//         content="\t" + c;
+//         buffFileWriter.write ( content);
+//         }
+//      if( highEmitLoc < emitLoc ){
+//           highEmitLoc = emitLoc;}
+// }
+
+public static void start( DecList tree )
     {
         //Retrive flag option from Main arguments
         flagOption = Main.getFlag();
@@ -17,6 +53,8 @@ public class CodeGen
         if (flagOption == 'c') 
         {
             System.out.println( "\nCode Generation Start:\n" );
+            genPreludeCode ();
+
             codeGen(tree);
         }   
     } 
@@ -191,6 +229,7 @@ public class CodeGen
     static public void codeGen(FunctionDec tree) 
     {
         System.out.print("FunctionDec: Name: " + tree.func );
+
   
         codeGen(tree.result);  
         codeGen(tree.params);
