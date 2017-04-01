@@ -4,8 +4,8 @@ void main (void)
 {
 	int x;
 	int y;
-	x = 4;
+	x = 16;
 	y = 2;
 
-	y = y * x;
+	y = y / x;
 }
