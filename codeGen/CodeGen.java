@@ -414,9 +414,14 @@ public static void emitRM_Abs( String op,int r, int a, String c )
 
         if( tree.rhs instanceof IntExp)
         {
-            rhsVal = ((IntExp)tree.rhs).value;
+           rhsVal = ((IntExp)tree.rhs).value;
             System.out.println("*retrving var" + leftVar);
             emitRM("LDA",ac,lhsOffset,fp,"retrving var");
+            emitRM("ST",ac,initFO,fp,"");
+            emitRM("LDC",ac,rhsVal,ac,"");
+
+            emitRM("LD",ac1,initFO,fp,"");
+            emitRM("ST",ac,0,ac1,"");
 
         }
         codeGen(tree.rhs);
