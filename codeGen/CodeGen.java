@@ -58,6 +58,27 @@ public class CodeGen
     }
 
 
+    //Format: (Operation, register, register, register, comment)
+    public static void emitRO(String op,int r, int s, int t, String c )
+    {
+        String content = Integer.toString(emitLoc) +": " + op +" " +Integer.toString(r) +"," + Integer.toString(s) + "," + Integer.toString(t);
+        
+        System.out.println (content);
+
+       // buffFileWriter.write (content);
+        ++emitLoc;
+        // if( TraceCode )
+        // { 
+        //     content="\t" + c;
+        //     buffFileWriter.write ( content);
+        // }
+        
+        if( highEmitLoc < emitLoc )
+        {
+            highEmitLoc = emitLoc;
+        }
+    }
+
     //Format: (Operation, register, offset, register, comment)
     public static void emitRM(String op,int r, int d, int s, String c )
     {
@@ -102,9 +123,9 @@ public class CodeGen
             System.out.println( "\nCode Generation Start:\n" );
             genPreludeCode ();
 
-            emitRM( "ST", fp, globalOffset+ofpFO, fp, "push ofp");
+            codeGen(tree);
 
-            //codeGen(tree);
+            genFinaleCode();
         }   
     } 
 
@@ -131,13 +152,15 @@ public class CodeGen
 
         emitLoc += 11;
         System.out.println( "* End of standard prelude." );
+    }
 
 
-
+    static public void genFinaleCode()
+    {
+        System.out.println( "* Finale:" );
 
 
     }
-
 
     static public void codeGen(DecList tree) 
     {
@@ -254,7 +277,7 @@ public class CodeGen
           codeGen( (ArrayDec)tree ); 
         else 
         {
-          System.out.println( "Illegal expression at line " + tree.pos  );
+          //System.out.println( "Illegal expression at line " + tree.pos  );
         }
     }
 
@@ -262,11 +285,11 @@ public class CodeGen
     {
         if (tree.typ == NameTy.INT) 
         {
-           System.out.print( "Int " );
+           //System.out.print( "Int " );
         }
         else if (tree.typ == NameTy.VOID) 
         {
-           System.out.print( "Void " );
+           //System.out.print( "Void " );
         }
     }
 
@@ -278,9 +301,9 @@ public class CodeGen
 
     static public void codeGen(FunctionDec tree) 
     {
-        System.out.print("FunctionDec: Name: " + tree.func );
+        //System.out.print("FunctionDec: Name: " + tree.func );
 
-        //emitRM("ST",ac,retFO,fp,"store return");
+        emitRM("ST",ac,retFO,fp,"store return");
   
         codeGen(tree.result);  
         codeGen(tree.params);
@@ -289,19 +312,19 @@ public class CodeGen
 
     static public void codeGen(IntExp tree) 
     {   
-        System.out.print( "IntExp: " + tree.value + " ");  
+        //System.out.print( "IntExp: " + tree.value + " ");  
     }
 
     static public void codeGen(SimpleDec tree)
     {
-        System.out.print( "Simple Dec: Type: ");
+        //System.out.print( "Simple Dec: Type: ");
         codeGen(tree.typ);
-        System.out.print( "Name: " + tree.name );
+       // System.out.print( "Name: " + tree.name );
     }
 
     static public void codeGen(ArrayDec tree) 
     {   
-        System.out.print( "Array Dec: Type: ");       
+        //System.out.print( "Array Dec: Type: ");       
         codeGen(tree.typ);   
     }
 
@@ -309,7 +332,7 @@ public class CodeGen
     static public void codeGen(AssignExp tree) 
     {   
 
-        System.out.print( "AssignExp: " );     
+        //System.out.print( "AssignExp: " );     
         codeGen(tree.lhs);
         codeGen(tree.rhs);
     }
@@ -317,7 +340,7 @@ public class CodeGen
     static public void codeGen(IfExp tree) 
     {
 
-        System.out.print( "IfExp:" );
+        //System.out.print( "IfExp:" );
         codeGen(tree.test);
         codeGen(tree.thenp);
         
@@ -330,13 +353,13 @@ public class CodeGen
     static public void codeGen(IndexVar tree) 
     {
 
-        System.out.print( "IndexVar:" + tree.name + " " );
+       // System.out.print( "IndexVar:" + tree.name + " " );
         codeGen(tree.index);
     }
 
     static public void codeGen(WhileExp tree) 
     {
-        System.out.print("WhileExp:");
+        //System.out.print("WhileExp:");
 
         codeGen(tree.test);
         codeGen(tree.body);
@@ -345,61 +368,61 @@ public class CodeGen
     static public void codeGen(ReturnExp tree) 
     {
 
-        System.out.print( "ReturnExp: " );
+       // System.out.print( "ReturnExp: " );
         codeGen(tree.exp); 
     }
 
     static public void codeGen(SimpleVar tree) 
     {
        
-        System.out.print( "SimpleVar: " + tree.name + " ");
+       // System.out.print( "SimpleVar: " + tree.name + " ");
     }
 
     static public void codeGen(CallExp tree) 
     {
        
-        System.out.print( "CallExp: " + tree.func + " " ); 
+        //System.out.print( "CallExp: " + tree.func + " " ); 
         codeGen (tree.args);
     }
 
     static public void codeGen(OpExp tree) 
     {
-        System.out.print( "OpExp:" ); 
-        switch( tree.op ) 
-        {
-          case OpExp.PLUS:
-            System.out.print( " + " );
-            break;
-          case OpExp.MINUS:
-            System.out.print( " - " );
-            break;
-          case OpExp.MUL:
-            System.out.print( " * " );
-            break;
-          case OpExp.DIV:
-            System.out.print( " / " );
-            break;
-          case OpExp.EQ:
-            System.out.print( " = " );
-            break;
-          case OpExp.NE:
-            System.out.print( " != " );
-            break;
-          case OpExp.LT:
-            System.out.print( " < " );
-            break;
-          case OpExp.LE:
-            System.out.print( " <= " );
-            break;
-          case OpExp.GT:
-            System.out.print( " > " );
-            break;
-          case OpExp.GE:
-            System.out.print( " >= " );
-            break;
-          default:
-            System.out.println( "Unrecognized operator at line " + tree.pos);         
-        }
+       // System.out.print( "OpExp:" ); 
+        // switch( tree.op ) 
+        // {
+        //   case OpExp.PLUS:
+        //     System.out.print( " + " );
+        //     break;
+        //   case OpExp.MINUS:
+        //     System.out.print( " - " );
+        //     break;
+        //   case OpExp.MUL:
+        //     System.out.print( " * " );
+        //     break;
+        //   case OpExp.DIV:
+        //     System.out.print( " / " );
+        //     break;
+        //   case OpExp.EQ:
+        //     System.out.print( " = " );
+        //     break;
+        //   case OpExp.NE:
+        //     System.out.print( " != " );
+        //     break;
+        //   case OpExp.LT:
+        //     System.out.print( " < " );
+        //     break;
+        //   case OpExp.LE:
+        //     System.out.print( " <= " );
+        //     break;
+        //   case OpExp.GT:
+        //     System.out.print( " > " );
+        //     break;
+        //   case OpExp.GE:
+        //     System.out.print( " >= " );
+        //     break;
+        //   default:
+        //     System.out.println( "Unrecognized operator at line " + tree.pos);         
+        // }
 
         codeGen(tree.left);
         codeGen(tree.right); 
@@ -407,7 +430,7 @@ public class CodeGen
 
     static public void codeGen(NilExp tree) 
     {
-        System.out.print( "Nil" );
+       // System.out.print( "Nil" );
     }
 
     static public void codeGen(VarExp tree)

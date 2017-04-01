@@ -1,31 +1,7 @@
 /* Basic working document to show a fully valid program,showing most features. */
 
-int shell (void){
-	int y;
-    int x;
-    void z;
-
-    y = y*y*x;
-
-	return y;
-}
-void men (int y){
-	int tenTimes;
-	 int times;
-	tenTimes=times*10;
-	return;
-}
-
-void main (void){
-	int x; void y;
-	while (shell()){
-	void a;
-	int z;
-	shell ();
-	}
-	if ( shell ()<1){
-	int lol;
-	lol=1;
-	}
-
+void main (void)
+{
+	int x;
+	x = 1;
 }
