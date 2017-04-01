@@ -100,18 +100,25 @@ public class CodeGen
         }
     }
 
-// public static void emitRM_Abs( String op,int r, int a, String c ) {
-//     String content= Integer.toString(emitLoc) +": " + op +" " +Integer.toString(r) +", " + Integer.toString((a-(emitLoc+1))) + "(" + c +" )";
+public static void emitRM_Abs( String op,int r, int a, String c ) 
+{
+    String content= Integer.toString(emitLoc) +": " + op +" " +Integer.toString(r) +"," + Integer.toString((a-(emitLoc+1))) + "("+ pc +") " + c;
     
-//      buffFileWriter.write (content);
-//      ++emitLoc;
-//       if( TraceCode ){ 
-//         content="\t" + c;
-//         buffFileWriter.write ( content);
-//         }
-//      if( highEmitLoc < emitLoc ){
-//           highEmitLoc = emitLoc;}
-// }
+    System.out.println (content);
+
+    // buffFileWriter.write (content);
+    ++emitLoc;
+    // if( TraceCode )
+    // { 
+    //     content="\t" + c;
+    //     buffFileWriter.write ( content);
+    // }
+    
+    if( highEmitLoc < emitLoc )
+    {
+        highEmitLoc = emitLoc;
+    }
+}
 
     public static void start( DecList tree )
     {
@@ -157,9 +164,13 @@ public class CodeGen
 
     static public void genFinaleCode()
     {
-        System.out.println( "* Finale:" );
-
-
+        System.out.println( "* Finale:" );       
+        emitRM( "ST", fp, globalOffset+ofpFO, fp, "push ofp" );
+        emitRM( "LDA", fp, globalOffset, fp, "push frame" );
+        emitRM( "LDA", ac, 1, pc, "load ac with ret ptr" );
+        emitRM_Abs( "LDA", pc, entry, "jump to main loc" );
+        emitRM( "LD", fp, ofpFO, fp, "pop frame" );
+        emitRO( "HALT", 0, 0, 0, "" );
     }
 
     static public void codeGen(DecList tree) 
@@ -303,11 +314,29 @@ public class CodeGen
     {
         //System.out.print("FunctionDec: Name: " + tree.func );
 
+
+        int savedLoc = emitSkip(1);
+
+        if (tree.func.equals("main")) 
+        {
+            entry = emitLoc;
+            //System.out.println("entry: " + entry);
+        }
+
         emitRM("ST",ac,retFO,fp,"store return");
-  
+
         codeGen(tree.result);  
         codeGen(tree.params);
         codeGen(tree.body);  
+
+        emitRM( "LD", pc, retFO, fp, "return to caller" );
+
+        int savedLoc2 = emitSkip(0);
+        emitBackup(savedLoc);
+        emitRM_Abs("LDA",pc,savedLoc2,"");
+        emitRestore();
+
+
     }
 
     static public void codeGen(IntExp tree) 
