@@ -14,7 +14,7 @@ int x; void xx;
 
 	y>9;
 	y=z*4;
-	z==4;
+	z==y;
 	t!=45;
 
 
