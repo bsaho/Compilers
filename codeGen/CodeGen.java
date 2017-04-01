@@ -369,9 +369,10 @@ public static void emitRM_Abs( String op,int r, int a, String c )
 
     }
 
-    static public void codeGen(IntExp tree) 
+    static public String codeGen(IntExp tree) 
     {   
         //System.out.print( "IntExp: " + tree.value + " ");  
+        return Integer.toString (tree.value);
     }
 
 
@@ -481,29 +482,43 @@ public static void emitRM_Abs( String op,int r, int a, String c )
     {
         int rightOffset=-1000,leftOffset=-1000;
 
-        switch( tree.op ) 
-        {
-          case OpExp.PLUS:
-        if (tree.left instanceof VarExp)
-        {
-            String varName= codeGen ((VarExp) tree.left);
-         
+        switch( tree.op ) {
+            case OpExp.PLUS:
+                if (tree.left instanceof VarExp)
+                {
+                String varName= codeGen ((VarExp) tree.left);
+
+                    leftOffset=table.getOffset (varName,currentScope);
+
+
+                }
+                if (tree.right instanceof VarExp){
+                String varName= codeGen ((VarExp) tree.right);
+
+                 rightOffset=table.getOffset (varName,currentScope);
+
+                }
+                if (tree.left instanceof IntExp)
+                {
+                String varName= codeGen ((IntExp) tree.left);
+
                 leftOffset=table.getOffset (varName,currentScope);
 
-            
-        }
-         if (tree.right instanceof VarExp){
-            String varName= codeGen ((VarExp) tree.right);
-           
-             rightOffset=table.getOffset (varName,currentScope);
-            
-        }
-        if (rightOffset!=-1000 && leftOffset!=-1000){
-            emitRM( "LD", ac, rightOffset, fp, "return to caller" );
-            emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
-            emitRO ( "ADD", ac, ac, ac1, "return to caller" );
 
-        }
+                }
+                if (tree.right instanceof IntExp){
+                String varName= codeGen ((IntExp) tree.right);
+
+                rightOffset=table.getOffset (varName,currentScope);
+
+                }
+
+                if (rightOffset>-1000 && leftOffset>-1000){
+                emitRM( "LD", ac, rightOffset, fp, "return to caller" );
+                emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
+                emitRO ( "ADD", ac, ac, ac1, "return to caller" );
+
+                }
 
 
 
@@ -524,7 +539,22 @@ public static void emitRM_Abs( String op,int r, int a, String c )
              rightOffset=table.getOffset (varName,currentScope);
             
         }
-        if (rightOffset!=-1000 && leftOffset!=-1000){
+        if (tree.left instanceof IntExp)
+            {
+            String varName= codeGen ((IntExp) tree.left);
+
+            leftOffset=table.getOffset (varName,currentScope);
+
+
+            }
+            if (tree.right instanceof IntExp){
+            String varName= codeGen ((IntExp) tree.right);
+
+            rightOffset=table.getOffset (varName,currentScope);
+
+            }
+
+        if (rightOffset>-1000 && leftOffset>-1000){
             emitRM( "LD", ac, rightOffset, fp, "return to caller" );
             emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
             emitRO ( "SUB", ac, ac1, ac, "return to caller" );
@@ -549,7 +579,22 @@ public static void emitRM_Abs( String op,int r, int a, String c )
              rightOffset=table.getOffset (varName,currentScope);
             
         }
-        if (rightOffset!=-1000 && leftOffset!=-1000){
+         if (tree.left instanceof IntExp)
+                {
+                String varName= codeGen ((IntExp) tree.left);
+
+                leftOffset=table.getOffset (varName,currentScope);
+
+
+                }
+                if (tree.right instanceof IntExp){
+                String varName= codeGen ((IntExp) tree.right);
+
+                rightOffset=table.getOffset (varName,currentScope);
+
+                }
+
+        if (rightOffset>-1000 && leftOffset>-1000){
             emitRM( "LD", ac, rightOffset, fp, "return to caller" );
             emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
             emitRO ( "MUL", ac, ac, ac1, "return to caller" );
@@ -574,7 +619,22 @@ public static void emitRM_Abs( String op,int r, int a, String c )
              rightOffset=table.getOffset (varName,currentScope);
             
         }
-        if (rightOffset!=-1000 && leftOffset!=-1000){
+                        if (tree.left instanceof IntExp)
+                {
+                String varName= codeGen ((IntExp) tree.left);
+
+                leftOffset=table.getOffset (varName,currentScope);
+
+
+                }
+                if (tree.right instanceof IntExp){
+                String varName= codeGen ((IntExp) tree.right);
+
+                rightOffset=table.getOffset (varName,currentScope);
+
+                }
+
+        if (rightOffset>-1000 && leftOffset>-1000){
             emitRM( "LD", ac, rightOffset, fp, "return to caller" );
             emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
             emitRO ( "DIV", ac, ac1, ac, "return to caller" );
@@ -599,13 +659,29 @@ public static void emitRM_Abs( String op,int r, int a, String c )
                      rightOffset=table.getOffset (varName,currentScope);
                     
                 }
-                if (rightOffset!=-1000 && leftOffset!=-1000){
-                    emitRM( "LD", ac, rightOffset, fp, "setting for comparison" );
-                   
-                    emitRO ( "JEQ", ac, leftOffset, fp, "performing comparison" );
+                                if (tree.left instanceof IntExp)
+                {
+                String varName= codeGen ((IntExp) tree.left);
+
+                leftOffset=table.getOffset (varName,currentScope);
 
 
                 }
+                if (tree.right instanceof IntExp){
+                String varName= codeGen ((IntExp) tree.right);
+
+                rightOffset=table.getOffset (varName,currentScope);
+
+                }
+
+
+        if (rightOffset>-1000 && leftOffset>-1000){
+            emitRM( "LD", ac, rightOffset, fp, "return to caller" );
+            emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
+            emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+
+
+        }
                 break;
           case OpExp.NE:
                  if (tree.left instanceof VarExp)
@@ -622,13 +698,29 @@ public static void emitRM_Abs( String op,int r, int a, String c )
                      rightOffset=table.getOffset (varName,currentScope);
                     
                 }
-                if (rightOffset!=-1000 && leftOffset!=-1000){
-                    emitRM( "LD", ac, rightOffset, fp, "setting for comparison" );
-                   
-                    emitRO ( "JNE", ac, leftOffset, fp, "performing comparison" );
+                 if (tree.left instanceof IntExp)
+                {
+                String varName= codeGen ((IntExp) tree.left);
+
+                leftOffset=table.getOffset (varName,currentScope);
 
 
                 }
+                if (tree.right instanceof IntExp){
+                String varName= codeGen ((IntExp) tree.right);
+
+                rightOffset=table.getOffset (varName,currentScope);
+
+                }
+
+
+        if (rightOffset>-1000 && leftOffset>-1000){
+            emitRM( "LD", ac, rightOffset, fp, "return to caller" );
+            emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
+            emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+
+
+        }
                     break;
           case OpExp.LT:
              if (tree.left instanceof VarExp)
@@ -645,13 +737,29 @@ public static void emitRM_Abs( String op,int r, int a, String c )
                  rightOffset=table.getOffset (varName,currentScope);
                 
             }
-            if (rightOffset!=-1000 && leftOffset!=-1000){
-                emitRM( "LD", ac, rightOffset, fp, "setting for comparison" );
-               
-                emitRO ( "JLT", ac, leftOffset, fp, "performing comparison" );
+                            if (tree.left instanceof IntExp)
+                {
+                String varName= codeGen ((IntExp) tree.left);
+
+                leftOffset=table.getOffset (varName,currentScope);
 
 
-            }
+                }
+                if (tree.right instanceof IntExp){
+                String varName= codeGen ((IntExp) tree.right);
+
+                rightOffset=table.getOffset (varName,currentScope);
+
+                }
+
+
+        if (rightOffset>-1000 && leftOffset>-1000){
+            emitRM( "LD", ac, rightOffset, fp, "return to caller" );
+            emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
+            emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+
+
+        }
             break;
           case OpExp.LE:
              if (tree.left instanceof VarExp)
@@ -668,13 +776,29 @@ public static void emitRM_Abs( String op,int r, int a, String c )
                  rightOffset=table.getOffset (varName,currentScope);
                 
             }
-            if (rightOffset!=-1000 && leftOffset!=-1000){
-                emitRM( "LD", ac, rightOffset, fp, "setting for comparison" );
-               
-                emitRO ( "JLE", ac, leftOffset, fp, "performing comparison" );
+                            if (tree.left instanceof IntExp)
+                {
+                String varName= codeGen ((IntExp) tree.left);
+
+                leftOffset=table.getOffset (varName,currentScope);
 
 
-            }
+                }
+                if (tree.right instanceof IntExp){
+                String varName= codeGen ((IntExp) tree.right);
+
+                rightOffset=table.getOffset (varName,currentScope);
+
+                }
+
+
+        if (rightOffset>-1000 && leftOffset>-1000){
+            emitRM( "LD", ac, rightOffset, fp, "return to caller" );
+            emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
+            emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+
+
+        }
                 break;
           case OpExp.GT:
              if (tree.left instanceof VarExp)
@@ -691,13 +815,29 @@ public static void emitRM_Abs( String op,int r, int a, String c )
                  rightOffset=table.getOffset (varName,currentScope);
                 
             }
-            if (rightOffset!=-1000 && leftOffset!=-1000){
-                emitRM( "LD", ac, rightOffset, fp, "setting for comparison" );
-               
-                emitRO ( "JGT", ac, leftOffset, fp, "performing comparison" );
+             if (tree.left instanceof IntExp)
+                {
+                String varName= codeGen ((IntExp) tree.left);
+
+                leftOffset=table.getOffset (varName,currentScope);
 
 
-            }
+                }
+                if (tree.right instanceof IntExp){
+                String varName= codeGen ((IntExp) tree.right);
+
+                rightOffset=table.getOffset (varName,currentScope);
+
+                }
+
+
+        if (rightOffset>-1000 && leftOffset>-1000){
+            emitRM( "LD", ac, rightOffset, fp, "return to caller" );
+            emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
+            emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+
+
+        }
                 break;
           case OpExp.GE:
              if (tree.left instanceof VarExp)
@@ -714,13 +854,29 @@ public static void emitRM_Abs( String op,int r, int a, String c )
                  rightOffset=table.getOffset (varName,currentScope);
                 
             }
-            if (rightOffset!=-1000 && leftOffset!=-1000){
-                emitRM( "LD", ac, rightOffset, fp, "setting for comparison" );
-               
-                emitRO ( "JGE", ac, leftOffset, fp, "performing comparison" );
+                            if (tree.left instanceof IntExp)
+                {
+                String varName= codeGen ((IntExp) tree.left);
+
+                leftOffset=table.getOffset (varName,currentScope);
 
 
-            }
+                }
+                if (tree.right instanceof IntExp){
+                String varName= codeGen ((IntExp) tree.right);
+
+                rightOffset=table.getOffset (varName,currentScope);
+
+                }
+
+
+        if (rightOffset>-1000 && leftOffset>-1000){
+            emitRM( "LD", ac, rightOffset, fp, "return to caller" );
+            emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
+            emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+
+
+        }
                 break;
           default:
          }
