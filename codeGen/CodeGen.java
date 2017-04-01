@@ -9,28 +9,75 @@ public class CodeGen
     public static char flagOption;
     public static int currentOutLine = 0;
     static int emitLoc = 0;
-static int highEmitLoc = 0;
-static int entry; /* absolute address for main */
-static int globalOffset; /* next available loc after global frame */
+    static int highEmitLoc = 0;
+    static int entry; /* absolute address for main */
+    static int globalOffset; /* next available loc after global frame */
 
-private static final String FILENAME = "output.tm";
 
-public static int emitSkip( int distance ) {
-     int i = emitLoc;
-     emitLoc += distance;
-     if( highEmitLoc < emitLoc )
-     {highEmitLoc = emitLoc;}
-     return i;
-}
-public static void emitBackup( int loc ) {
- if( loc > highEmitLoc )
-{ //emitComment( "BUG in emitBackup" );
-System.out.println ("BUG in emitBackup");
- } emitLoc = loc;
-}
-public static void emitRestore(  ) {
- emitLoc = highEmitLoc;
-}
+    public static int pc = 7; //The program counter register
+    public static int gp = 6; //The global pointer register
+    public static int fp = 5; //The frame pointer register
+    public static int ac = 0; //The 1st storage register
+    public static int ac1 = 1; //The 2nd storage register
+
+
+    public static int frameOffset = 0;
+
+    public static int ofpFO = 0; // Original frame pointer - Frame Offset
+    public static int retFO = -1; // Return Adress - Frame Offset
+    public static int initFO = -2; // Start of function parameters - Frame Offset
+
+    private static final String FILENAME = "output.tm";
+
+
+
+    public static int emitSkip( int distance )
+    {
+        int i = emitLoc;
+        emitLoc += distance;
+        if( highEmitLoc < emitLoc )
+        {
+            highEmitLoc = emitLoc;
+        }
+        return i;
+    }
+
+    public static void emitBackup( int loc ) 
+    {
+        if( loc > highEmitLoc )
+        { 
+            //emitComment( "BUG in emitBackup" );
+            System.out.println ("BUG in emitBackup");
+        } 
+        emitLoc = loc;
+    }
+    
+    public static void emitRestore(  ) 
+    {
+        emitLoc = highEmitLoc;
+    }
+
+
+    //Format: (Operation, register, offset, register, comment)
+    public static void emitRM(String op,int r, int d, int s, String c )
+    {
+        String content = Integer.toString(emitLoc) +": " + op +" " +Integer.toString(r) +"," + Integer.toString(d) + "(" + Integer.toString(s) +")";
+        
+        System.out.println (content);
+
+       // buffFileWriter.write (content);
+        ++emitLoc;
+        // if( TraceCode )
+        // { 
+        //     content="\t" + c;
+        //     buffFileWriter.write ( content);
+        // }
+        
+        if( highEmitLoc < emitLoc )
+        {
+            highEmitLoc = emitLoc;
+        }
+    }
 
 // public static void emitRM_Abs( String op,int r, int a, String c ) {
 //     String content= Integer.toString(emitLoc) +": " + op +" " +Integer.toString(r) +", " + Integer.toString((a-(emitLoc+1))) + "(" + c +" )";
@@ -45,7 +92,7 @@ public static void emitRestore(  ) {
 //           highEmitLoc = emitLoc;}
 // }
 
-public static void start( DecList tree )
+    public static void start( DecList tree )
     {
         //Retrive flag option from Main arguments
         flagOption = Main.getFlag();
@@ -55,7 +102,9 @@ public static void start( DecList tree )
             System.out.println( "\nCode Generation Start:\n" );
             genPreludeCode ();
 
-            codeGen(tree);
+            emitRM( "ST", fp, globalOffset+ofpFO, fp, "push ofp");
+
+            //codeGen(tree);
         }   
     } 
 
@@ -80,6 +129,7 @@ public static void start( DecList tree )
         System.out.println( "10:   LD  7,-1(5)   return to caller" );
         System.out.println( "3:    LDA  7,7(7)   jump around i/o code" );
 
+        emitLoc += 11;
         System.out.println( "* End of standard prelude." );
 
 
@@ -230,6 +280,7 @@ public static void start( DecList tree )
     {
         System.out.print("FunctionDec: Name: " + tree.func );
 
+        //emitRM("ST",ac,retFO,fp,"store return");
   
         codeGen(tree.result);  
         codeGen(tree.params);
