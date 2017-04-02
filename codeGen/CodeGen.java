@@ -453,17 +453,17 @@ public static void emitRM_Abs( String op,int r, int a, String c )
             int rhsOffset;
 
             //get name of rhs var
-            rightVar = codeGen((VarExp)tree.rhs);
-            rhsOffset = table.getOffset(rightVar,currentScope);
+            // rightVar = codeGen((VarExp)tree.rhs);
+            // rhsOffset = table.getOffset(rightVar,currentScope);
 
-            System.out.println("*setting var " + leftVar +" = "+rightVar);
-            emitRM("LDA",ac,lhsOffset,fp,"retrving var");
-            emitRM("ST",ac,initFO,fp,"");
-            emitRM("LD",ac,rhsOffset,fp,"");
+            // System.out.println("*setting var " + leftVar +" = "+rightVar);
+            // emitRM("LDA",ac,lhsOffset,fp,"retrving var");
+            // emitRM("ST",ac,initFO,fp,"");
+            // emitRM("LD",ac,rhsOffset,fp,"");
 
-            emitRM("LD",ac1,initFO,fp,"");
-            emitRM("ST",ac,0,ac1,"");
-            System.out.println("*stored " + rightVar +" to "+ leftVar +" offset:"+lhsOffset);
+            // emitRM("LD",ac1,initFO,fp,"");
+            // emitRM("ST",ac,0,ac1,"");
+            // System.out.println("*stored " + rightVar +" to "+ leftVar +" offset:"+lhsOffset);
 
         }
 
