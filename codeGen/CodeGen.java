@@ -20,6 +20,7 @@ public class CodeGen
     static int fp = 5; //The frame pointer register
     static int ac = 0; //The 1st storage register
     static int ac1 = 1; //The 2nd storage register
+    static int ac2 = 2; //The 3rd storage register
 
 
     static int frameOffset = 0;
@@ -448,27 +449,30 @@ public static void emitRM_Abs( String op,int r, int a, String c )
         }
         else if( tree.rhs instanceof OpExp)
         {   
-            //call genOpExp and then store value in ac register
+            //call genOpExp and then store value from ac register
             String rightVar;
             int rhsOffset;
+
+            codeGen(tree.rhs);
 
             //get name of rhs var
             // rightVar = codeGen((VarExp)tree.rhs);
             // rhsOffset = table.getOffset(rightVar,currentScope);
 
-            // System.out.println("*setting var " + leftVar +" = "+rightVar);
-            // emitRM("LDA",ac,lhsOffset,fp,"retrving var");
-            // emitRM("ST",ac,initFO,fp,"");
-            // emitRM("LD",ac,rhsOffset,fp,"");
+            System.out.println("*setting var " + leftVar + " to OpExp");
+            //ac has the value we need so it is stored in a temp var
+            emitRM("ST",ac,initFO,fp,"");
 
-            // emitRM("LD",ac1,initFO,fp,"");
-            // emitRM("ST",ac,0,ac1,"");
-            // System.out.println("*stored " + rightVar +" to "+ leftVar +" offset:"+lhsOffset);
+            emitRM("LDA",ac,lhsOffset,fp,"retrving var");
+            emitRM("ST",ac,initFO-1,fp,"");
+            emitRM("LD",ac,initFO,fp,"");
+
+            emitRM("LD",ac1,initFO-1,fp,"");
+            emitRM("ST",ac,0,ac1,"");
+            System.out.println("*stored OpExp in " + leftVar);
 
         }
 
-
-        codeGen(tree.rhs);
     }
 
     static public void codeGen(IfExp tree) 
