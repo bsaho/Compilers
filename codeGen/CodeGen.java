@@ -473,14 +473,33 @@ public static void emitRM_Abs( String op,int r, int a, String c )
 
     static public void codeGen(IfExp tree) 
     {
-
         //System.out.print( "IfExp:" );
+        int savedLoc = emitSkip(1);
+
         codeGen(tree.test);
-        codeGen(tree.thenp);
+
+
+
         
+
+        codeGen(tree.thenp);
+       
+
+        int savedLoc2 = emitSkip(0);
+        // emitBackup( savedLoc );
+        emitRM_Abs( "JNE", pc, savedLoc, "backpatching" );
+        emitRestore();
+
+
         if (tree.elsep != null )
-        {
+        {   
+            int elseSavedLoc=emitSkip (1);
             codeGen( tree.elsep);
+            int savedLoc3 = emitSkip(0);
+            // emitBackup( elseSavedLoc );
+            emitRM_Abs( "JNE", pc, elseSavedLoc, "backpatching" );
+            emitRestore();
+
         }
     }
 
