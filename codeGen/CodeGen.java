@@ -565,8 +565,7 @@ public static void emitRM_Abs( String op,int r, int a, String c )
 
     }
 
-    static public void codeGen(IfExp tree) 
-    {
+    static public void codeGen(IfExp tree) {
         //System.out.print( "IfExp:" );
 
         codeGen(tree.test);
@@ -593,8 +592,7 @@ public static void emitRM_Abs( String op,int r, int a, String c )
         }
     }
 
-    static public String  codeGen(IndexVar tree) 
-    {
+    static public String  codeGen(IndexVar tree)  {
 
        // System.ouprint( "IndexVar:" + tree.name + " " );
         codeGen(tree.index);
@@ -655,192 +653,221 @@ public static void emitRM_Abs( String op,int r, int a, String c )
 
     }
 
-    static public void codeGen(OpExp tree) 
+      static public void codeGen(OpExp tree) 
     {
         int rightOffset=-1000,leftOffset=-1000;
-        
-        switch( tree.op ) 
-        {
+
+
+        switch( tree.op ) {
             case OpExp.PLUS:
                 if (tree.left instanceof VarExp)
                 {
-                    String varName= codeGen ((VarExp) tree.left);
-                    leftOffset=table.getOffset (varName,currentScope);
+                String varName= codeGen ((VarExp) tree.left);
+
+                leftOffset=table.getOffset (varName,currentScope);
+
+
                 }
-                if (tree.right instanceof VarExp)
-                {
-                    String varName= codeGen ((VarExp) tree.right);
-                    rightOffset=table.getOffset (varName,currentScope);
+                if (tree.right instanceof VarExp){
+                String varName= codeGen ((VarExp) tree.right);
+
+                 rightOffset=table.getOffset (varName,currentScope);
+
                 }
                 if (tree.left instanceof IntExp)
                 {
-                    String varName= codeGen ((IntExp) tree.left);
-                    leftOffset=table.getOffset (varName,currentScope);
+                String varName= codeGen ((IntExp) tree.left);
+
+                leftOffset=table.getOffset (varName,currentScope);
+
+
                 }
-                if (tree.right instanceof IntExp)
-                {
-                    String varName= codeGen ((IntExp) tree.right);
-                    rightOffset=table.getOffset (varName,currentScope);
+                if (tree.right instanceof IntExp){
+                String varName= codeGen ((IntExp) tree.right);
+
+                rightOffset=table.getOffset (varName,currentScope);
+
                 }
 
-                if (rightOffset>-1000 && leftOffset>-1000)
-                {
-                    emitRM( "LD", ac, rightOffset, fp, "return to caller" );
-                    emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
-                    emitRO ( "ADD", ac, ac, ac1, "return to caller" );
-                }
-                break;
+                if (rightOffset>-1000 && leftOffset>-1000){
+                emitRM( "LD", ac, rightOffset, fp, "return to caller" );
+                emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
+                emitRO ( "ADD", ac, ac, ac1, "return to caller" );
+                // emitRM("ST",ac,frameOffset,fp,"");
+                // emitRM("ST",ac1,frameOffset,fp,"");
 
-            case OpExp.MINUS:
-                if (tree.left instanceof VarExp)
-                {
-                    String varName= codeGen ((VarExp) tree.left);
-                    leftOffset=table.getOffset (varName,currentScope);
-                }
-                if (tree.right instanceof VarExp)
-                {
-                    String varName= codeGen ((VarExp) tree.right);
-                    rightOffset=table.getOffset (varName,currentScope);    
-                }
-                if (tree.left instanceof IntExp)
-                {
-                    String varName= codeGen ((IntExp) tree.left);
-                    leftOffset=table.getOffset (varName,currentScope);
-                }
-                if (tree.right instanceof IntExp)
-                {
-                    String varName= codeGen ((IntExp) tree.right);
-                    rightOffset=table.getOffset (varName,currentScope);
+
+
+                }else if (rightOffset>-1000 && leftOffset<-1000){
+                    // emitRM ("ST",)
+                    
+
+                }else if (rightOffset<-1000 && leftOffset>-1000){
+                    
                 }
 
-                if (rightOffset>-1000 && leftOffset>-1000)
-                {
-                    emitRM( "LD", ac, rightOffset, fp, "return to caller" );
-                    emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
-                    emitRO ( "SUB", ac, ac1, ac, "return to caller" );
-                }
 
-                break;
+
             
-            case OpExp.MUL:
-                if (tree.left instanceof VarExp)
-                {
-                    String varName= codeGen ((VarExp) tree.left);
-                    leftOffset=table.getOffset (varName,currentScope);    
-                }
-                if (tree.right instanceof VarExp)
-                {
-                    String varName= codeGen ((VarExp) tree.right);
-                    rightOffset=table.getOffset (varName,currentScope);
-                }
-                if (tree.left instanceof IntExp)
-                {
-                    String varName= codeGen ((IntExp) tree.left);
+            break;
+          case OpExp.MINUS:
+            if (tree.left instanceof VarExp)
+            {
+                String varName= codeGen ((VarExp) tree.left);
+             
                     leftOffset=table.getOffset (varName,currentScope);
-                }
-                if (tree.right instanceof IntExp)
+
+                
+            }
+             if (tree.right instanceof VarExp){
+                String varName= codeGen ((VarExp) tree.right);
+               
+                 rightOffset=table.getOffset (varName,currentScope);
+                
+            }
+            if (tree.left instanceof IntExp)
                 {
-                    String varName= codeGen ((IntExp) tree.right);
-                    rightOffset=table.getOffset (varName,currentScope);
+                String varName= codeGen ((IntExp) tree.left);
+
+                leftOffset=table.getOffset (varName,currentScope);
+
+
+                }
+                if (tree.right instanceof IntExp){
+                String varName= codeGen ((IntExp) tree.right);
+
+                rightOffset=table.getOffset (varName,currentScope);
+
                 }
 
-                if (rightOffset>-1000 && leftOffset>-1000)
-                {
-                    emitRM( "LD", ac, rightOffset, fp, "return to caller" );
-                    emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
-                    emitRO ( "MUL", ac, ac, ac1, "return to caller" );
-                }
+            if (rightOffset>-1000 && leftOffset>-1000){
+                emitRM( "LD", ac, rightOffset, fp, "return to caller" );
+                emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
+                emitRO ( "SUB", ac, ac1, ac, "return to caller" );
 
+
+            }
 
                 break;
-          
-            case OpExp.DIV:
-                if (tree.left instanceof VarExp)
+          case OpExp.MUL:
+
+        if (tree.left instanceof VarExp)
+        {
+            String varName= codeGen ((VarExp) tree.left);
+         
+                leftOffset=table.getOffset (varName,currentScope);
+
+            
+        }
+         if (tree.right instanceof VarExp){
+            String varName= codeGen ((VarExp) tree.right);
+           
+             rightOffset=table.getOffset (varName,currentScope);
+            
+        }
+         if (tree.left instanceof IntExp)
+                {
+                String varName= codeGen ((IntExp) tree.left);
+
+                leftOffset=table.getOffset (varName,currentScope);
+
+
+                }
+                if (tree.right instanceof IntExp){
+                String varName= codeGen ((IntExp) tree.right);
+
+                rightOffset=table.getOffset (varName,currentScope);
+
+                }
+
+        if (rightOffset>-1000 && leftOffset>-1000){
+            emitRM( "LD", ac, rightOffset, fp, "return to caller" );
+            emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
+            emitRO ( "MUL", ac, ac, ac1, "return to caller" );
+
+
+        }
+
+
+            break;
+          case OpExp.DIV:
+        if (tree.left instanceof VarExp)
+        {
+            String varName= codeGen ((VarExp) tree.left);
+         
+                leftOffset=table.getOffset (varName,currentScope);
+
+            
+        }
+         if (tree.right instanceof VarExp){
+            String varName= codeGen ((VarExp) tree.right);
+           
+             rightOffset=table.getOffset (varName,currentScope);
+            
+        }
+                        if (tree.left instanceof IntExp)
+                {
+                String varName= codeGen ((IntExp) tree.left);
+
+                leftOffset=table.getOffset (varName,currentScope);
+
+
+                }
+                if (tree.right instanceof IntExp){
+                String varName= codeGen ((IntExp) tree.right);
+
+                rightOffset=table.getOffset (varName,currentScope);
+
+                }
+
+        if (rightOffset>-1000 && leftOffset>-1000){
+            emitRM( "LD", ac, rightOffset, fp, "return to caller" );
+            emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
+            emitRO ( "DIV", ac, ac1, ac, "return to caller" );
+
+
+        }
+
+            break;
+
+          case OpExp.EQ:
+                 if (tree.left instanceof VarExp)
                 {
                     String varName= codeGen ((VarExp) tree.left);
-                    leftOffset=table.getOffset (varName,currentScope); 
+                 
+                        leftOffset=table.getOffset (varName,currentScope);
+
+                    
                 }
-                if (tree.right instanceof VarExp)
-                {
+                 if (tree.right instanceof VarExp){
                     String varName= codeGen ((VarExp) tree.right);
-                    rightOffset=table.getOffset (varName,currentScope);
+                   
+                     rightOffset=table.getOffset (varName,currentScope);
                     
                 }
-                if (tree.left instanceof IntExp)
+                                if (tree.left instanceof IntExp)
                 {
-                    String varName= codeGen ((IntExp) tree.left);
-                    leftOffset=table.getOffset (varName,currentScope);
-                }
-                if (tree.right instanceof IntExp)
-                {
-                    String varName= codeGen ((IntExp) tree.right);
-                    rightOffset=table.getOffset (varName,currentScope);
-                }
+                String varName= codeGen ((IntExp) tree.left);
 
-                if (rightOffset>-1000 && leftOffset>-1000)
-                {
-                    emitRM( "LD", ac, rightOffset, fp, "return to caller" );
-                    emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
-                    emitRO ( "DIV", ac, ac1, ac, "return to caller" );
-                }
+                leftOffset=table.getOffset (varName,currentScope);
 
-                break;
-
-            case OpExp.EQ:
-                //System.out.println("EXP:==");
-                if (tree.left instanceof VarExp)
-                {
-                    String varName= codeGen ((VarExp) tree.left);
-                    leftOffset=table.getOffset (varName,currentScope);
-    
-                }
-                if (tree.right instanceof VarExp)
-                {
-                    String varName= codeGen ((VarExp) tree.right);   
-                    rightOffset=table.getOffset (varName,currentScope);
-                    
-                }
-                if (tree.left instanceof IntExp)
-                {
-                    String varName= codeGen ((IntExp) tree.left);
-                    leftOffset=table.getOffset (varName,currentScope);
 
                 }
-                if (tree.right instanceof IntExp)
-                {
-                    String varName= codeGen ((IntExp) tree.right);
-                    rightOffset=table.getOffset (varName,currentScope);
+                if (tree.right instanceof IntExp){
+                String varName= codeGen ((IntExp) tree.right);
+
+                rightOffset=table.getOffset (varName,currentScope);
+
                 }
 
-                if (rightOffset>-1000 && leftOffset>-1000)
-                {
-                    emitRM( "LD", ac, rightOffset, fp, "return to caller" );
-                    emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
-                    emitRO ( "SUB", ac, ac1, ac, "return to caller" );
-                    
-                    
-                    //save this position to insert jmp code
-                    int savedLoc = emitSkip(1);
-                    //if false load 0 to ac
-                    emitRM( "LDC", ac, 0, 0, "set true" );
-                    //skip to end (pc +1)
-                    emitRM( "LDA", pc, 1, pc, "skip false condition" );
-                    //if true load 1 to ac
-                    emitRM( "LDC", ac, 1, 0, "set false" );
 
-                    //Add in jmp code and restore emitLoc
-                    int savedLoc2 = emitSkip(0);
-                    emitBackup( savedLoc );
-                    emitRM_Abs("JEQ", ac , savedLoc2,"backpatching jump");
-                    emitRestore();
-                    
-                }
-                else
-                {
-                    System.out.println("ERROR: variable not found");
-                    System.out.println("Right offest: "+rightOffset);
-                    System.out.println("Right offest: "+leftOffset);
-                }
+        if (rightOffset>-1000 && leftOffset>-1000){
+            emitRM( "LD", ac, rightOffset, fp, "return to caller" );
+            emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
+            emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+
+
+        }
                 break;
           case OpExp.NE:
                  if (tree.left instanceof VarExp)
@@ -877,6 +904,24 @@ public static void emitRM_Abs( String op,int r, int a, String c )
             emitRM( "LD", ac, rightOffset, fp, "return to caller" );
             emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
             emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+            //save this position to insert jmp code
+            int savedLoc = emitSkip(1);
+            //if false load 0 to ac
+            emitRM( "LDC", ac, 0, 0, "set true" );
+            //skip to end (pc +1)
+            emitRM( "LDA", pc, 1, pc, "skip false condition" );
+            //if true load 1 to ac
+            emitRM( "LDC", ac, 1, 0, "set false" );
+
+            //Add in jmp code and restore emitLoc
+            int savedLoc2 = emitSkip(0);
+            emitBackup( savedLoc );
+            emitRM_Abs("JEQ", ac , savedLoc2,"backpatching jump");
+            emitRestore();
+
+
+
+
 
 
         }
@@ -916,6 +961,20 @@ public static void emitRM_Abs( String op,int r, int a, String c )
             emitRM( "LD", ac, rightOffset, fp, "return to caller" );
             emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
             emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+            //save this position to insert jmp code
+            int savedLoc = emitSkip(1);
+            //if false load 0 to ac
+            emitRM( "LDC", ac, 0, 0, "set true" );
+            //skip to end (pc +1)
+            emitRM( "LDA", pc, 1, pc, "skip false condition" );
+            //if true load 1 to ac
+            emitRM( "LDC", ac, 1, 0, "set false" );
+
+            //Add in jmp code and restore emitLoc
+            int savedLoc2 = emitSkip(0);
+            emitBackup( savedLoc );
+            emitRM_Abs("JGE", ac , savedLoc2,"backpatching jump");
+            emitRestore();
 
 
         }
@@ -935,7 +994,7 @@ public static void emitRM_Abs( String op,int r, int a, String c )
                  rightOffset=table.getOffset (varName,currentScope);
                 
             }
-                            if (tree.left instanceof IntExp)
+             if (tree.left instanceof IntExp)
                 {
                 String varName= codeGen ((IntExp) tree.left);
 
@@ -955,6 +1014,20 @@ public static void emitRM_Abs( String op,int r, int a, String c )
             emitRM( "LD", ac, rightOffset, fp, "return to caller" );
             emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
             emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+            //save this position to insert jmp code
+            int savedLoc = emitSkip(1);
+            //if false load 0 to ac
+            emitRM( "LDC", ac, 0, 0, "set true" );
+            //skip to end (pc +1)
+            emitRM( "LDA", pc, 1, pc, "skip false condition" );
+            //if true load 1 to ac
+            emitRM( "LDC", ac, 1, 0, "set false" );
+
+            //Add in jmp code and restore emitLoc
+            int savedLoc2 = emitSkip(0);
+            emitBackup( savedLoc );
+            emitRM_Abs("JGT", ac , savedLoc2,"backpatching jump");
+            emitRestore();
 
 
         }
@@ -994,6 +1067,20 @@ public static void emitRM_Abs( String op,int r, int a, String c )
             emitRM( "LD", ac, rightOffset, fp, "return to caller" );
             emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
             emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+            //save this position to insert jmp code
+            int savedLoc = emitSkip(1);
+            //if false load 0 to ac
+            emitRM( "LDC", ac, 0, 0, "set true" );
+            //skip to end (pc +1)
+            emitRM( "LDA", pc, 1, pc, "skip false condition" );
+            //if true load 1 to ac
+            emitRM( "LDC", ac, 1, 0, "set false" );
+
+            //Add in jmp code and restore emitLoc
+            int savedLoc2 = emitSkip(0);
+            emitBackup( savedLoc );
+            emitRM_Abs("JLE", ac , savedLoc2,"backpatching jump");
+            emitRestore();
 
 
         }
@@ -1033,6 +1120,21 @@ public static void emitRM_Abs( String op,int r, int a, String c )
             emitRM( "LD", ac, rightOffset, fp, "return to caller" );
             emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
             emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+            //save this position to insert jmp code
+            int savedLoc = emitSkip(1);
+            //if false load 0 to ac
+            emitRM( "LDC", ac, 0, 0, "set true" );
+            //skip to end (pc +1)
+            emitRM( "LDA", pc, 1, pc, "skip false condition" );
+            //if true load 1 to ac
+            emitRM( "LDC", ac, 1, 0, "set false" );
+
+            //Add in jmp code and restore emitLoc
+            int savedLoc2 = emitSkip(0);
+            emitBackup( savedLoc );
+            emitRM_Abs("JLT", ac , savedLoc2,"backpatching jump");
+            emitRestore();
+
 
 
         }
@@ -1043,7 +1145,6 @@ public static void emitRM_Abs( String op,int r, int a, String c )
         codeGen(tree.left);
         codeGen(tree.right); 
     }
-
     static public void codeGen(NilExp tree) 
     {
        // System.out.print( "Nil" );
