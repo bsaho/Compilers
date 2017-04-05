@@ -5,12 +5,9 @@ void main (void)
 	int x;
 	int y;
 
-    x = 4;
+    x = 82;
     y = 4;
 
-    if( x == y)
-    {
-        y = 42;
-    }
+   output(x);
 
 }

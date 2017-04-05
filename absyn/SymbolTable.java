@@ -57,6 +57,7 @@ public class SymbolTable
     {
         table = new HashMap<String, symbolList >();
         table.put("Global", new symbolList());
+        //table.addScope("output");
         currentScope="Global";
         lastScopeAdded=currentScope;
     }

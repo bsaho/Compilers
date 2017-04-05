@@ -22,16 +22,18 @@ public class CodeGen
     static int ac1 = 1; //The 2nd storage register
     static int ac2 = 2; //The 3rd storage register
 
-
-    static int frameOffset = 0;
-
     static int ofpFO = 0; // Original frame pointer - Frame Offset
     static int retFO = -1; // Return Adress - Frame Offset
     static int initFO = -2; // Start of function parameters - Frame Offset
 
+    static int frameOffset = initFO; //Points to end of frame points at intitFO at start of new Frame
+
     private static final String FILENAME = "output.tm";
 
     public static SymbolTable table = Absyn.t;
+
+    static HashMap<String,Integer> functionList = new HashMap<String,Integer>();
+
 
     public static int emitSkip( int distance )
     {
@@ -142,24 +144,33 @@ public static void emitRM_Abs( String op,int r, int a, String c )
     {
         System.out.println( "* Standard prelude:" );
 
+
         //Standard prelude code
-        System.out.println( "0:    LD  6,0(0)    load gp with maxaddress" );
-        System.out.println( "1:    LDA  5,0(6)   copy to gp to fp" );
-        System.out.println( "2:    ST  0,0(0)    clear location 0" );
+        emitRM( "LD", gp, 0, ac, "load gp with maxaddress" );
+        emitRM( "LDA", fp, 0, gp, "copy to gp to fp" );
+        emitRM( "ST", ac, 0, 0, "clear location 0" );
+
+        int savedLoc = emitSkip(1);
 
         //Code for input function
-        System.out.println( "4:    ST  0,-1(5)   store return" );
-        System.out.println( "5:    IN  0,0,0     input" );
-        System.out.println( "6:    LD  7,-1(5)   return to caller" );
+        //Store the location of this function
+        functionList.put("input",4);
+        emitRM( "ST", ac, retFO, fp, "store return" );
+        emitRO( "IN", ac, 0, 0, " input" );
+        emitRM( "LD", pc, retFO, fp, "return to caller" );
 
         //Code for output function
-        System.out.println( "7:    ST  0,-1(5)   store return" );
-        System.out.println( "8:    LD  0,-2(5)   load output value" );
-        System.out.println( "9:    OUT  0,0,0    output" );
-        System.out.println( "10:   LD  7,-1(5)   return to caller" );
-        System.out.println( "3:    LDA  7,7(7)   jump around i/o code" );
+        //Store the location of this function
+        functionList.put("output",7);
+        emitRM( "ST", ac, retFO, fp, "store return" );
+        emitRM( "LD", ac, initFO, fp, " load output value" );
+        emitRO( "OUT", ac, 0, 0, " output" );
+        emitRM( "LD", pc, retFO, fp, "return to caller" );
 
-        emitLoc += 11;
+        int savedLoc2 = emitSkip(0);
+        emitBackup(savedLoc);
+        emitRM_Abs("LDA",pc,savedLoc2,"jump around i/o code");
+        emitRestore();
         System.out.println( "* End of standard prelude." );
     }
 
@@ -185,11 +196,28 @@ public static void emitRM_Abs( String op,int r, int a, String c )
     }
     
     //Exp list for parameters
-    static public void codeGen(ExpList tree, int isParam) 
+    static public void codeGen(ExpList tree, String currentScope) 
     {
+        System.out.println("* Processing Params");
+        String tempName;
+        int tempOffset;
+        int paramNum = 0;
+
         while( tree != null ) 
         {
-            codeGen(tree.head);
+            if(tree.head instanceof VarExp)
+            {
+                if( ((VarExp)tree.head).variable instanceof SimpleVar)
+                {
+                    tempName = codeGen(tree.head);
+                    System.out.println( "*Retriving var " + tempName  +" in scope "+ currentScope);
+                    //set the value of the offset in the symbol table
+                    tempOffset = table.getOffset(tempName, currentScope);
+                    emitRM( "LD", ac, tempOffset, fp, "load in var" );
+                    emitRM( "ST", ac, initFO + frameOffset + paramNum, fp, "load in var" );
+                }
+            }
+            paramNum--;
             tree = tree.tail;
         } 
     }
@@ -216,7 +244,6 @@ public static void emitRM_Abs( String op,int r, int a, String c )
     //VarDecList for parameters
     static public void codeGen(VarDecList tree) 
     {
-
         while( tree != null ) 
         {
             codeGen(tree.head);
@@ -244,28 +271,58 @@ public static void emitRM_Abs( String op,int r, int a, String c )
     }
 
 
-    static public void codeGen(Exp tree) 
+    static public String codeGen(Exp tree) 
     {
         if( tree instanceof AssignExp )
-           codeGen( (AssignExp)tree );
+        {
+            codeGen( (AssignExp)tree );
+            return "";
+        }  
         else if( tree instanceof IfExp )
-          codeGen( (IfExp)tree );
+        {
+            codeGen( (IfExp)tree );
+            return "";
+        } 
         else if( tree instanceof IntExp )
-          codeGen( (IntExp)tree );
+        {
+            codeGen( (IntExp)tree );
+            return "";
+        } 
         else if( tree instanceof OpExp )
-          codeGen( (OpExp)tree );
+        {
+            codeGen( (OpExp)tree );
+            return "";
+        }   
         else if( tree instanceof VarExp )
-          codeGen( (VarExp)tree );
+        {
+            return codeGen( (VarExp)tree );
+        }
         else if (tree instanceof WhileExp)
-          codeGen ((WhileExp) tree );
+        {
+            codeGen ((WhileExp) tree );
+            return "";
+        }
         else if (tree instanceof ReturnExp)
-          codeGen ((ReturnExp) tree );
+        {
+            codeGen ((ReturnExp) tree );
+            return "";
+        }
         else if (tree instanceof CallExp )
-          codeGen ((CallExp) tree );
+        {
+            codeGen ((CallExp) tree );
+            return "";
+        }  
         else if (tree instanceof NilExp )
-          codeGen ((NilExp) tree );
+        {
+            codeGen ((NilExp) tree );
+            return "";
+        }  
         else if (tree instanceof CompoundExp )
-          codeGen ((CompoundExp) tree);
+        {
+            codeGen ((CompoundExp) tree);
+            return "";
+        }  
+        return "";    
     }
 
     static public String codeGen(Var tree) 
@@ -340,14 +397,17 @@ public static void emitRM_Abs( String op,int r, int a, String c )
     {
         //System.out.print("FunctionDec: Name: " + tree.func );
 
-
         int savedLoc = emitSkip(1);
+
 
         if (tree.func.equals("main")) 
         {
             entry = emitLoc;
             //System.out.println("entry: " + entry);
         }
+
+        //Store the location of this function
+        functionList.put(tree.func,emitLoc);
 
         //Set scope to the current function
         currentScope = tree.func;
@@ -368,6 +428,9 @@ public static void emitRM_Abs( String op,int r, int a, String c )
         //At end of function set scope back to global
         currentScope = "Global";
 
+        //Set global offsset here
+       // globalOffset = emitLoc;
+
     }
 
     static public String codeGen(IntExp tree) 
@@ -377,14 +440,14 @@ public static void emitRM_Abs( String op,int r, int a, String c )
     }
 
 
-        static public void codeGen(SimpleDec tree)
+    static public void codeGen(SimpleDec tree)
     {
         //System.out.print( "Simple Dec: Type: ");
         codeGen(tree.typ);
         System.out.println( "*Storing var " + tree.name);
         //set the value of the offset in the symbol table
         //tree.offset = initFO; 
-        initFO -= 1;
+        frameOffset --;
     }
 
     static public void codeGen(SimpleDec tree, String currentScope)
@@ -393,8 +456,8 @@ public static void emitRM_Abs( String op,int r, int a, String c )
         codeGen(tree.typ);
         System.out.println( "*Storing var " + tree.name +" in scope "+ currentScope);
         //set the value of the offset in the symbol table
-        table.SetOffset(tree.name, currentScope ,initFO); 
-        initFO -= 1;
+        table.SetOffset(tree.name, currentScope ,initFO+frameOffset); 
+        frameOffset --;
     }
 
     static public void codeGen(ArrayDec tree) 
@@ -474,6 +537,31 @@ public static void emitRM_Abs( String op,int r, int a, String c )
             System.out.println("*stored OpExp in " + leftVar);
 
         }
+        else if( tree.rhs instanceof CallExp)
+        {   
+            //call genCallExp and then store value from ac register
+            String rightVar;
+            int rhsOffset;
+
+            codeGen(tree.rhs);
+
+            //get name of rhs var
+            rightVar = ((CallExp)tree.rhs).func;
+            // rhsOffset = table.getOffset(rightVar,currentScope);
+
+            System.out.println("*setting var " + leftVar + " to call to " + rightVar);
+            //ac has the value we need so it is stored in a temp var
+            emitRM("ST",ac,initFO,fp,"");
+
+            emitRM("LDA",ac,lhsOffset,fp,"retrving var");
+            emitRM("ST",ac,initFO-1,fp,"");
+            emitRM("LD",ac,initFO,fp,"");
+
+            emitRM("LD",ac1,initFO-1,fp,"");
+            emitRM("ST",ac,0,ac1,"");
+            System.out.println("*stored result of " + rightVar + " in " + leftVar);
+
+        }
 
     }
 
@@ -482,7 +570,7 @@ public static void emitRM_Abs( String op,int r, int a, String c )
         //System.out.print( "IfExp:" );
 
         codeGen(tree.test);
-        
+
         int savedLoc = emitSkip(1);
         codeGen(tree.thenp);
        
@@ -536,9 +624,35 @@ public static void emitRM_Abs( String op,int r, int a, String c )
 
     static public void codeGen(CallExp tree) 
     {
-       
-        //System.out.print( "CallExp: " + tree.func + " " ); 
-        codeGen (tree.args);
+
+        //Look up location of function
+        int funcLocation;
+        String funcName;
+
+        funcName = tree.func;
+        funcLocation = functionList.get(funcName);
+
+        System.out.println( "* Call to Function: " +  funcName+ " location: " + funcLocation);  
+        
+        codeGen (tree.args, currentScope);
+        
+        //Set scope to the current function
+        currentScope = funcName;
+
+        //Need to move the offset down so the old retuen val isnt overwritten***********************************
+        //frameOffset --;
+        emitRM( "ST", fp, frameOffset+ofpFO, fp, "push ofp" );
+        emitRM( "LDA", fp, frameOffset, fp, "push frame" );
+        emitRM( "LDA", ac, 1, pc, "load ac with ret ptr" ); 
+        emitRM_Abs( "LDA", pc, funcLocation, "jump to function loc" );
+
+        //Function will return to this line
+        emitRM( "LD", fp, ofpFO, fp, "pop frame" );
+
+        //At end of function set scope back to global
+        currentScope = "Global";
+
+
     }
 
     static public void codeGen(OpExp tree) 
@@ -703,6 +817,23 @@ public static void emitRM_Abs( String op,int r, int a, String c )
                     emitRM( "LD", ac, rightOffset, fp, "return to caller" );
                     emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
                     emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+                    
+                    
+                    //save this position to insert jmp code
+                    int savedLoc = emitSkip(1);
+                    //if false load 0 to ac
+                    emitRM( "LDC", ac, 0, 0, "set true" );
+                    //skip to end (pc +1)
+                    emitRM( "LDA", pc, 1, pc, "skip false condition" );
+                    //if true load 1 to ac
+                    emitRM( "LDC", ac, 1, 0, "set false" );
+
+                    //Add in jmp code and restore emitLoc
+                    int savedLoc2 = emitSkip(0);
+                    emitBackup( savedLoc );
+                    emitRM_Abs("JEQ", ac , savedLoc2,"backpatching jump");
+                    emitRestore();
+                    
                 }
                 else
                 {
