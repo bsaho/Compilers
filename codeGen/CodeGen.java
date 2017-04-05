@@ -626,7 +626,20 @@ public static void emitRM_Abs( String op,int r, int a, String c )
         //System.out.print("WhileExp:");
 
         codeGen(tree.test);
+        int savedLoc = emitSkip(1);
+
         codeGen(tree.body);
+
+
+
+       
+
+        int savedLoc2 = emitSkip(0);
+        // emitBackup( savedLoc );
+        emitRM_Abs( "JNE", ac, savedLoc, "backpatching WHILE loop" );
+        emitRestore();
+
+
     }
 
     static public void codeGen(ReturnExp tree) 
@@ -674,6 +687,7 @@ public static void emitRM_Abs( String op,int r, int a, String c )
 
 
     }
+       /* RM  opST,     mem(d+reg(s)) = reg(r) */
 
       static public void codeGen(OpExp tree) 
     {
@@ -682,6 +696,7 @@ public static void emitRM_Abs( String op,int r, int a, String c )
 
         switch( tree.op ) {
             case OpExp.PLUS:
+
                 if (tree.left instanceof VarExp)
                 {
                 String varName= codeGen ((VarExp) tree.left);
@@ -712,19 +727,30 @@ public static void emitRM_Abs( String op,int r, int a, String c )
                 }
 
                 if (rightOffset>-1000 && leftOffset>-1000){
-                emitRM( "LD", ac, rightOffset, fp, "return to caller" );
-                emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
-                emitRO ( "ADD", ac, ac, ac1, "return to caller" );
-                // emitRM("ST",ac,frameOffset,fp,"");
-                // emitRM("ST",ac1,frameOffset,fp,"");
+                emitRM( "LD", ac, rightOffset, fp, "" );
+                emitRM( "LD", ac1, leftOffset, fp, "" );
+                emitRO ( "ADD", ac, ac, ac1, "" );
+                emitRM("ST",ac,frameOffset,fp,"storing var");
 
 
 
                 }else if (rightOffset>-1000 && leftOffset<-1000){
-                    // emitRM ("ST",)
+                    emitRM( "LD", ac1, 0, ac, "" );  
+                    emitRM( "LD", ac, rightOffset, fp, "" );
+
+                    emitRO ( "ADD", ac, ac, ac1, "" );
+                    emitRM("ST",ac,frameOffset,fp,"storing var");
+
+                    
                     
 
                 }else if (rightOffset<-1000 && leftOffset>-1000){
+                    emitRM( "LD", ac1, leftOffset, ac, "" );  
+                    //emitRM( "LD", ac, rightOffset, fp, "" );
+
+                    emitRO ( "ADD", ac, ac, ac1, "" );
+                    emitRM("ST",ac,frameOffset,fp,"storing var");
+
                     
                 }
 
@@ -768,7 +794,25 @@ public static void emitRM_Abs( String op,int r, int a, String c )
                 emitRO ( "SUB", ac, ac1, ac, "return to caller" );
 
 
-            }
+            }else if (rightOffset>-1000 && leftOffset<-1000){
+                    emitRM( "LD", ac1, 0, ac, "" );  
+                    emitRM( "LD", ac, rightOffset, fp, "" );
+
+                    emitRO ( "SUB", ac, ac, ac1, "" );
+                    emitRM("ST",ac,frameOffset,fp,"storing var");
+
+                    
+                    
+
+                }else if (rightOffset<-1000 && leftOffset>-1000){
+                    emitRM( "LD", ac1, leftOffset, ac, "" );  
+                    //emitRM( "LD", ac, rightOffset, fp, "" );
+
+                    emitRO ( "SUB", ac, ac, ac1, "" );
+                    emitRM("ST",ac,frameOffset,fp,"storing var");
+
+                    
+                }
 
                 break;
           case OpExp.MUL:
@@ -808,7 +852,25 @@ public static void emitRM_Abs( String op,int r, int a, String c )
             emitRO ( "MUL", ac, ac, ac1, "return to caller" );
 
 
-        }
+        }else if (rightOffset>-1000 && leftOffset<-1000){
+                    emitRM( "LD", ac1, 0, ac, "" );  
+                    emitRM( "LD", ac, rightOffset, fp, "" );
+
+                    emitRO ( "MUL", ac, ac, ac1, "" );
+                    emitRM("ST",ac,frameOffset,fp,"storing var");
+
+                    
+                    
+
+                }else if (rightOffset<-1000 && leftOffset>-1000){
+                    emitRM( "LD", ac1, leftOffset, ac, "" );  
+                    //emitRM( "LD", ac, rightOffset, fp, "" );
+
+                    emitRO ( "MUL", ac, ac, ac1, "" );
+                    emitRM("ST",ac,frameOffset,fp,"storing var");
+
+                    
+                }
 
 
             break;
@@ -848,7 +910,25 @@ public static void emitRM_Abs( String op,int r, int a, String c )
             emitRO ( "DIV", ac, ac1, ac, "return to caller" );
 
 
-        }
+        }else if (rightOffset>-1000 && leftOffset<-1000){
+                    emitRM( "LD", ac1, 0, ac, "" );  
+                    emitRM( "LD", ac, rightOffset, fp, "" );
+
+                    emitRO ( "DIV", ac, ac, ac1, "" );
+                    emitRM("ST",ac,frameOffset,fp,"storing var");
+
+                    
+                    
+
+                }else if (rightOffset<-1000 && leftOffset>-1000){
+                    emitRM( "LD", ac1, leftOffset, ac, "" );  
+                    //emitRM( "LD", ac, rightOffset, fp, "" );
+
+                    emitRO ( "DIV", ac, ac, ac1, "" );
+                    emitRM("ST",ac,frameOffset,fp,"storing var");
+
+                    
+                }
 
             break;
 
@@ -867,7 +947,7 @@ public static void emitRM_Abs( String op,int r, int a, String c )
                      rightOffset=table.getOffset (varName,currentScope);
                     
                 }
-                                if (tree.left instanceof IntExp)
+              if (tree.left instanceof IntExp)
                 {
                 String varName= codeGen ((IntExp) tree.left);
 
@@ -887,9 +967,74 @@ public static void emitRM_Abs( String op,int r, int a, String c )
             emitRM( "LD", ac, rightOffset, fp, "return to caller" );
             emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
             emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+            //save this position to insert jmp code
+            int savedLoc = emitSkip(1);
+            //if false load 0 to ac
+            emitRM( "LDC", ac, 0, 0, "set true" );
+            //skip to end (pc +1)
+            emitRM( "LDA", pc, 1, pc, "skip false condition" );
+            //if true load 1 to ac
+            emitRM( "LDC", ac, 1, 0, "set false" );
+
+            //Add in jmp code and restore emitLoc
+            int savedLoc2 = emitSkip(0);
+            emitBackup( savedLoc );
+            emitRM_Abs("JNE", ac , savedLoc2,"backpatching jump");
+            emitRestore();
 
 
-        }
+
+
+
+
+        }else if (rightOffset>-1000 && leftOffset<-1000){
+                    emitRM( "LD", ac1, 0, ac, "" );  
+                    emitRM( "LD", ac, rightOffset, fp, "" );
+
+                    emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+                    //save this position to insert jmp code
+                    int savedLoc = emitSkip(1);
+                    //if false load 0 to ac
+                    emitRM( "LDC", ac, 0, 0, "set true" );
+                    //skip to end (pc +1)
+                    emitRM( "LDA", pc, 1, pc, "skip false condition" );
+                    //if true load 1 to ac
+                    emitRM( "LDC", ac, 1, 0, "set false" );
+
+                    //Add in jmp code and restore emitLoc
+                    int savedLoc2 = emitSkip(0);
+                    emitBackup( savedLoc );
+                    emitRM_Abs("JNE", ac , savedLoc2,"backpatching jump");
+                    emitRestore();
+
+
+                    
+                    
+
+                }else if (rightOffset<-1000 && leftOffset>-1000){
+                    emitRM( "LD", ac1, leftOffset, ac, "" );  
+                    //emitRM( "LD", ac, rightOffset, fp, "" );
+
+
+                    emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+                    //save this position to insert jmp code
+                    int savedLoc = emitSkip(1);
+                    //if false load 0 to ac
+                    emitRM( "LDC", ac, 0, 0, "set true" );
+                    //skip to end (pc +1)
+                    emitRM( "LDA", pc, 1, pc, "skip false condition" );
+                    //if true load 1 to ac
+                    emitRM( "LDC", ac, 1, 0, "set false" );
+
+                    //Add in jmp code and restore emitLoc
+                    int savedLoc2 = emitSkip(0);
+                    emitBackup( savedLoc );
+                    emitRM_Abs("JNE", ac , savedLoc2,"backpatching jump");
+                    emitRestore();
+
+                    
+                }
+
                 break;
           case OpExp.NE:
                  if (tree.left instanceof VarExp)
@@ -946,7 +1091,53 @@ public static void emitRM_Abs( String op,int r, int a, String c )
 
 
 
-        }
+        }else if (rightOffset>-1000 && leftOffset<-1000){
+                    emitRM( "LD", ac1, 0, ac, "" );  
+                    emitRM( "LD", ac, rightOffset, fp, "" );
+
+                    emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+                    //save this position to insert jmp code
+                    int savedLoc = emitSkip(1);
+                    //if false load 0 to ac
+                    emitRM( "LDC", ac, 0, 0, "set true" );
+                    //skip to end (pc +1)
+                    emitRM( "LDA", pc, 1, pc, "skip false condition" );
+                    //if true load 1 to ac
+                    emitRM( "LDC", ac, 1, 0, "set false" );
+
+                    //Add in jmp code and restore emitLoc
+                    int savedLoc2 = emitSkip(0);
+                    emitBackup( savedLoc );
+                    emitRM_Abs("JEQ", ac , savedLoc2,"backpatching jump");
+                    emitRestore();
+
+
+                    
+                    
+
+                }else if (rightOffset<-1000 && leftOffset>-1000){
+                    emitRM( "LD", ac1, leftOffset, ac, "" );  
+                    //emitRM( "LD", ac, rightOffset, fp, "" );
+
+
+                    emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+                    //save this position to insert jmp code
+                    int savedLoc = emitSkip(1);
+                    //if false load 0 to ac
+                    emitRM( "LDC", ac, 0, 0, "set true" );
+                    //skip to end (pc +1)
+                    emitRM( "LDA", pc, 1, pc, "skip false condition" );
+                    //if true load 1 to ac
+                    emitRM( "LDC", ac, 1, 0, "set false" );
+
+                    //Add in jmp code and restore emitLoc
+                    int savedLoc2 = emitSkip(0);
+                    emitBackup( savedLoc );
+                    emitRM_Abs("JEQ", ac , savedLoc2,"backpatching jump");
+                    emitRestore();
+
+                    
+                }
                     break;
           case OpExp.LT:
              if (tree.left instanceof VarExp)
@@ -999,7 +1190,53 @@ public static void emitRM_Abs( String op,int r, int a, String c )
             emitRestore();
 
 
-        }
+        }else if (rightOffset>-1000 && leftOffset<-1000){
+                    emitRM( "LD", ac1, 0, ac, "" );  
+                    emitRM( "LD", ac, rightOffset, fp, "" );
+
+                    emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+                    //save this position to insert jmp code
+                    int savedLoc = emitSkip(1);
+                    //if false load 0 to ac
+                    emitRM( "LDC", ac, 0, 0, "set true" );
+                    //skip to end (pc +1)
+                    emitRM( "LDA", pc, 1, pc, "skip false condition" );
+                    //if true load 1 to ac
+                    emitRM( "LDC", ac, 1, 0, "set false" );
+
+                    //Add in jmp code and restore emitLoc
+                    int savedLoc2 = emitSkip(0);
+                    emitBackup( savedLoc );
+                    emitRM_Abs("JGE", ac , savedLoc2,"backpatching jump");
+                    emitRestore();
+
+
+                    
+                    
+
+                }else if (rightOffset<-1000 && leftOffset>-1000){
+                    emitRM( "LD", ac1, leftOffset, ac, "" );  
+                    //emitRM( "LD", ac, rightOffset, fp, "" );
+
+
+                    emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+                    //save this position to insert jmp code
+                    int savedLoc = emitSkip(1);
+                    //if false load 0 to ac
+                    emitRM( "LDC", ac, 0, 0, "set true" );
+                    //skip to end (pc +1)
+                    emitRM( "LDA", pc, 1, pc, "skip false condition" );
+                    //if true load 1 to ac
+                    emitRM( "LDC", ac, 1, 0, "set false" );
+
+                    //Add in jmp code and restore emitLoc
+                    int savedLoc2 = emitSkip(0);
+                    emitBackup( savedLoc );
+                    emitRM_Abs("JGE", ac , savedLoc2,"backpatching jump");
+                    emitRestore();
+
+                    
+                }
             break;
           case OpExp.LE:
              if (tree.left instanceof VarExp)
@@ -1052,7 +1289,53 @@ public static void emitRM_Abs( String op,int r, int a, String c )
             emitRestore();
 
 
-        }
+        }else if (rightOffset>-1000 && leftOffset<-1000){
+                    emitRM( "LD", ac1, 0, ac, "" );  
+                    emitRM( "LD", ac, rightOffset, fp, "" );
+
+                    emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+                    //save this position to insert jmp code
+                    int savedLoc = emitSkip(1);
+                    //if false load 0 to ac
+                    emitRM( "LDC", ac, 0, 0, "set true" );
+                    //skip to end (pc +1)
+                    emitRM( "LDA", pc, 1, pc, "skip false condition" );
+                    //if true load 1 to ac
+                    emitRM( "LDC", ac, 1, 0, "set false" );
+
+                    //Add in jmp code and restore emitLoc
+                    int savedLoc2 = emitSkip(0);
+                    emitBackup( savedLoc );
+                    emitRM_Abs("JGT", ac , savedLoc2,"backpatching jump");
+                    emitRestore();
+
+
+                    
+                    
+
+                }else if (rightOffset<-1000 && leftOffset>-1000){
+                    emitRM( "LD", ac1, leftOffset, ac, "" );  
+                    //emitRM( "LD", ac, rightOffset, fp, "" );
+
+
+                    emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+                    //save this position to insert jmp code
+                    int savedLoc = emitSkip(1);
+                    //if false load 0 to ac
+                    emitRM( "LDC", ac, 0, 0, "set true" );
+                    //skip to end (pc +1)
+                    emitRM( "LDA", pc, 1, pc, "skip false condition" );
+                    //if true load 1 to ac
+                    emitRM( "LDC", ac, 1, 0, "set false" );
+
+                    //Add in jmp code and restore emitLoc
+                    int savedLoc2 = emitSkip(0);
+                    emitBackup( savedLoc );
+                    emitRM_Abs("JGT", ac , savedLoc2,"backpatching jump");
+                    emitRestore();
+
+                    
+                }
                 break;
           case OpExp.GT:
              if (tree.left instanceof VarExp)
@@ -1105,7 +1388,53 @@ public static void emitRM_Abs( String op,int r, int a, String c )
             emitRestore();
 
 
-        }
+        }else if (rightOffset>-1000 && leftOffset<-1000){
+                    emitRM( "LD", ac1, 0, ac, "" );  
+                    emitRM( "LD", ac, rightOffset, fp, "" );
+
+                    emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+                    //save this position to insert jmp code
+                    int savedLoc = emitSkip(1);
+                    //if false load 0 to ac
+                    emitRM( "LDC", ac, 0, 0, "set true" );
+                    //skip to end (pc +1)
+                    emitRM( "LDA", pc, 1, pc, "skip false condition" );
+                    //if true load 1 to ac
+                    emitRM( "LDC", ac, 1, 0, "set false" );
+
+                    //Add in jmp code and restore emitLoc
+                    int savedLoc2 = emitSkip(0);
+                    emitBackup( savedLoc );
+                    emitRM_Abs("JLE", ac , savedLoc2,"backpatching jump");
+                    emitRestore();
+
+
+                    
+                    
+
+                }else if (rightOffset<-1000 && leftOffset>-1000){
+                    emitRM( "LD", ac1, leftOffset, ac, "" );  
+                    //emitRM( "LD", ac, rightOffset, fp, "" );
+
+
+                    emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+                    //save this position to insert jmp code
+                    int savedLoc = emitSkip(1);
+                    //if false load 0 to ac
+                    emitRM( "LDC", ac, 0, 0, "set true" );
+                    //skip to end (pc +1)
+                    emitRM( "LDA", pc, 1, pc, "skip false condition" );
+                    //if true load 1 to ac
+                    emitRM( "LDC", ac, 1, 0, "set false" );
+
+                    //Add in jmp code and restore emitLoc
+                    int savedLoc2 = emitSkip(0);
+                    emitBackup( savedLoc );
+                    emitRM_Abs("JLE", ac , savedLoc2,"backpatching jump");
+                    emitRestore();
+
+                    
+                }
                 break;
           case OpExp.GE:
              if (tree.left instanceof VarExp)
@@ -1159,7 +1488,53 @@ public static void emitRM_Abs( String op,int r, int a, String c )
 
 
 
-        }
+        }else if (rightOffset>-1000 && leftOffset<-1000){
+                    emitRM( "LD", ac1, 0, ac, "" );  
+                    emitRM( "LD", ac, rightOffset, fp, "" );
+
+                    emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+                    //save this position to insert jmp code
+                    int savedLoc = emitSkip(1);
+                    //if false load 0 to ac
+                    emitRM( "LDC", ac, 0, 0, "set true" );
+                    //skip to end (pc +1)
+                    emitRM( "LDA", pc, 1, pc, "skip false condition" );
+                    //if true load 1 to ac
+                    emitRM( "LDC", ac, 1, 0, "set false" );
+
+                    //Add in jmp code and restore emitLoc
+                    int savedLoc2 = emitSkip(0);
+                    emitBackup( savedLoc );
+                    emitRM_Abs("JLT", ac , savedLoc2,"backpatching jump");
+                    emitRestore();
+
+
+                    
+                    
+
+                }else if (rightOffset<-1000 && leftOffset>-1000){
+                    emitRM( "LD", ac1, leftOffset, ac, "" );  
+                    //emitRM( "LD", ac, rightOffset, fp, "" );
+
+
+                    emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+                    //save this position to insert jmp code
+                    int savedLoc = emitSkip(1);
+                    //if false load 0 to ac
+                    emitRM( "LDC", ac, 0, 0, "set true" );
+                    //skip to end (pc +1)
+                    emitRM( "LDA", pc, 1, pc, "skip false condition" );
+                    //if true load 1 to ac
+                    emitRM( "LDC", ac, 1, 0, "set false" );
+
+                    //Add in jmp code and restore emitLoc
+                    int savedLoc2 = emitSkip(0);
+                    emitBackup( savedLoc );
+                    emitRM_Abs("JLT", ac , savedLoc2,"backpatching jump");
+                    emitRestore();
+
+                    
+                }
                 break;
           default:
          }
