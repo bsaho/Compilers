@@ -201,7 +201,8 @@ public static void emitRM_Abs( String op,int r, int a, String c )
         System.out.println("* Processing Params");
         String tempName;
         int tempOffset;
-        int paramNum = 0;
+        int tempSize;
+        int paramOffset = 0;
 
         while( tree != null ) 
         {
@@ -214,10 +215,20 @@ public static void emitRM_Abs( String op,int r, int a, String c )
                     //set the value of the offset in the symbol table
                     tempOffset = table.getOffset(tempName, currentScope);
                     emitRM( "LD", ac, tempOffset, fp, "load in var" );
-                    emitRM( "ST", ac, initFO + frameOffset + paramNum, fp, "load in var" );
+                    emitRM( "ST", ac, initFO + frameOffset + paramOffset, fp, "load in var" );
+                    paramOffset--;
                 }
+                // else if( ((VarExp)tree.head).variable instanceof IndexVar)
+                // {
+                //     tempName = codeGen(tree.head);
+                //     tempSize = 
+                //     System.out.println( "*Retriving array var " + tempName  +" in scope "+ currentScope);
+                //     //set the value of the offset in the symbol table
+                //     tempOffset = table.getOffset(tempName, currentScope);
+                //     emitRM( "LD", ac, tempOffset, fp, "load in var" );
+                //     emitRM( "ST", ac, initFO + frameOffset + paramOffset, fp, "load in var" );
+                // }
             }
-            paramNum--;
             tree = tree.tail;
         } 
     }
@@ -452,12 +463,23 @@ public static void emitRM_Abs( String op,int r, int a, String c )
 
     static public void codeGen(SimpleDec tree, String currentScope)
     {
-        //System.out.print( "Simple Dec: Type: ");
         codeGen(tree.typ);
         System.out.println( "*Storing var " + tree.name +" in scope "+ currentScope);
         //set the value of the offset in the symbol table
         table.SetOffset(tree.name, currentScope ,initFO+frameOffset); 
         frameOffset --;
+    }
+
+
+    static public void codeGen(ArrayDec tree, String currentScope)
+    {
+        int size;
+        size = Integer.parseInt(codeGen(tree.size));
+        codeGen(tree.typ);
+        System.out.println( "*Storing array var " + tree.name +" in scope "+ currentScope);
+        //set the value of the offset in the symbol table
+        table.SetOffset(tree.name, currentScope ,initFO+frameOffset); 
+        frameOffset -= size;
     }
 
     static public void codeGen(ArrayDec tree) 
@@ -592,7 +614,7 @@ public static void emitRM_Abs( String op,int r, int a, String c )
         }
     }
 
-    static public String  codeGen(IndexVar tree)  {
+    static public String codeGen(IndexVar tree)  {
 
        // System.ouprint( "IndexVar:" + tree.name + " " );
         codeGen(tree.index);
