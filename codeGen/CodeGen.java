@@ -285,8 +285,8 @@ public static void emitRM_Abs( String op,int r, int a, String c )
         } 
         else if( tree instanceof IntExp )
         {
-            codeGen( (IntExp)tree );
-            return "";
+            return codeGen( (IntExp)tree );
+            
         } 
         else if( tree instanceof OpExp )
         {
@@ -670,6 +670,7 @@ public static void emitRM_Abs( String op,int r, int a, String c )
       static public void codeGen(OpExp tree) 
     {
         int rightOffset=-1000,leftOffset=-1000;
+        int rightInt=-1000, leftInt=-1000;
 
 
         switch( tree.op ) {
@@ -692,15 +693,16 @@ public static void emitRM_Abs( String op,int r, int a, String c )
                 if (tree.left instanceof IntExp)
                 {
                 String varName= codeGen ((IntExp) tree.left);
+                leftInt=Integer.valueOf(varName); 
 
-                leftOffset=table.getOffset (varName,currentScope);
 
 
                 }
                 if (tree.right instanceof IntExp){
                 String varName= codeGen ((IntExp) tree.right);
+                rightInt=Integer.valueOf(varName); 
 
-                rightOffset=table.getOffset (varName,currentScope);
+
 
                 }
 
@@ -712,7 +714,34 @@ public static void emitRM_Abs( String op,int r, int a, String c )
 
 
 
-                }else if (rightOffset>-1000 && leftOffset<-1000){
+                }else if (rightInt!=-1000 && leftInt!=-1000){
+                emitRM( "LDC", ac, rightInt, fp, "" );
+                emitRM( "LDC", ac1, leftInt, fp, "" );
+                emitRO ( "ADD", ac, ac, ac1, "" );
+                emitRM("ST",ac,frameOffset,fp,"storing var");
+
+
+
+                }else if (rightInt!=-1000 && leftInt==-1000){
+                    emitRM( "LD", ac1, 0, ac, "" );  
+                    emitRM( "LDC", ac, rightInt, fp, "" );
+                    emitRO ( "ADD", ac, ac, ac1, "" );
+                    emitRM("ST",ac,frameOffset,fp,"storing var");
+
+
+
+                }else if (rightInt<-1000 && leftInt>-1000){
+                    emitRM( "LDC", ac1, leftInt, ac, "" );  
+                    //emitRM( "LD", ac, rightOffset, fp, "" );
+
+                    emitRO ( "ADD", ac, ac, ac1, "" );
+                    emitRM("ST",ac,frameOffset,fp,"storing var");
+
+
+
+                }
+
+                else if (rightOffset>-1000 && leftOffset<-1000){
                     emitRM( "LD", ac1, 0, ac, "" );  
                     emitRM( "LD", ac, rightOffset, fp, "" );
 
@@ -767,12 +796,40 @@ public static void emitRM_Abs( String op,int r, int a, String c )
                 }
 
             if (rightOffset>-1000 && leftOffset>-1000){
-                emitRM( "LD", ac, rightOffset, fp, "return to caller" );
-                emitRM( "LD", ac1, leftOffset, fp, "return to caller" );
-                emitRO ( "SUB", ac, ac1, ac, "return to caller" );
+                emitRM( "LD", ac, rightOffset, fp, "" );
+                emitRM( "LD", ac1, leftOffset, fp, "" );
+                emitRO ( "SUB", ac, ac1, ac, "" );
 
 
-            }else if (rightOffset>-1000 && leftOffset<-1000){
+            }else if (rightInt!=-1000 && leftInt!=-1000){
+                emitRM( "LDC", ac, rightInt, fp, "" );
+                emitRM( "LDC", ac1, leftInt, fp, "" );
+                emitRO ( "SUB", ac, ac, ac1, "" );
+                emitRM("ST",ac,frameOffset,fp,"storing var");
+
+
+
+                }else if (rightInt!=-1000 && leftInt==-1000){
+                    emitRM( "LD", ac1, 0, ac, "" );  
+                    emitRM( "LDC", ac, rightInt, fp, "" );
+                    emitRO ( "SUB", ac, ac, ac1, "" );
+                    emitRM("ST",ac,frameOffset,fp,"storing var");
+
+
+
+                }else if (rightInt<-1000 && leftInt>-1000){
+                    emitRM( "LDC", ac1, leftInt, ac, "" );  
+                    //emitRM( "LD", ac, rightOffset, fp, "" );
+
+                    emitRO ( "SUB", ac, ac, ac1, "" );
+                    emitRM("ST",ac,frameOffset,fp,"storing var");
+
+
+
+                }
+
+
+            else if (rightOffset>-1000 && leftOffset<-1000){
                     emitRM( "LD", ac1, 0, ac, "" );  
                     emitRM( "LD", ac, rightOffset, fp, "" );
 
@@ -830,7 +887,34 @@ public static void emitRM_Abs( String op,int r, int a, String c )
             emitRO ( "MUL", ac, ac, ac1, "return to caller" );
 
 
-        }else if (rightOffset>-1000 && leftOffset<-1000){
+        }else if (rightInt!=-1000 && leftInt!=-1000){
+                emitRM( "LDC", ac, rightInt, fp, "" );
+                emitRM( "LDC", ac1, leftInt, fp, "" );
+                emitRO ( "MUL", ac, ac, ac1, "" );
+                emitRM("ST",ac,frameOffset,fp,"storing var");
+
+
+
+                }else if (rightInt!=-1000 && leftInt==-1000){
+                    emitRM( "LD", ac1, 0, ac, "" );  
+                    emitRM( "LDC", ac, rightInt, fp, "" );
+                    emitRO ( "MUL", ac, ac, ac1, "" );
+                    emitRM("ST",ac,frameOffset,fp,"storing var");
+
+
+
+                }else if (rightInt<-1000 && leftInt>-1000){
+                    emitRM( "LDC", ac1, leftInt, ac, "" );  
+                    //emitRM( "LD", ac, rightOffset, fp, "" );
+
+                    emitRO ( "MUL", ac, ac, ac1, "" );
+                    emitRM("ST",ac,frameOffset,fp,"storing var");
+
+
+
+                }
+
+        else if (rightOffset>-1000 && leftOffset<-1000){
                     emitRM( "LD", ac1, 0, ac, "" );  
                     emitRM( "LD", ac, rightOffset, fp, "" );
 
@@ -888,7 +972,34 @@ public static void emitRM_Abs( String op,int r, int a, String c )
             emitRO ( "DIV", ac, ac1, ac, "return to caller" );
 
 
-        }else if (rightOffset>-1000 && leftOffset<-1000){
+        }else if (rightInt!=-1000 && leftInt!=-1000){
+                emitRM( "LDC", ac, rightInt, fp, "" );
+                emitRM( "LDC", ac1, leftInt, fp, "" );
+                emitRO ( "DIV", ac, ac, ac1, "" );
+                emitRM("ST",ac,frameOffset,fp,"storing var");
+
+
+
+                }else if (rightInt!=-1000 && leftInt==-1000){
+                    emitRM( "LD", ac1, 0, ac, "" );  
+                    emitRM( "LDC", ac, rightInt, fp, "" );
+                    emitRO ( "DIV", ac, ac, ac1, "" );
+                    emitRM("ST",ac,frameOffset,fp,"storing var");
+
+
+
+                }else if (rightInt<-1000 && leftInt>-1000){
+                    emitRM( "LDC", ac1, leftInt, ac, "" );  
+                    //emitRM( "LD", ac, rightOffset, fp, "" );
+
+                    emitRO ( "DIV", ac, ac, ac1, "" );
+                    emitRM("ST",ac,frameOffset,fp,"storing var");
+
+
+
+                }
+
+        else if (rightOffset>-1000 && leftOffset<-1000){
                     emitRM( "LD", ac1, 0, ac, "" );  
                     emitRM( "LD", ac, rightOffset, fp, "" );
 
