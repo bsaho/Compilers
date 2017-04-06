@@ -133,9 +133,11 @@ public class CodeGen
 public static void emitRM_Abs( String op,int r, int a, String c ) 
 {
     String content= Integer.toString(emitLoc) +": " + op +" " +Integer.toString(r) +"," + Integer.toString((a-(emitLoc+1))) + "("+ pc +") " + c;
-    
+     if (writeToFile!=null){
+            writeToFile.println (content);
+        }
     System.out.println (content);
-
+    
     // buffFileWriter.write (content);
     ++emitLoc;
     // if( TraceCode )

@@ -1,7 +1,7 @@
 =====================================================================
-CIS*4650 Project Checkpoint 2
+CIS*4650 Project Checkpoint 3
 Written By: Stephen Deline and Bashir Saho
-March 22, 2017
+April 5, 2017
 =====================================================================
 
 
@@ -10,9 +10,9 @@ Description
 This project is designed to create a complier for the 
 Cminus language.
 
-This checkpoint contains code that will create and print an 
-abstract syntax tree and a symbol table 
-for provided Cminus source code.
+This checkpoint contains code that will create an print
+assmbler code for the TM simulator
+based on provided Cminus source code.
 
 
 How To Build
