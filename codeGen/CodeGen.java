@@ -1107,7 +1107,7 @@ public static void emitRM_Abs( String op,int r, int a, String c )
 
         }else if (rightInt!=-1000 && leftInt!=-1000){
                            emitRM( "LDC", ac, rightInt, fp, "return to caller" );
-            emitRM( "LD", ac1, leftInt, fp, "return to caller" );
+            emitRM( "LDC", ac1, leftInt, fp, "return to caller" );
             emitRO ( "SUB", ac, ac1, ac, "return to caller" );
             //save this position to insert jmp code
             int savedLoc = emitSkip(1);
@@ -1279,7 +1279,7 @@ public static void emitRM_Abs( String op,int r, int a, String c )
 
         }else if (rightInt!=-1000 && leftInt!=-1000){
              emitRM( "LDC", ac, rightInt, fp, "return to caller" );
-            emitRM( "LD", ac1, leftInt, fp, "return to caller" );
+            emitRM( "LDC", ac1, leftInt, fp, "return to caller" );
             emitRO ( "SUB", ac, ac1, ac, "return to caller" );
             //save this position to insert jmp code
             int savedLoc = emitSkip(1);
@@ -1613,7 +1613,7 @@ public static void emitRM_Abs( String op,int r, int a, String c )
 
         }else if (rightInt!=-1000 && leftInt!=-1000){
                            emitRM( "LDC", ac, rightInt, fp, "return to caller" );
-            emitRM( "LD", ac1, leftInt, fp, "return to caller" );
+            emitRM( "LDC", ac1, leftInt, fp, "return to caller" );
             emitRO ( "SUB", ac, ac1, ac, "return to caller" );
             //save this position to insert jmp code
             int savedLoc = emitSkip(1);
@@ -1781,7 +1781,7 @@ public static void emitRM_Abs( String op,int r, int a, String c )
 
         }else if (rightInt!=-1000 && leftInt!=-1000){
                            emitRM( "LDC", ac, rightInt, fp, "return to caller" );
-            emitRM( "LD", ac1, leftInt, fp, "return to caller" );
+            emitRM( "LDC", ac1, leftInt, fp, "return to caller" );
             emitRO ( "SUB", ac, ac1, ac, "return to caller" );
             //save this position to insert jmp code
             int savedLoc = emitSkip(1);
@@ -1949,7 +1949,7 @@ public static void emitRM_Abs( String op,int r, int a, String c )
 
         }else if (rightInt!=-1000 && leftInt!=-1000){
                            emitRM( "LDC", ac, rightInt, fp, "return to caller" );
-            emitRM( "LD", ac1, leftInt, fp, "return to caller" );
+            emitRM( "LDC", ac1, leftInt, fp, "return to caller" );
             emitRO ( "SUB", ac, ac1, ac, "return to caller" );
             //save this position to insert jmp code
             int savedLoc = emitSkip(1);
