@@ -6,6 +6,8 @@ import cminus.Main;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.File;
 
 
 public class CodeGen
@@ -36,8 +38,23 @@ public class CodeGen
     public static SymbolTable table = Absyn.s;
 
     static HashMap<String,Integer> functionList = new HashMap<String,Integer>();
-         static FileWriter fileWrite = null;
+    static PrintWriter writeToFile =null;
+    public static int startFile ( ){ 
+        File outputFile=null;
+        try { 
+             outputFile = new File ("out.tm");
+             outputFile.createNewFile();
 
+            writeToFile=new PrintWriter("out.tm");
+
+        }catch (IOException e){
+            int y=0;
+        }
+        
+        return 1;
+    }
+    
+    static int go=startFile ();
    
 
     public static int emitSkip( int distance )
@@ -71,7 +88,9 @@ public class CodeGen
     public static void emitRO(String op,int r, int s, int t, String c )
     {
         String content = Integer.toString(emitLoc) +": " + op +" " +Integer.toString(r) +"," + Integer.toString(s) + "," + Integer.toString(t);
-        
+        if (writeToFile!=null){
+            writeToFile.println (content);
+        }
         System.out.println (content);
 
        // buffFileWriter.write (content);
@@ -92,7 +111,9 @@ public class CodeGen
     public static void emitRM(String op,int r, int d, int s, String c )
     {
         String content = Integer.toString(emitLoc) +": " + op +" " +Integer.toString(r) +"," + Integer.toString(d) + "(" + Integer.toString(s) +")";
-        
+        if (writeToFile!=null){
+            writeToFile.println (content);
+        }
         System.out.println (content);
 
        // buffFileWriter.write (content);
@@ -189,6 +210,10 @@ public static void emitRM_Abs( String op,int r, int a, String c )
         emitRM_Abs( "LDA", pc, entry, "jump to main loc" );
         emitRM( "LD", fp, ofpFO, fp, "pop frame" );
         emitRO( "HALT", 0, 0, 0, "" );
+            if (writeToFile!=null){
+        writeToFile.close ();
+    }
+
     }
 
     static public void codeGen(DecList tree) 
