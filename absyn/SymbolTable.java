@@ -13,6 +13,7 @@ public class SymbolTable
         public int lineNo;
         public int arraySize;
         public int offset;
+        public int numParams;
 
         public symbolListItem(String name, String type, int lineNum) 
         {
@@ -28,6 +29,17 @@ public class SymbolTable
             symbolType = type;
             lineNo= lineNum ;
             arraySize=size;
+        }
+
+        //For functions
+        public symbolListItem(String name, String type,int numParams ,int lineNum, boolean sd) 
+        {
+            symbolName = name;
+            symbolType = type;
+            lineNo= lineNum ;
+            arraySize=0;
+           // System.out.println("numParams DEc"+ name+" "+ numParams);
+            this.numParams = numParams;
         }
     }
 
@@ -60,6 +72,47 @@ public class SymbolTable
         //table.addScope("output");
         currentScope="Global";
         lastScopeAdded=currentScope;
+    }
+
+    public int getNumParam(String varName)
+    {
+        String upperScope;
+
+        int size = table.keySet().size ();
+        Set scopeNames = table.keySet();
+        ArrayList <symbolListItem> temp;
+        Iterator index = scopeNames.iterator ();
+
+        //Check for varName in higher scopes until Global scope is reached
+        upperScope = table.get(currentScope).prevScope;
+        // while(!upperScope.equals("Global"))
+        // {   
+        //     temp = table.get(upperScope).contents;
+        //     for (int i=0;i<temp.size();i++)
+        //     {
+        //         if (varName.equals(temp.get(i).symbolName))
+        //         {
+        //             return temp.get(i).numParams;
+        //         }
+        //     }
+        //     upperScope = table.get(upperScope).prevScope;
+        // }
+
+                //System.out.println ("Search string " + varName);
+
+         //At end,check Global scope too
+        temp = table.get("Global").contents;
+        for (int i=0;i<temp.size();i++)
+        {
+            if (varName.equals(temp.get(i).symbolName))
+            {
+                     //                System.out.println ("Symbol " + varName + " Found! In restricted scope " + currentScope);
+                     // System.out.println("numParams "+ temp.get(i).numParams);
+                 return temp.get(i).numParams;
+            }
+        }
+
+         return 0;
     }
 
     //Returns true if sucessful
@@ -347,6 +400,15 @@ public class SymbolTable
         ArrayList <symbolListItem> current;
         current = table.get(currentScope).contents;
         symbolListItem newSymbol = new symbolListItem (varName,varType,size, lineNum);
+        current.add(newSymbol);  
+       // printSymbol (newSymbol);
+    }
+    public  void add (String varName, String varType,int numParams, int lineNum, boolean sd)
+    {
+        ArrayList <symbolListItem> current;
+        current = table.get(currentScope).contents;
+        symbolListItem newSymbol = new symbolListItem (varName,varType,numParams, lineNum,sd);
+         //System.out.println ("func added " + varName+" "+ numParams);
         current.add(newSymbol);  
        // printSymbol (newSymbol);
     }

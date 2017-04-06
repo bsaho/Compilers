@@ -7,6 +7,9 @@ abstract public class Absyn
 	public static int genericScopeCounter=0;
 	public int pos;
     public static  SymbolTable t =new SymbolTable ();
+
+    //S is the final table with no deletions
+    public static  SymbolTable s =new SymbolTable ();
     public static char flagOption;
 
 
@@ -35,6 +38,18 @@ abstract public class Absyn
             System.out.println( "\nThe Symbol Table is:\n" );
         }
 
+        //Add in input and output functions to symbol table
+        t.add ("output","FUNCVOID",1,1,true);
+        t.addScope ("output","FUNCVOID", 0);
+        s.add ("output","FUNCVOID",1,1,true);
+        s.addScope( "output","FUNCVOID", 0);
+
+        t.add ("input","FUNCINT",0);
+        t.addScope ("input","FUNCINT", 0);
+        s.add ("input","FUNCINT",0);
+        s.addScope( "input","FUNCINT", 0);
+
+
 	    while( tree != null ) 
 	    {
 	    	showTree( tree.head, spaces );
@@ -43,13 +58,17 @@ abstract public class Absyn
 	}
   	
   	//Exp list for parameters
-	static public void showTree( ExpList tree, int spaces, int isParam) 
+	static public int showTree( ExpList tree, int spaces, int isParam) 
 	{
+         int numParams = 0;
+
 	    while( tree != null ) 
 	    {
 	    	showTree(tree.head, spaces );
 	     	tree = tree.tail;
+            numParams++;
 	    } 
+        return numParams;
 	}
 
 	//Exp list for normal lists
@@ -72,14 +91,18 @@ abstract public class Absyn
 	}
 
 	//VarDecList for parameters
-	static public void showTree( VarDecList tree, int spaces, int isParam) 
+	static public int showTree( VarDecList tree, int spaces, int isParam) 
   	{
+        int numParams = 0;
+
 	  	while( tree != null ) 
 	    {
 	    	showTree(tree.head, spaces );
 
 	     	tree = tree.tail;
+            numParams++;
 	    } 
+        return numParams;
   	}
 
   	//VarDecList for normal lists
@@ -199,20 +222,26 @@ abstract public class Absyn
         System.out.print(" ReturnType: ");
         String result=showTree(tree.result, 0 );
 
-	    if (result.equals("VOID")){
-	    	t.add (tree.func,"FUNCVOID",tree.pos);
-	    	t.addScope (tree.func,"FUNCVOID", tree.pos);
-	    }
-	    else if (result.equals("Int")){
-	    	t.add (tree.func,"FUNCINT",tree.pos);
-	    	t.addScope (tree.func,"FUNCINT", tree.pos);
-	    }
-
 	    
        // System.out.println("");
-	    
-        showTree (tree.params, spaces, 1);
+	    int numParams;
+        numParams= showTree (tree.params, spaces, 1);
 	    showTree (tree.body, spaces );
+
+        if (result.equals("VOID"))
+        {
+            t.add (tree.func,"FUNCVOID",numParams,tree.pos,true);
+            t.addScope (tree.func,"FUNCVOID", tree.pos);
+            s.add (tree.func,"FUNCVOID",numParams,tree.pos,true);
+            s.addScope (tree.func,"FUNCVOID", tree.pos);
+        }
+        else if (result.equals("Int")){
+            t.add (tree.func,"FUNCINT",numParams,tree.pos,true);
+            t.addScope (tree.func,"FUNCINT", tree.pos);
+            s.add (tree.func,"FUNCINT",numParams,tree.pos,true);
+            s.addScope (tree.func,"FUNCINT", tree.pos);
+        }
+
 	    //t.printAll ();
 	    if (result.equals("VOID") && t.lookup ("ReturnExp",0))
         {
@@ -235,7 +264,7 @@ abstract public class Absyn
 	    	System.out.println (" ERROR: No return statement, " + " int function " 
 	    		+ tree.func + " must return int value");
 	    }
-       // t.delete();
+       t.delete();
         return tree.func;
   	}
 
@@ -267,6 +296,7 @@ abstract public class Absyn
          	System.out.println ("ERROR: Redeclaration of existing variable " + tree.name + " at line " + tree.pos);
         }
         t.add (tree.name,varName,1);  
+        s.add (tree.name,varName,1);  
     }
 
  	static public void showTree( ArrayDec tree, int spaces ) 
@@ -302,11 +332,13 @@ abstract public class Absyn
 	    if (tree.hasSize == true) 
 	    {	 
             int size= showTree (tree.size, spaces );  
-	    	t.add (tree.name,varName,size,1);
+            t.add (tree.name,varName,size,1);
+	    	s.add (tree.name,varName,size,1);
 	    }
         else
         {
            t.add (tree.name,varName,1); 
+           s.add (tree.name,varName,1); 
         }
   	}
 
@@ -433,7 +465,8 @@ abstract public class Absyn
 	    		}
 	    	}
 	    }
-  		t.addScope (scopeName,"IF",tree.pos);
+        t.addScope (scopeName,"IF",tree.pos);
+  		s.addScope (scopeName,"IF",tree.pos);
 
 	    showTree( tree.test, spaces );
 	    showTree( tree.thenp, spaces );
@@ -441,7 +474,7 @@ abstract public class Absyn
 	    {
 	    	showTree( tree.elsep, spaces );
 	  	}
-	  	//t.delete ();
+	  	t.delete ();
   	}
 
   	static public String showTree( IndexVar tree, int spaces ) 
@@ -492,6 +525,7 @@ abstract public class Absyn
         String scopeName= "WhileScope" + String.valueOf(genericScopeCounter);
         genericScopeCounter++;
         t.addScope (scopeName,"WHILE",tree.pos);
+        s.addScope (scopeName,"WHILE",tree.pos);
 	    
         if (flagOption == 's')
     	{	
@@ -517,7 +551,7 @@ abstract public class Absyn
 	    showTree( tree.test, spaces );
 	    showTree( tree.body, spaces );
 
-	   // t.delete ();
+	    t.delete ();
   	}
 
   	static public void showTree( ReturnExp tree, int spaces ) 
@@ -534,11 +568,13 @@ abstract public class Absyn
     	{
     		if (tree.exp instanceof NilExp)
     		{
-	   			t.add ("ReturnNull","RETURN",tree.pos);
+                t.add ("ReturnNull","RETURN",tree.pos);
+	   			s.add ("ReturnNull","RETURN",tree.pos);
 			}
 			else 
 			{
-				t.add ("ReturnExp","RETURN",tree.pos);
+                t.add ("ReturnExp","RETURN",tree.pos);
+				s.add ("ReturnExp","RETURN",tree.pos);
 			}
     	}
 
@@ -563,6 +599,9 @@ static public String showTree( CallExp tree, int spaces ) {
 	    	indent( spaces );
 	    	System.out.print( "CallExp: " + tree.func + " " ); 
   		}
+
+        spaces += SPACES;
+        int numArgs = showTree (tree.args, spaces, 1);
 	    
 	    if (flagOption == 's')
 	   	{
@@ -571,12 +610,16 @@ static public String showTree( CallExp tree, int spaces ) {
                 System.out.println(" ");
 	    		System.out.println (" ERROR: Failed function call of function " + tree.func+ " on line "+ tree.pos + " , function does not exist");
 	    	}
+            if(numArgs != s.getNumParam(tree.func))
+            {
+                System.out.println(" ");
+                System.out.println (" ERROR: Failed function call of function " + tree.func+ " on line "+ tree.pos + " , incorrect number/type of paramters" + numArgs + " " + t.getNumParam(tree.func));
+            }
 	    }
 
 	   
 	    //System.out.println(" ");
-	    spaces += SPACES;
-	    showTree (tree.args, spaces, 1);
+
 	    //System.out.print("\n");
 	    return tree.func;
   	}

@@ -33,7 +33,7 @@ public class CodeGen
 
     private static final String FILEN = "output.tm";
 
-    public static SymbolTable table = Absyn.t;
+    public static SymbolTable table = Absyn.s;
 
     static HashMap<String,Integer> functionList = new HashMap<String,Integer>();
          static FileWriter fileWrite = null;
