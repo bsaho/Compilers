@@ -32,6 +32,9 @@ int exfunc(int x)
         while(1>0)
         {
         int i;
+        y=6>8;
+        x=5*9;
+        z=3<7;
         i = i +1;
         }
         
