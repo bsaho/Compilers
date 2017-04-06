@@ -3,6 +3,9 @@ package codeGen;
 import java.util.*;
 import absyn.*;
 import cminus.Main;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 
 public class CodeGen
@@ -28,12 +31,14 @@ public class CodeGen
 
     static int frameOffset = initFO; //Points to end of frame points at intitFO at start of new Frame
 
-    private static final String FILENAME = "output.tm";
+    private static final String FILEN = "output.tm";
 
     public static SymbolTable table = Absyn.t;
 
     static HashMap<String,Integer> functionList = new HashMap<String,Integer>();
+         static FileWriter fileWrite = null;
 
+   
 
     public static int emitSkip( int distance )
     {
@@ -1441,7 +1446,7 @@ public static void emitRM_Abs( String op,int r, int a, String c )
 
         }else if (rightInt!=-1000 && leftInt!=-1000){
                            emitRM( "LDC", ac, rightInt, fp, "return to caller" );
-            emitRM( "LD", ac1, leftInt, fp, "return to caller" );
+            emitRM( "LDC", ac1, leftInt, fp, "return to caller" );
             emitRO ( "SUB", ac, ac1, ac, "return to caller" );
             //save this position to insert jmp code
             int savedLoc = emitSkip(1);
